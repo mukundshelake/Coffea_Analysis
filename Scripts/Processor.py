@@ -5,14 +5,8 @@ from coffea.analysis_tools import Weights
 from coffea.nanoevents import NanoEventsFactory, PFNanoAODSchema, NanoAODSchema
 from coffea.util import load, save
 import hist
-from filesetGen import getfileset
+from lib.helpers import getfileset
 
-def getFiles(folder_path):
-    file_list = []
-    for file_name in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, file_name)):
-            file_list.append(os.path.join(folder_path, file_name))
-    return file_list
 
 class NanoProcessor(processor.ProcessorABC):
     def __init__(self):
@@ -127,20 +121,24 @@ class NanoProcessor(processor.ProcessorABC):
     def postprocess(self, accumulator):
         return accumulator
 
-    
+   
 
-outputDir = '/home/mukund2/Projects/CoffeaTrial/outputs'
-
-#
+inputDir = '/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP'
+# If you are using getFiles from the lib.helpers 
 #fileset = {
 #    "Data": getFiles('/home/mukund2/Projects/CoffeaTrial/Files/Data'),
 #    "MC": getFiles('/home/mukund2/Projects/CoffeaTrial/Files/MC')
 #}
-fileset = getfileset('/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP')        
+
+
+# Generate the fileset in the appropriate format for the input directory.
+fileset = getfileset(inputDir)        
 
 iterative_run = processor.Runner(
     executor=processor.IterativeExecutor(compression=None),
     schema=NanoAODSchema,
+    chunksize=200,
+    maxchunks=10,
 )
 
 out = iterative_run(
@@ -148,4 +146,4 @@ out = iterative_run(
     treename="Events",
     processor_instance=NanoProcessor(),
 )
-save(out, "output.coffea")  # save dictionary into coffea file
+save(out, "outTest.coffea")  # save dictionary into coffea file
