@@ -192,4 +192,4 @@ timestamp = time.strftime("%Y%m%d_%H%M%S")
 # Create a unique output name using script name and timestamp
 output_filename = f"{script_name}_{timestamp}_{era}_{lep}.coffea"
 outputfile = os.path.join(outputDir, output_filename)
-save(out, output_filename)  # save dictionary into coffea file
+save(out, outputfile)  # save dictionary into coffea file
