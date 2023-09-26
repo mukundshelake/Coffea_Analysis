@@ -1,4 +1,26 @@
-import glob, os
+import glob, os, ROOT
+import ROOT
+import os
+
+def isValidRootFile(fname):
+    if not os.path.exists(os.path.expandvars(fname)):
+        return False
+    try:
+        f = ROOT.TFile(fname)
+    except Exception as e:
+        return False
+
+    if not f:
+        return False
+
+    try:
+        return not (f.IsZombie() or f.TestBit(ROOT.TFile.kRecovered) or f.GetListOfKeys().IsEmpty())
+    finally:
+        f.Close()
+
+
+
+
 def getfileset(DirList):
 	fileset = {}
 	for eraDir in DirList:
@@ -8,10 +30,14 @@ def getfileset(DirList):
 			for file in glob.glob(os.path.join(setName,'*/*/*/*/*.root')):
 				#print(file)
 				if os.path.isfile(file):
-					lst.append(file)
+					if isValidRootFile(file):
+						lst.append(file)
+					else: 
+						print(f"Excluding file {file} as invalid ROOT file")
 			setName = setName.split('/')[-1]
 			fileset[setName] = lst
 	return fileset
+
 
 
 def getFiles(folder_path):
