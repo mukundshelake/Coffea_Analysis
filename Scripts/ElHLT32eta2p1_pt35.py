@@ -173,8 +173,8 @@ fileset = getfileset(inputDir)
 iterative_run = processor.Runner(
     executor=processor.IterativeExecutor(compression=None),
     schema=NanoAODSchema,
-    chunksize=10,
-    maxchunks=10,
+    # chunksize=10,
+    # maxchunks=10,
 )
 
 out = iterative_run(
