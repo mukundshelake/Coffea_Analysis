@@ -133,14 +133,14 @@ print(eventtypes)
 
 ### for plot naming
 era = 'UL2016preVFP'
-channel = 'el'
-feature = 'electron_eta'
+lep = 'el'
+feature = 'electron_pt'
 plotDir = '../plots'
 
 ### Fig1: Only Data plot 
 fig1, ax = plt.subplots()
 hep.histplot(eventtypes['Data']['UL2016preVFP_el'][feature] , ax=ax)
-fig1_name = era + '_' + channel + '_' + feature + '.pdf'
+fig1_name = era + '_' + lep + '_' + feature + '.pdf'
 fig1_file = os.path.join(plotDir, fig1_name)
 plt.savefig(fig1_file)
 
@@ -164,7 +164,7 @@ hep.histplot(
     color="k",
 )
 plt.legend()
-fig2_name = era + '_' + channel + '_' + feature + '_stacked'+'.pdf'
+fig2_name = era + '_' + lep + '_' + feature + '_stacked'+'.pdf'
 fig2_file = os.path.join(plotDir, fig2_name)
 plt.savefig(fig2_file)
 

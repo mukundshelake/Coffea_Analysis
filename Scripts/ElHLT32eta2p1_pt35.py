@@ -5,7 +5,7 @@ from coffea.analysis_tools import Weights
 from coffea.nanoevents import NanoEventsFactory, PFNanoAODSchema, NanoAODSchema
 from coffea.util import load, save
 import hist
-from lib.helpers import getfileset, getFiles
+from lib.helpers import getfileset, getFiles, logScript
 from coffea.lookup_tools import extractor
 
 
@@ -45,12 +45,12 @@ class NanoProcessor(processor.ProcessorABC):
                 hist.storage.Weight(),
             ),             
         }
-        isRealData = not hasattr(events, "genWeight")
+        isRealData = not hasattr(events, "Generator")
         dataset = events.metadata["dataset"]
         if isRealData:
             output["sumw"] = len(events)
         else:
-            output["sumw"] = ak.sum(events.genWeight)
+            output["sumw"] = ak.sum(events.Generator.weight)
 
         ####################
         #    Selections    #
@@ -109,29 +109,30 @@ class NanoProcessor(processor.ProcessorABC):
 
         #### Initializing the extractor
 
-        ext = extractor()
-        ext.add_weight_sets(["* * /nfs/home/mukund/Projects/Coffea_Analysis/Scripts/SFs/UL2016_preVFP_Tight.root"])
-        ext.finalize()
-        evaluator = ext.make_evaluator()
+        # ext = extractor()
+        # ext.add_weight_sets(["* * /nfs/home/mukund/Projects/Coffea_Analysis/Scripts/SFs/UL2016_preVFP_Tight.root"])
+        # ext.finalize()
+        # evaluator = ext.make_evaluator()
 
         weights = Weights(len(events[event_level]), storeIndividual=True)
 
         if isRealData:
+            print(f"working on data {dataset}")
             genflavor = ak.zeros_like(sjets.pt)
         else:
+            print(f"working on MC {dataset}")
             genflavor = sjets.hadronFlavour
-            # weights.add("genweight", events[event_level].genWeight)
+            if 'WJet' not in dataset:
+                weights.add("GeneratorWeight", events[event_level].Generator.weight)
             # genweiev = ak.flatten(ak.broadcast_arrays(weights.weight(), sjets["pt"])[0])
-            eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
-            eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
+            # eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
+            # eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
 
-            weights.add(
-            "eleSF",
-            # the event weight is the product of the per-electron weights
-            # note, in a real analysis we would first have to select electrons of interest
-            weight=ak.prod(eleSF, axis=1),
-            weightUp=ak.prod(eleSF + eleSFerror, axis=1),
-            )
+            # weights.add(
+            # "eleSF",
+            # weight=ak.prod(eleSF),
+            # weightUp=ak.prod(eleSF + eleSFerror),
+            # )
 
         ####################
         #  Fill histogram  #
@@ -166,15 +167,14 @@ outputDir = f'../coffeaOutputs'
 
 inputDir = [DataDir, MCDir] 
 
-
 # Generate the fileset in the appropriate format for the input directory.
 fileset = getfileset(inputDir)        
 
 iterative_run = processor.Runner(
     executor=processor.IterativeExecutor(compression=None),
     schema=NanoAODSchema,
-    # chunksize=10,
-    # maxchunks=10,
+    # chunksize=5,
+    # maxchunks=5,
 )
 
 out = iterative_run(
@@ -184,7 +184,7 @@ out = iterative_run(
     
 )
 # Get the base name of the script without the extension
-script_filename = os.path.basename(__file__)
+script_filename = os.path.abspath(__file__)
 script_name = os.path.splitext(script_filename)[0]
 # Generate a timestamp
 timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -193,3 +193,8 @@ timestamp = time.strftime("%Y%m%d_%H%M%S")
 output_filename = f"{script_name}_{timestamp}_{era}_{lep}.coffea"
 outputfile = os.path.join(outputDir, output_filename)
 save(out, outputfile)  # save dictionary into coffea file
+
+
+# Log the stuff
+metaTxt = "Retrying the Generator.weight to each MC except WJets; as WJets are dominating the dist"
+logScript("logger.txt", script_filename, outputfile, metaTxt)

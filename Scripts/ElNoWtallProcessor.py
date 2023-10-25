@@ -120,17 +120,21 @@ class NanoProcessor(processor.ProcessorABC):
         return accumulator
 
    
+era = 'EIGHTEEN'
+lep = 'el'
+DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
+MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 
-inputDir = '/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP'
-# If you are using getFiles from the lib.helpers 
-#fileset = {
-#    "Data": getFiles('/home/mukund2/Projects/CoffeaTrial/Files/Data'),
-#    "MC": getFiles('/home/mukund2/Projects/CoffeaTrial/Files/MC')
-#}
+inputDir = [DataDir, MCDir]
+# # If you are using getFiles from the lib.helpers 
+# fileset = {
+#    "Data": getfileset('/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/Data_el/'),
+#    "MC": getfileset('/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/MC/')
+# }
 
 
 # Generate the fileset in the appropriate format for the input directory.
-fileset = getfileset(inputDir)        
+fileset = getfileset(inputDir)         
 
 iterative_run = processor.Runner(
     executor=processor.IterativeExecutor(compression=None),

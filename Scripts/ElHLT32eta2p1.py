@@ -1,11 +1,11 @@
 import numpy as np, awkward as ak
-import os
+import os, time
 from coffea import processor
 from coffea.analysis_tools import Weights
 from coffea.nanoevents import NanoEventsFactory, PFNanoAODSchema, NanoAODSchema
 from coffea.util import load, save
 import hist
-from lib.helpers import getfileset
+from lib.helpers import getfileset, getFiles
 
 
 class NanoProcessor(processor.ProcessorABC):
@@ -23,11 +23,11 @@ class NanoProcessor(processor.ProcessorABC):
         ## create the dictionary contains the
         output = {
             "sumw": processor.defaultdict_accumulator(float),
-            "muon_pt": hist.Hist(
+            "electron_pt": hist.Hist(
                 hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
                 hist.storage.Weight(),
             ),
-            "muon_eta": hist.Hist(
+            "electron_eta": hist.Hist(
                 hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$\eta$ "),
                 hist.storage.Weight(),
             ),
@@ -57,11 +57,11 @@ class NanoProcessor(processor.ProcessorABC):
 
         ## Electron cuts
         # electron twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
-        events.Muon = events.Muon[
-            (events.Muon.pt > 25) & (abs(events.Muon.eta) <= 3.0)
+        events.Electron = events.Electron[
+            (events.Electron.pt > 25) & (abs(events.Electron.eta) <= 3.0)
         ]
-        req_mu = ak.count(events.Muon.pt, axis=1) >= 1
-        events.Muon = ak.pad_none(events.Muon, 1)
+        req_el = ak.count(events.Electron.pt, axis=1) >= 1
+        events.Electron = ak.pad_none(events.Electron, 1)
 
         ## Jet cuts
         events.Jet = events.Jet[(events.Jet.pt > 20) & (abs(events.Jet.eta) <= 3.0)]
@@ -71,20 +71,36 @@ class NanoProcessor(processor.ProcessorABC):
         ## Other cuts
         ###### Add additional cuts here
 	## HLT
+
+        triggers = [
+            "Ele32_eta2p1_WPTight_Gsf",
+        ]
+        checkHLT = ak.Array([hasattr(events.HLT, _trig) for _trig in triggers])
+        if ak.all(checkHLT == False):
+            raise ValueError("HLT paths:", triggers, " are all invalid in", dataset)
+        elif ak.any(checkHLT == False):
+            print(np.array(triggers)[~checkHLT], " not exist in", dataset)
+        trig_arrs = [
+            events.HLT[_trig] for _trig in triggers if hasattr(events.HLT, _trig)
+        ]
+        req_trig = np.zeros(len(events), dtype="bool")
+        for t in trig_arrs:
+            req_trig = req_trig | t
+
         event_level = ak.fill_none(
-            req_jet & req_mu, False)
+            req_jet & req_el & req_trig, False)
         if len(events[event_level]) == 0:
             return {dataset: output}
 
         ####################
         # Selected objects #
         ####################
-        smu = events.Muon[event_level]
-        smu = smu[:, 0]
+        sel = events.Electron[event_level]
+        sel = sel[:, 0]
         sjets = events.Jet[event_level]
         sjets = sjets[:, :3]
         
-        print("No. of muons: ", sum(event_level))
+        print("No. of electrons: ", sum(event_level))
         ####################
         # Weight & Geninfo #
         ####################
@@ -101,8 +117,8 @@ class NanoProcessor(processor.ProcessorABC):
         #  Fill histogram  #
         ####################
         # The content filled to histogram should be flatten arrays(numpy arrays)
-        output["muon_pt"].fill(ak.flatten(smu.pt, axis=-1), weight=weights.weight())
-        output["muon_eta"].fill(ak.flatten(smu.eta, axis=-1), weight=weights.weight())      
+        output["electron_pt"].fill(ak.flatten(sel.pt, axis=-1), weight=weights.weight())
+        output["electron_eta"].fill(ak.flatten(sel.eta, axis=-1), weight=weights.weight())      
         ## fill 2D histogram, since genweight is associate to the events, using ak.broadcast_arrays to assign the same weights for each jet
         output["jet_pt"].fill(
             ak.flatten(genflavor, axis=-1),
@@ -121,9 +137,10 @@ class NanoProcessor(processor.ProcessorABC):
         return accumulator
 
    
-
-DataDir = '/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/Data_mu'
-MCDir = '/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/MC'
+era = 'EIGHTEEN'
+lep = 'el'
+DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
+MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 
 inputDir = [DataDir, MCDir]
 # # If you are using getFiles from the lib.helpers 
@@ -145,5 +162,14 @@ out = iterative_run(
     fileset,
     treename="Events",
     processor_instance=NanoProcessor(),
+    
 )
-save(out, "outMuonall.coffea")  # save dictionary into coffea file
+# Get the base name of the script without the extension
+script_filename = os.path.basename(__file__)
+script_name = os.path.splitext(script_filename)[0]
+# Generate a timestamp
+timestamp = time.strftime("%Y%m%d_%H%M%S")
+
+# Create a unique output name using script name and timestamp
+output_filename = f"{script_name}_{timestamp}_{era}_{lep}.coffea"
+save(out, output_filename)  # save dictionary into coffea file

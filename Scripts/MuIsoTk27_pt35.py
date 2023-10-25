@@ -1,11 +1,11 @@
 import numpy as np, awkward as ak
-import os
+import os, time
 from coffea import processor
 from coffea.analysis_tools import Weights
 from coffea.nanoevents import NanoEventsFactory, PFNanoAODSchema, NanoAODSchema
 from coffea.util import load, save
 import hist
-from lib.helpers import getfileset
+from lib.helpers import getfileset, getFiles
 
 
 class NanoProcessor(processor.ProcessorABC):
@@ -23,6 +23,7 @@ class NanoProcessor(processor.ProcessorABC):
         ## create the dictionary contains the
         output = {
             "sumw": processor.defaultdict_accumulator(float),
+	        #"numEvents": processor.defaultdict_accumulator(float),
             "muon_pt": hist.Hist(
                 hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
                 hist.storage.Weight(),
@@ -58,7 +59,7 @@ class NanoProcessor(processor.ProcessorABC):
         ## Electron cuts
         # electron twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
         events.Muon = events.Muon[
-            (events.Muon.pt > 25) & (abs(events.Muon.eta) <= 3.0)
+            (events.Muon.pt > 35) & (abs(events.Muon.eta) <= 3.0)
         ]
         req_mu = ak.count(events.Muon.pt, axis=1) >= 1
         events.Muon = ak.pad_none(events.Muon, 1)
@@ -71,8 +72,24 @@ class NanoProcessor(processor.ProcessorABC):
         ## Other cuts
         ###### Add additional cuts here
 	## HLT
+
+        triggers = [
+            "IsoTkMu27",
+        ]
+        checkHLT = ak.Array([hasattr(events.HLT, _trig) for _trig in triggers])
+        if ak.all(checkHLT == False):
+            raise ValueError("HLT paths:", triggers, " are all invalid in", dataset)
+        elif ak.any(checkHLT == False):
+            print(np.array(triggers)[~checkHLT], " not exist in", dataset)
+        trig_arrs = [
+            events.HLT[_trig] for _trig in triggers if hasattr(events.HLT, _trig)
+        ]
+        req_trig = np.zeros(len(events), dtype="bool")
+        for t in trig_arrs:
+            req_trig = req_trig | t
+
         event_level = ak.fill_none(
-            req_jet & req_mu, False)
+            req_jet & req_mu & req_trig, False)
         if len(events[event_level]) == 0:
             return {dataset: output}
 
@@ -85,6 +102,7 @@ class NanoProcessor(processor.ProcessorABC):
         sjets = sjets[:, :3]
         
         print("No. of muons: ", sum(event_level))
+        #output["numEvents"] = sum(event_level)
         ####################
         # Weight & Geninfo #
         ####################
@@ -121,9 +139,10 @@ class NanoProcessor(processor.ProcessorABC):
         return accumulator
 
    
-
-DataDir = '/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/Data_mu'
-MCDir = '/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/MC'
+era = 'EIGHTEEN'
+lep = 'mu'
+DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
+MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 
 inputDir = [DataDir, MCDir]
 # # If you are using getFiles from the lib.helpers 
@@ -134,7 +153,7 @@ inputDir = [DataDir, MCDir]
 
 
 # Generate the fileset in the appropriate format for the input directory.
-fileset = getfileset(inputDir)        
+fileset = getfileset(inputDir)      
 
 iterative_run = processor.Runner(
     executor=processor.IterativeExecutor(compression=None),
@@ -145,5 +164,14 @@ out = iterative_run(
     fileset,
     treename="Events",
     processor_instance=NanoProcessor(),
+    
 )
-save(out, "outMuonall.coffea")  # save dictionary into coffea file
+# Get the base name of the script without the extension
+script_filename = os.path.basename(__file__)
+script_name = os.path.splitext(script_filename)[0]
+# Generate a timestamp
+timestamp = time.strftime("%Y%m%d_%H%M%S")
+
+# Create a unique output name using script name and timestamp
+output_filename = f"{script_name}_{timestamp}_{era}_{lep}.coffea"
+save(out, output_filename)  # save dictionary into coffea file

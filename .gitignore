@@ -1,3 +1,7 @@
 my_project_env/
 *.root
 Scripts/my_env/
+Scripts/SFs
+Logs/
+coffeaOutputs/
+Scripts/logger.txt
