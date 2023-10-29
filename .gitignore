@@ -5,3 +5,5 @@ Scripts/SFs
 Logs/
 coffeaOutputs/
 Scripts/logger.txt
+my_env
+*.pyc

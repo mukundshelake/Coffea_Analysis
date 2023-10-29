@@ -26,18 +26,6 @@ class NanoProcessor(processor.ProcessorABC):
         print(f"Working with {events.metadata['dataset']}")
         output = {
             "sumw" : processor.defaultdict_accumulator(float),
-            "NoSel":{
-                "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                            hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                            hist.storage.Weight(),
-                        )
-                },
             "AtleastOnelep":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float),
@@ -51,42 +39,6 @@ class NanoProcessor(processor.ProcessorABC):
                         )
                 },
             "LeadLep":{
-                "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                            hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                            hist.storage.Weight(),
-                        )
-                },
-            "AtleastThreeJ":{
-                "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                            hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                            hist.storage.Weight(),
-                        )
-                },
-            "JetPtEta":{
-                "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                            hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                            hist.storage.Weight(),
-                        )
-                },
-            "HLTcut":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float),
                 "electron_pt":  hist.Hist(
@@ -150,13 +102,12 @@ class NanoProcessor(processor.ProcessorABC):
             "leadPtandEta",
             ak.sum((events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0), axis=1) > 0
         )
-
         selection.add("atleastThreeJ", ak.num(events.Jet) > 2)
         selection.add(
             "JetPtandEta",
             ak.sum((events.Jet.pt >= 20.0) & (abs(events.Jet.eta) < 3.0), axis = 1) > 2
         )
-        selection.add("HLTEle32", events.HLT.Ele32_eta2p1_WPTight_Gsf)
+        selection.add("HLTEle32", events.HLT.Ele32_WPTight_Gsf)
         selectionList = {
         "AtleastOnelep":{'atleastOnelep': True},
         "LeadLep":{'leadPtandEta': True},
@@ -215,7 +166,7 @@ class NanoProcessor(processor.ProcessorABC):
                 if "HLTEle32" in cuts:
                     try:
                         ext = extractor()
-                        ext.add_weight_sets(["* * SFs/UL2016_preVFP_Tight.root"])
+                        ext.add_weight_sets(["* * SFs/UL2018_Tight.root"])
                         ext.finalize()
                         evaluator = ext.make_evaluator()
                         eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)

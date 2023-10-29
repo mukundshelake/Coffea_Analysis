@@ -26,6 +26,7 @@ class NanoProcessor(processor.ProcessorABC):
         output = {
             "sumw" : processor.defaultdict_accumulator(float),
             "selEvents" : processor.defaultdict_accumulator(float),
+            "wtEvents" : processor.defaultdict_accumulator(float),
             "electron_pt":  hist.Hist(
                     hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
                     hist.storage.Weight(),
@@ -56,7 +57,15 @@ class NanoProcessor(processor.ProcessorABC):
         )
         selection.add("HLTEle32", events.HLT.Ele32_eta2p1_WPTight_Gsf)
         event_level = selection.all('atleastOnelep', 'leadPtandEta', "atleastThreeJ", "JetPtandEta", "HLTEle32")
+        
+        if isRealData:
+            output["sumw"] = len(events)
+        else:
+            output["sumw"] = ak.sum(events.Generator.weight)
+        output["selEvents"] = sum(event_level)
+
         if sum(event_level) == 0:
+            output["wtEvents"] = 0.0
             return {dataset: output}
 
         ####################
@@ -94,7 +103,6 @@ class NanoProcessor(processor.ProcessorABC):
             except:
                 print(f"LHEWeight is not there for dataset {dataset}; adding +1s as LHEWeightSign")
                 weights.add("LHEWeightSign", weight = np.ones(sum(event_level), dtype = float))
-            
             try:
                 ext = extractor()
                 ext.add_weight_sets(["* * SFs/UL2016_preVFP_Tight.root"])
@@ -104,19 +112,17 @@ class NanoProcessor(processor.ProcessorABC):
                 eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
                 weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
             except:
+                weights.add("eleSF", weight = np.ones(sum(event_level), dtype = float))
                 print(f"HLT Scale factors is not working for dataset {dataset}; adding +1s as Scale factor weight")
         ####################
         #  Fill histogram  #
         ####################
         ## Filling the output dictionary
-        if isRealData:
-            output["sumw"] = len(events)
-        else:
-            output["sumw"] = ak.sum(events.Generator.weight)
-        output["selEvents"] = float(sum(event_level))
+        output["wtEvents"] = sum(weights.weight())
         output["electron_pt"].fill(ak.flatten(sel.pt, axis=-1), weight=weights.weight())
         output["electron_eta"].fill(ak.flatten(sel.eta, axis=-1), weight=weights.weight())
 
+        # print(output)
         return {dataset: output}
 
     def postprocess(self, accumulator):

@@ -3,6 +3,7 @@ import ROOT
 import os
 import time
 import paramiko
+
 def isValidRootFile(fname):
     if not os.path.exists(os.path.expandvars(fname)):
         return False
@@ -18,8 +19,6 @@ def isValidRootFile(fname):
         return not (f.IsZombie() or f.TestBit(ROOT.TFile.kRecovered) or f.GetListOfKeys().IsEmpty())
     finally:
         f.Close()
-
-
 
 
 def getfileset(DirList):

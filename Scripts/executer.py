@@ -11,7 +11,7 @@ from coffea import processor
 from coffea.util import load, save
 
 def executeAndLog(processor_address, meta_info=""):
-    era = 'SIXTEEN_preVFP'
+    era = 'EIGHTEEN'
     lep = 'el'
     DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
     MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
@@ -37,12 +37,11 @@ def executeAndLog(processor_address, meta_info=""):
         my_Processor = NanoProcessor()
         # Execute the script
         iterative_run = processor.Runner(
-            executor=processor.IterativeExecutor(compression=None, workers = 4),
+            executor=processor.FuturesExecutor(compression=None, workers = 15),
             schema=NanoAODSchema,
-            chunksize=20,
-            maxchunks=10,
+            # chunksize=20,
+            # maxchunks=10,
         )
-
         out = iterative_run(
             fileset,
             treename="Events",
