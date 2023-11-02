@@ -45,7 +45,7 @@ def executeAndLog(processor_address, meta_info=""):
         out = iterative_run(
             fileset,
             treename="Events",
-            processor_instance=my_Processor,   
+            processor_instance=my_Processor, 
         )
         save(out, coffeaOutput) 
         runStatus = "Success"

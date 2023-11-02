@@ -7,3 +7,4 @@ coffeaOutputs/
 Scripts/logger.txt
 my_env
 *.pyc
+Scripts/lib/secrets.py

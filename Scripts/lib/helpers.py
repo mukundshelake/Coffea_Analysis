@@ -4,6 +4,7 @@ import os
 import time
 import paramiko
 
+problemFiles = []
 def isValidRootFile(fname):
     if not os.path.exists(os.path.expandvars(fname)):
         return False
@@ -11,10 +12,8 @@ def isValidRootFile(fname):
         f = ROOT.TFile(fname)
     except Exception as e:
         return False
-
     if not f:
         return False
-
     try:
         return not (f.IsZombie() or f.TestBit(ROOT.TFile.kRecovered) or f.GetListOfKeys().IsEmpty())
     finally:
@@ -30,7 +29,7 @@ def getfileset(DirList):
 			for file in glob.glob(os.path.join(setName,'*/*/*/*/*.root')):
 				#print(file)
 				if os.path.isfile(file):
-					if isValidRootFile(file):
+					if isValidRootFile(file) and file not in problemFiles:
 						lst.append(file)
 					else: 
 						print(f"Excluding file {file} as invalid ROOT file")

@@ -26,66 +26,50 @@ class NanoProcessor(processor.ProcessorABC):
         print(f"Working with {events.metadata['dataset']}")
         output = {
             "sumw" : processor.defaultdict_accumulator(float),
+            "NoSel":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
             "AtleastOnelep":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
-                },
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
             "LeadLep":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
-                },
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "AtleastThreeJ":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "JetPtEta":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "HLTcut":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "LeadLandHLT":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "LeadLandthreeJandHLT":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
             "LeadLandthreeJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
-                },
-            "LeadLandJ":{
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "LeadLandgoodJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
-                },
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
             "Total":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
-                }
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            }
         }
         isRealData = not hasattr(events, "Generator")
         dataset = events.metadata["dataset"]
@@ -102,6 +86,7 @@ class NanoProcessor(processor.ProcessorABC):
             "leadPtandEta",
             ak.sum((events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0), axis=1) > 0
         )
+
         selection.add("atleastThreeJ", ak.num(events.Jet) > 2)
         selection.add(
             "JetPtandEta",
@@ -109,10 +94,16 @@ class NanoProcessor(processor.ProcessorABC):
         )
         selection.add("HLTEle32", events.HLT.Ele32_eta2p1_WPTight_Gsf)
         selectionList = {
+        "NoSel":{},
         "AtleastOnelep":{'atleastOnelep': True},
         "LeadLep":{'leadPtandEta': True},
+        "AtleastThreeJ":{'atleastThreeJ': True},
+        "JetPtEta":{"JetPtandEta": True},
+        "HLTcut":{"HLTEle32": True},
+        "LeadLandHLT":{"HLTEle32": True, 'leadPtandEta': True},
+        "LeadLandthreeJandHLT":{'atleastThreeJ': True, 'leadPtandEta': True, "HLTEle32": True},
         "LeadLandthreeJ":{'atleastThreeJ': True, 'leadPtandEta': True},
-        "LeadLandJ":{'atleastThreeJ': True, 'leadPtandEta': True, "JetPtandEta": True},
+        "LeadLandgoodJ":{'atleastThreeJ': True, 'leadPtandEta': True, "JetPtandEta": True},
         "Total":{'atleastOnelep': True, 'leadPtandEta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTEle32": True}
         }
         for region, cuts in selectionList.items():
@@ -129,7 +120,7 @@ class NanoProcessor(processor.ProcessorABC):
             ####################
             # Selected objects #
             ####################
-            sel = events.Electron[event_level][:, 0]
+
             ####################
             # Weight & Geninfo #
             ####################
@@ -142,12 +133,6 @@ class NanoProcessor(processor.ProcessorABC):
                     print(f"L1preFireW is not there for dataset {dataset}; adding 1s as L1preFireW")
                     weights.add("L1preFireW", weight = np.ones(sum(event_level), dtype = float))
             else:
-                try:
-                    weights.add("genWt", weight = events[event_level].Generator.weight)
-                    print("Added genWt")
-                except:
-                    print(f"genWeight is not there for dataset {dataset}; adding 1s as genWeights")
-                    weights.add("genWt", weight = np.ones(sum(event_level), dtype = float))
                 try:
                     weights.add("PUWt", weight = events[event_level].puWeight, weightUp = events[event_level].puWeightUp, weightDown = events[event_level].puWeightDown)
                     print("Added PUWt")
@@ -172,11 +157,11 @@ class NanoProcessor(processor.ProcessorABC):
                 if "HLTEle32" in cuts:
                     try:
                         ext = extractor()
-                        ext.add_weight_sets(["* * SFs/UL2016_preVFP_Tight.root"])
+                        ext.add_weight_sets(["* * SFs/UL2016_postVFP_Tight.root"])
                         ext.finalize()
                         evaluator = ext.make_evaluator()
-                        eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
-                        eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
+                        eleSF = evaluator["EGamma_SF2D"](events.Electron[event_level][:, 0].eta, events.Electron[event_level][:, 0].pt)
+                        eleSFerror = evaluator["EGamma_SF2D_error"](events.Electron[event_level][:, 0].eta, events.Electron[event_level][:, 0].pt)
                         weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
                         print("Added HLT SF")
                     except:
@@ -187,8 +172,6 @@ class NanoProcessor(processor.ProcessorABC):
             ####################
             ## Filling the output dictionary
             output[region]["wtEvents"] = float(sum(weights.weight()))
-            output[region]["electron_pt"].fill(ak.flatten(sel.pt, axis=-1), weight=weights.weight())
-            output[region]["electron_eta"].fill(ak.flatten(sel.eta, axis=-1), weight=weights.weight())
         return {dataset: output}
 
     def postprocess(self, accumulator):
