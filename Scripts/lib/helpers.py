@@ -3,7 +3,6 @@ import ROOT
 import os
 import time
 import paramiko
-import secrets
 
 problemFiles = []
 def isValidRootFile(fname):
@@ -94,10 +93,10 @@ def scptoEOS(outputFile, eosLogDir):
     destination_file = os.path.join('/eos/user/m/mshelake/CoffeaIntro/Logs/', eosLogDir, filename)
 
     # SSH connection parameters
-    hostname = secrets.hostname
+    hostname = "lxplus.cern.ch"
     port = 22  # SSH port (typically 22)
-    username = secrets.Username
-    password = secrets.Password
+    username = "mshelake"
+    password = "Mkshp400"
 
 
 

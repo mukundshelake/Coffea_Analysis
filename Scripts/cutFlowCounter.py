@@ -50,11 +50,19 @@ class NanoProcessor(processor.ProcessorABC):
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float)
             },
+            "LeadLandHLT":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "LeadLandthreeJandHLT":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
             "LeadLandthreeJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float)
             },
-            "LeadLandJ":{
+            "LeadLandgoodJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float)
             },
@@ -92,8 +100,10 @@ class NanoProcessor(processor.ProcessorABC):
         "AtleastThreeJ":{'atleastThreeJ': True},
         "JetPtEta":{"JetPtandEta": True},
         "HLTcut":{"HLTEle32": True},
+        "LeadLandHLT":{"HLTEle32": True, 'leadPtandEta': True},
+        "LeadLandthreeJandHLT":{'atleastThreeJ': True, 'leadPtandEta': True, "HLTEle32": True},
         "LeadLandthreeJ":{'atleastThreeJ': True, 'leadPtandEta': True},
-        "LeadLandJ":{'atleastThreeJ': True, 'leadPtandEta': True, "JetPtandEta": True},
+        "LeadLandgoodJ":{'atleastThreeJ': True, 'leadPtandEta': True, "JetPtandEta": True},
         "Total":{'atleastOnelep': True, 'leadPtandEta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTEle32": True}
         }
         for region, cuts in selectionList.items():

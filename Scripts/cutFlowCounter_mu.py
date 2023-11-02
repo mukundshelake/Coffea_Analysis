@@ -50,11 +50,19 @@ class NanoProcessor(processor.ProcessorABC):
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float)
             },
+            "LeadLandHLT":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
+            "LeadLandthreeJandHLT":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
+            },
             "LeadLandthreeJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float)
             },
-            "LeadLandJ":{
+            "LeadLandgoodJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float)
             },
@@ -84,17 +92,19 @@ class NanoProcessor(processor.ProcessorABC):
             "JetPtandEta",
             ak.sum((events.Jet.pt >= 20.0) & (abs(events.Jet.eta) < 3.0), axis = 1) > 2
         )
-        selection.add("HLTEle32", events.HLT.Ele32_eta2p1_WPTight_Gsf)
+        selection.add("HLTIsoTk24", events.HLT.IsoTkMu24)
         selectionList = {
         "NoSel":{},
         "AtleastOnelep":{'atleastOnelep': True},
         "LeadLep":{'leadPtandEta': True},
         "AtleastThreeJ":{'atleastThreeJ': True},
         "JetPtEta":{"JetPtandEta": True},
-        "HLTcut":{"HLTEle32": True},
+        "HLTcut":{"HLTIsoTk24": True},
+        "LeadLandHLT":{"HLTIsoTk24": True, 'leadPtandEta': True},
+        "LeadLandthreeJandHLT":{'atleastThreeJ': True, 'leadPtandEta': True, "HLTIsoTk24": True},
         "LeadLandthreeJ":{'atleastThreeJ': True, 'leadPtandEta': True},
-        "LeadLandJ":{'atleastThreeJ': True, 'leadPtandEta': True, "JetPtandEta": True},
-        "Total":{'atleastOnelep': True, 'leadPtandEta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTEle32": True}
+        "LeadLandgoodJ":{'atleastThreeJ': True, 'leadPtandEta': True, "JetPtandEta": True},
+        "Total":{'atleastOnelep': True, 'leadPtandEta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTIsoTk24": True}
         }
         for region, cuts in selectionList.items():
             event_level = selection.require(**cuts)
@@ -144,19 +154,19 @@ class NanoProcessor(processor.ProcessorABC):
                     print(f"LHEWeight is not there for dataset {dataset}; adding +1s as LHEWeightSign")
                     weights.add("LHEWeightSign", weight = np.ones(sum(event_level), dtype = float))
                 
-                if "HLTEle32" in cuts:
-                    try:
-                        ext = extractor()
-                        ext.add_weight_sets(["* * SFs/UL2016_postVFP_Tight.root"])
-                        ext.finalize()
-                        evaluator = ext.make_evaluator()
-                        eleSF = evaluator["EGamma_SF2D"](events.Muon[event_level][:, 0].eta, events.Muon[event_level][:, 0].pt)
-                        eleSFerror = evaluator["EGamma_SF2D_error"](events.Muon[event_level][:, 0].eta, events.Muon[event_level][:, 0].pt)
-                        weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
-                        print("Added HLT SF")
-                    except:
-                        print(f"HLT Scale factors is not working for dataset {dataset}; adding +1s as Scale factor weight")
-                        weights.add("eleSF", weight = np.ones(sum(event_level), dtype = float))
+                # if "HLTIsoTk24" in cuts:
+                #     try:
+                #         ext = extractor()
+                #         ext.add_weight_sets(["* * SFs/UL2016_postVFP_Tight.root"])
+                #         ext.finalize()
+                #         evaluator = ext.make_evaluator()
+                #         eleSF = evaluator["EGamma_SF2D"](events.Muon[event_level][:, 0].eta, events.Muon[event_level][:, 0].pt)
+                #         eleSFerror = evaluator["EGamma_SF2D_error"](events.Muon[event_level][:, 0].eta, events.Muon[event_level][:, 0].pt)
+                #         weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
+                #         print("Added HLT SF")
+                #     except:
+                #         print(f"HLT Scale factors is not working for dataset {dataset}; adding +1s as Scale factor weight")
+                #         weights.add("eleSF", weight = np.ones(sum(event_level), dtype = float))
             ####################
             #  Fill histogram  #
             ####################

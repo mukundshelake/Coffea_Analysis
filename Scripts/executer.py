@@ -11,8 +11,8 @@ from coffea import processor
 from coffea.util import load, save
 
 def executeAndLog(processor_address, meta_info=""):
-    era = 'EIGHTEEN'
-    lep = 'el'
+    era = 'SIXTEEN_preVFP'
+    lep = 'mu'
     DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
     MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 
@@ -45,7 +45,7 @@ def executeAndLog(processor_address, meta_info=""):
         out = iterative_run(
             fileset,
             treename="Events",
-            processor_instance=my_Processor,   
+            processor_instance=my_Processor, 
         )
         save(out, coffeaOutput) 
         runStatus = "Success"
