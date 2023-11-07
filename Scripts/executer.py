@@ -10,9 +10,9 @@ from coffea.nanoevents import NanoAODSchema
 from coffea import processor
 from coffea.util import load, save
 
-def executeAndLog(processor_address, meta_info=""):
-    era = 'SIXTEEN_preVFP'
-    lep = 'mu'
+def executeAndLog(processor_address, era, lep, istest, meta_info=""):
+    # era = 'SIXTEEN_preVFP'
+    # lep = 'el'
     DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
     MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 
@@ -36,12 +36,20 @@ def executeAndLog(processor_address, meta_info=""):
         exec(f"from {processorName} import NanoProcessor", globals())
         my_Processor = NanoProcessor()
         # Execute the script
-        iterative_run = processor.Runner(
-            executor=processor.FuturesExecutor(compression=None, workers = 15),
-            schema=NanoAODSchema,
-            # chunksize=20,
-            # maxchunks=10,
-        )
+
+        if istest:
+            iterative_run = processor.Runner(
+                executor=processor.FuturesExecutor(compression=None, workers = 15),
+                schema=NanoAODSchema,
+                chunksize= 20,
+                maxchunks= 10,
+            )
+        else:
+            iterative_run = processor.Runner(
+                executor=processor.FuturesExecutor(compression=None, workers = 15),
+                schema=NanoAODSchema
+            )
+
         out = iterative_run(
             fileset,
             treename="Events",
@@ -72,11 +80,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Log the processor content with error handling.")
 
     # Define command-line arguments for script filename and meta information
+    parser.add_argument("-e", "--era", required=True, help="Data taking era to run on the analysisi on [SIXTEENpreVFP, SIXTEEN_postVFP, SEVENTEEN, EIGHTEEN]")
+    parser.add_argument("-l", "--lep", required=True, help="Lepton to run analysis on")
     parser.add_argument("-p", "--processor_address", required=True, help="Path to the processor to execute and log.")
     parser.add_argument("-m", "--meta_info", default="", help="Optional meta information.")
+    parser.add_argument('--test', action = "store_true", default= False, help="Is this a test run or full run")
 
     # Parse the command-line arguments
     args = parser.parse_args()
 
     # Call the function with the specified script filename and meta information
-    executeAndLog(args.processor_address, args.meta_info)
+    executeAndLog(args.processor_address, args.era, args.lep, args.test, args.meta_info)
