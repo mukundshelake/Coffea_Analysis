@@ -27,11 +27,11 @@ class NanoProcessor(processor.ProcessorABC):
             "sumw" : processor.defaultdict_accumulator(float),
             "selEvents" : processor.defaultdict_accumulator(float),
             "wtEvents" : processor.defaultdict_accumulator(float),
-            "electron_pt":  hist.Hist(
+            "muon_pt":  hist.Hist(
                     hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
                     hist.storage.Weight(),
                     ),
-            "electron_eta": hist.Hist(
+            "muon_eta": hist.Hist(
                         hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
                         hist.storage.Weight(),
                     ), 
@@ -52,10 +52,10 @@ class NanoProcessor(processor.ProcessorABC):
         ####################
 
         selection = PackedSelection()
-        selection.add("atleastOnelep", ak.num(events.Electron) > 0)
+        selection.add("atleastOnelep", ak.num(events.Muon) > 0)
         selection.add(
             "leadPtandEta",
-            ak.sum((events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0), axis=1) > 0
+            ak.sum((events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 3.0), axis=1) > 0
         )
 
         selection.add("atleastThreeJ", ak.num(events.Jet) > 2)
@@ -63,8 +63,8 @@ class NanoProcessor(processor.ProcessorABC):
             "JetPtandEta",
             ak.sum((events.Jet.pt >= 20.0) & (abs(events.Jet.eta) < 3.0), axis = 1) > 2
         )
-        selection.add("HLTEle32", events.HLT.Ele32_eta2p1_WPTight_Gsf)
-        event_level = selection.all('atleastOnelep', 'leadPtandEta', "atleastThreeJ", "JetPtandEta", "HLTEle32")
+        selection.add("HLTIsoTk24", events.HLT.IsoTkMu24)
+        event_level = selection.all('atleastOnelep', 'leadPtandEta', "atleastThreeJ", "JetPtandEta", "HLTIsoTk24")
         
         if isRealData:
             output["sumw"] = len(events)
@@ -79,9 +79,9 @@ class NanoProcessor(processor.ProcessorABC):
         ####################
         # Selected objects #
         ####################
-        sel = events.Electron[event_level][:, 0]
+        smu = events.Muon[event_level][:, 0]
         sjet = events.Jet[event_level][:, 0]
-        # print("No. of selected electrons: ", sum(event_level))
+        # print("No. of selected muons: ", sum(event_level))
         #output["numEvents"] = sum(event_level)
         ####################
         # Weight & Geninfo #
@@ -111,24 +111,24 @@ class NanoProcessor(processor.ProcessorABC):
             except:
                 print(f"LHEWeight is not there for dataset {dataset}; adding +1s as LHEWeightSign")
                 weights.add("LHEWeightSign", weight = np.ones(sum(event_level), dtype = float))
-            try:
-                ext = extractor()
-                ext.add_weight_sets(["* * SFs/UL2016_preVFP_Tight.root"])
-                ext.finalize()
-                evaluator = ext.make_evaluator()
-                eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
-                eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
-                weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
-            except:
-                weights.add("eleSF", weight = np.ones(sum(event_level), dtype = float))
-                print(f"HLT Scale factors is not working for dataset {dataset}; adding +1s as Scale factor weight")
-        # ####################
+            # try:
+            #     ext = extractor()
+            #     ext.add_weight_sets(["* * SFs/UL2016_preVFP_Tight.root"])
+            #     ext.finalize()
+            #     evaluator = ext.make_evaluator()
+            #     eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
+            #     eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
+            #     weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
+            # except:
+            #     weights.add("eleSF", weight = np.ones(sum(event_level), dtype = float))
+            #     print(f"HLT Scale factors is not working for dataset {dataset}; adding +1s as Scale factor weight")
+        ####################
         #  Fill histogram  #
         ####################
         ## Filling the output dictionary
         output["wtEvents"] = sum(weights.weight())
-        output["electron_pt"].fill(ak.flatten(sel.pt, axis=-1), weight=weights.weight())
-        output["electron_eta"].fill(ak.flatten(sel.eta, axis=-1), weight=weights.weight())
+        output["muon_pt"].fill(ak.flatten(smu.pt, axis=-1), weight=weights.weight())
+        output["muon_eta"].fill(ak.flatten(smu.eta, axis=-1), weight=weights.weight())
         output["jet_pt"].fill(ak.flatten(sjet.pt, axis=-1), weight=weights.weight())
         output["jet_eta"].fill(ak.flatten(sjet.eta, axis=-1), weight=weights.weight())
         # print(output)

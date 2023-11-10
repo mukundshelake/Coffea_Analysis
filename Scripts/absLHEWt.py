@@ -161,18 +161,18 @@ class NanoProcessor(processor.ProcessorABC):
 
 era = 'SIXTEEN_preVFP'
 lep = 'el'
-DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
-MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 outputDir = f'../coffeaOutputs'
 
-inputDir = [DataDir, MCDir] 
+
 # inputDir = [MCDir]
 
 # Generate the fileset in the appropriate format for the input directory.
-fileset = getfileset(inputDir)        
+fileset = {"TTbar_SemiLeptonic": getFiles('/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/MC/ttbar_SemiLeptonic/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/Tree_14_Feb23_MCUL2016preVFP_ttbar_SemiLeptonic/230214_201301/0000/'),
+            "TTbar_FullyLeptonic":getFiles('/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_preVFP/MC/ttbar_FullyLeptonic/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/Tree_14_Feb23_MCUL2016preVFP_ttbar_FullyLeptonic/230214_203031/0000/')
+            }        
 
 iterative_run = processor.Runner(
-    executor=processor.IterativeExecutor(compression=None),
+    executor=processor.FuturesExecutor(compression=None, workers = 15),
     schema=NanoAODSchema,
     # chunksize=5,
     # maxchunks=5,

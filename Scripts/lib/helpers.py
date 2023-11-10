@@ -41,7 +41,10 @@ def getFiles(folder_path):
     file_list = []
     for file_name in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, file_name)):
-            file_list.append(os.path.join(folder_path, file_name))
+            if isValidRootFile(os.path.join(folder_path, file_name)):
+                file_list.append(os.path.join(folder_path, file_name))
+            else: 
+                print(f"Excluding file {file_name} as invalid ROOT file")           
     return file_list
 
 
