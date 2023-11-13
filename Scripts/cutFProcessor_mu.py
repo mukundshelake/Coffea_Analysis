@@ -100,7 +100,7 @@ class NanoProcessor(processor.ProcessorABC):
         selection.add("atleastOnelep", ak.num(events.Muon) > 0)
         selection.add(
             "leadPtandEta",
-            ak.sum((events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 3.0), axis=1) > 0
+            ak.sum((events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 3.0) & (events.Muon.tightId), axis=1) > 0
         )
         selection.add("atleastThreeJ", ak.num(events.Jet) > 2)
         selection.add(

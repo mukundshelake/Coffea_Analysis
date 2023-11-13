@@ -56,14 +56,6 @@ class NanoProcessor(processor.ProcessorABC):
                 "electron_eta": hist.Hist(
                         hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
                         hist.storage.Weight(),
-                        ),
-                "jet_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "jet_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
                         )
                 },
             "Total":{
@@ -99,8 +91,8 @@ class NanoProcessor(processor.ProcessorABC):
         selection = PackedSelection()
         selection.add("atleastOnelep", ak.num(events.Electron) > 0)
         selection.add(
-            "leadPtandEta",
-            ak.sum((events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0), axis=1) > 0
+            "TightLpt_eta",
+            ak.sum((events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0) & (events.Electron.cutBased == 4), axis=1) > 0
         )
         selection.add("atleastThreeJ", ak.num(events.Jet) > 2)
         selection.add(
@@ -111,9 +103,9 @@ class NanoProcessor(processor.ProcessorABC):
         selectionList = {
         "NoSel":{},
         "HLT":{"HLTEle32": True},
-        "HLTandGoodLep":{"HLTEle32": True,'leadPtandEta': True},
-        "HLTGoodLandThreeJ":{'atleastThreeJ': True, "HLTEle32": True,'leadPtandEta': True},
-        "Total":{'atleastOnelep': True, 'leadPtandEta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTEle32": True}
+        "HLTandGoodLep":{"HLTEle32": True,'TightLpt_eta': True},
+        "HLTGoodLandThreeJ":{'atleastThreeJ': True, "HLTEle32": True,'TightLpt_eta': True},
+        "Total":{'atleastOnelep': True, 'TightLpt_eta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTEle32": True}
         }
         for region, cuts in selectionList.items():
             event_level = selection.require(**cuts)
@@ -130,9 +122,9 @@ class NanoProcessor(processor.ProcessorABC):
             # Selected objects #
             ####################
             if "electron_pt" in output[region]:
-                sel = events.Electron[event_level][:, 0]
+                sel = events.Electron[(events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0) & (events.Electron.cutBased == 4)][event_level][:, 0]
             if 'jet_pt' in output[region]:
-                sjet = events.Jet[event_level][:, 0]
+                sjet = events.Jet[(events.Jet.pt >= 20.0) & (abs(events.Jet.eta) < 3.0)][event_level][:, 0]
             ####################
             # Weight & Geninfo #
             ####################
