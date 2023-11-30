@@ -75,9 +75,11 @@ def logScript(logFile, script_filename, coffeaFile, meta, runStatus, errorFile):
     status = ""
     if runStatus =="Success":
         status = f"Status: Successfull run; no error file was generated\n\n"
+        print(f"Output coffea file stored at {coffeaFile}")
+        print(status)
     elif runStatus == "Failure":
         status = f"Status: There was error; error log can be found at {errorFile}\n\n"
-	
+        print(status)
 
     # Create a formatted entry for the current script
     script_entry = f"Processor: {meta}\n" + "-"*80 + "-"*80 +f"\n{script_content}\n" + "-"*80 + "-"*80 +"\n"

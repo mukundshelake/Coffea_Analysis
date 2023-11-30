@@ -10,7 +10,7 @@ from coffea.nanoevents import NanoAODSchema
 from coffea import processor
 from coffea.util import load, save
 
-def executeAndLog(processor_address, era, lep, istest, meta_info=""):
+def executeAndLog(processor_address, era, lep, istest, noLog, meta_info=""):
     # era = 'SIXTEEN_preVFP'
     # lep = 'el'
     DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
@@ -68,11 +68,12 @@ def executeAndLog(processor_address, era, lep, istest, meta_info=""):
             error_log.write("Stack trace:\n")
             traceback.print_exc(file=error_log)
     logScript(logFile, processor_address, coffeaOutput, meta_info, runStatus, errorFile)
-    if runStatus=="Success":
-        scptoEOS(coffeaOutput, eosLogDir)
-    scptoEOS(logFile, eosLogDir)
-    if runStatus=="Failure":
-        scptoEOS(errorFile, eosLogDir)
+    if not noLog:
+        if runStatus=="Success":
+            scptoEOS(coffeaOutput, eosLogDir)
+        scptoEOS(logFile, eosLogDir)
+        if runStatus=="Failure":
+            scptoEOS(errorFile, eosLogDir)
 
 # Specify the script file, output file, and optional meta information
 if __name__ == "__main__":
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--processor_address", required=True, help="Path to the processor to execute and log.")
     parser.add_argument("-m", "--meta_info", default="", help="Optional meta information.")
     parser.add_argument('--test', action = "store_true", default= False, help="Is this a test run or full run")
-
+    parser.add_argument('--noLog', action = "store_true", default= False, help="Is this a test run or full run")
     # Parse the command-line arguments
     args = parser.parse_args()
 
