@@ -86,9 +86,9 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--processor_address", required=True, help="Path to the processor to execute and log.")
     parser.add_argument("-m", "--meta_info", default="", help="Optional meta information.")
     parser.add_argument('--test', action = "store_true", default= False, help="Is this a test run or full run")
-    parser.add_argument('--noLog', action = "store_true", default= False, help="Is this a test run or full run")
+    parser.add_argument('--noLog', action = "store_true", default= False, help="Should we log the scripts to EOS")
     # Parse the command-line arguments
     args = parser.parse_args()
 
     # Call the function with the specified script filename and meta information
-    executeAndLog(args.processor_address, args.era, args.lep, args.test, args.meta_info)
+    executeAndLog(args.processor_address, args.era, args.lep, args.test, args.noLog, args.meta_info)
