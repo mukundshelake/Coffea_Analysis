@@ -14,7 +14,9 @@ def executeAndLog(processor_address, era, lep, istest, meta_info=""):
     # era = 'SIXTEEN_preVFP'
     # lep = 'el'
     DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
+    print(f"Will take the datafiles from {DataDir}")
     MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
+    print(f"Will take the MCfiles from {MCDir}")
 
     inputDir = [DataDir, MCDir] 
 

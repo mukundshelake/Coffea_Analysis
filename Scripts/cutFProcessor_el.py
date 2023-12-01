@@ -7,11 +7,55 @@ from coffea.nanoevents import NanoAODSchema
 from coffea.lookup_tools import extractor
 from coffea.analysis_tools import PackedSelection
 import warnings
+import correctionlib
 warnings.filterwarnings("ignore")
 
 
 class NanoProcessor(processor.ProcessorABC):
     def __init__(self):
+        
+        self.nLep = 1 # greater than equal to
+        self.nJet = 3 # greater than equal to
+        self.nbJet = 2 # greater than equal to
+        # Lepton pT thresholds
+        self.lep_pt_min = 35.0
+        self.lep_pt_max = 200.0
+        self.lep_ptHist_nBins = 60
+        self.lep_ptHist_min = 0
+        self.lep_ptHist_max = 300
+        
+        # Lepton eta thresholds
+        self.lep_abseta_max = 3.0
+        self.lep_etaHist_nBins = 60
+        self.lep_etaHist_min = -3.0
+        self.lep_etaHist_max = 3.0
+        
+        # AK4 jets pt kinematics
+        
+        self.jet_pt_min = 30.0
+        self.jet_pt_max = 300.0
+        self.jet_ptHist_nBins = 60
+        self.jet_ptHist_min = 0.0
+        self.jet_ptHist_max = 300.0
+        
+        # AK4 jets eta kinematics
+        self.jet_abseta_max = 3.0
+        self.jet_etaHist_nBins = 60
+        self.jet_etaHist_min = -3.0
+        self.jet_etaHist_max = 3.0
+        
+        # Tight ID configs
+        self.eleTightID_idx = 4
+        self.eleTightID_file = 'SFs/UL2016preVFP_ele_ID_SFs.json'
+        
+        # B-Tagging configs
+        self.btagThreshold = 0.2598
+        
+        # SFs
+        ##For "Medium" requires (sel.eta, sel.pt) ranges (-inf --> inf, 10 --> inf)
+        
+        
+        
         pass
         # Define histograms with hist class- https://hist.readthedocs.io/
 
@@ -23,7 +67,7 @@ class NanoProcessor(processor.ProcessorABC):
     ## Place to process the Nanoevents, selections, weights, fill histogram is done here, considered as a loop with operating on columnar dataset
     def process(self, events):
         ## create the dictionary contains 
-        print(f"Working with {events.metadata['dataset']}")
+        # print(f"Working with {events.metadata['dataset']}")
         output = {
             "sumw" : processor.defaultdict_accumulator(float),
             "NoSel":{
@@ -36,45 +80,33 @@ class NanoProcessor(processor.ProcessorABC):
                 },
             "HLTandGoodLep":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
+                "wtEvents" : processor.defaultdict_accumulator(float)
                 },
             "HLTGoodLandThreeJ":{
                 "selEvents" : processor.defaultdict_accumulator(float),
-                "wtEvents" : processor.defaultdict_accumulator(float),
-                "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
-                        hist.storage.Weight(),
-                        ),
-                "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
-                        hist.storage.Weight(),
-                        )
+                "wtEvents" : processor.defaultdict_accumulator(float)
+                },
+            "HLTGoodLandGood3J":{
+                "selEvents" : processor.defaultdict_accumulator(float),
+                "wtEvents" : processor.defaultdict_accumulator(float)
                 },
             "Total":{
                 "selEvents" : processor.defaultdict_accumulator(float),
                 "wtEvents" : processor.defaultdict_accumulator(float),
                 "electron_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
+                        hist.axis.Regular(self.lep_ptHist_nBins, self.lep_ptHist_min, self.lep_ptHist_max, name="pt", label="$p_T$ [GeV]"),
                         hist.storage.Weight(),
                         ),
                 "electron_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
+                        hist.axis.Regular(self.lep_etaHist_nBins, self.lep_etaHist_min, self.lep_etaHist_max, name="eta", label="$ \eta $ "),
                         hist.storage.Weight(),
                         ),
                 "jet_pt":  hist.Hist(
-                        hist.axis.Regular(50, 0, 300, name="pt", label="$p_T$ [GeV]"),
+                        hist.axis.Regular(self.jet_ptHist_nBins, self.jet_ptHist_min, self.jet_ptHist_max, name="pt", label="$p_T$ [GeV]"),
                         hist.storage.Weight(),
                         ),
                 "jet_eta": hist.Hist(
-                        hist.axis.Regular(50, -3.0, 3.0, name="eta", label="$ \eta $ "),
+                        hist.axis.Regular(self.jet_etaHist_nBins, self.jet_etaHist_min, self.jet_etaHist_max, name="eta", label="$ \eta $ "),
                         hist.storage.Weight(),
                         )
                 }
@@ -89,31 +121,27 @@ class NanoProcessor(processor.ProcessorABC):
         #    Selections    #
         ####################
         selection = PackedSelection()
-        selection.add("atleastOnelep", ak.num(events.Electron) > 0)
-        selection.add(
-            "TightLpt_eta",
-            ak.sum((events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0) & (events.Electron.cutBased == 4), axis=1) > 0
-        )
-        selection.add("atleastThreeJ", ak.num(events.Jet) > 2)
-        selection.add(
-            "JetPtandEta",
-            ak.sum((events.Jet.pt >= 20.0) & (abs(events.Jet.eta) < 3.0), axis = 1) > 2
-        )
-        selection.add("HLTEle32", events.HLT.Ele32_eta2p1_WPTight_Gsf)
+        selection.add("atleastOnelep", ak.num(events.Electron) >= self.nLep)
+        selection.add("TightLpt_eta", ak.sum((events.Electron.pt >= self.lep_pt_min) & (abs(events.Electron.eta) <= self.lep_abseta_max) & (events.Electron.cutBased == self.eleTightID_idx), axis=1) >= self.nLep)
+        selection.add("atleastThreeJ", ak.num(events.Jet) >= self.nJet)
+        selection.add("JetPtandEta", ak.sum((events.Jet.pt >= self.jet_pt_min) & (abs(events.Jet.eta) < self.jet_abseta_max), axis = 1) >= self.nJet)
+        selection.add("HLT", events.HLT.Ele32_eta2p1_WPTight_Gsf)
+        selection.add("mediumBTagGoodJets", ak.sum((events.Jet.pt >= self.jet_pt_min) & (abs(events.Jet.eta) < self.jet_abseta_max) & (events.Jet.btagDeepFlavB > self.btagThreshold), axis = 1) >= self.nbJet)
         selectionList = {
         "NoSel":{},
-        "HLT":{"HLTEle32": True},
-        "HLTandGoodLep":{"HLTEle32": True,'TightLpt_eta': True},
-        "HLTGoodLandThreeJ":{'atleastThreeJ': True, "HLTEle32": True,'TightLpt_eta': True},
-        "Total":{'atleastOnelep': True, 'TightLpt_eta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLTEle32": True}
+        "HLT":{"HLT": True},
+        "HLTandGoodLep":{"HLT": True,'TightLpt_eta': True},
+        "HLTGoodLandThreeJ":{'atleastThreeJ': True, "HLT": True,'TightLpt_eta': True},
+        "HLTGoodLandGood3J":{'atleastOnelep': True, 'TightLpt_eta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLT": True},
+        "Total":{'atleastOnelep': True, 'TightLpt_eta': True, "atleastThreeJ": True, "JetPtandEta": True, "HLT": True, "mediumBTagGoodJets": True}
         }
         for region, cuts in selectionList.items():
             event_level = selection.require(**cuts)
             output[region]["selEvents"] = float(sum(event_level))
             if sum(event_level) == 0:
-                print("No event selected")
+                # print("No event selected")
                 output[region]["wtEvents"] = float(sum(event_level))
-                print(output)
+                # print(output)
                 if region == 'Total':
                     return {dataset: output}
                 continue
@@ -122,9 +150,13 @@ class NanoProcessor(processor.ProcessorABC):
             # Selected objects #
             ####################
             if "electron_pt" in output[region]:
-                sel = events.Electron[(events.Electron.pt >= 35.0) & (abs(events.Electron.eta) <= 3.0) & (events.Electron.cutBased == 4)][event_level][:, 0]
+                sel = events.Electron[(events.Electron.pt >= self.lep_pt_min) & (abs(events.Electron.eta) <= self.lep_abseta_max) & (events.Electron.cutBased == self.eleTightID_idx)][event_level][:, 0]
             if 'jet_pt' in output[region]:
-                sjet = events.Jet[(events.Jet.pt >= 20.0) & (abs(events.Jet.eta) < 3.0)][event_level][:, 0]
+#                 sjet = events.Jet[(events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 3.0)][event_level][:, 0]
+                sjet = events.Jet[(events.Jet.pt >= self.jet_pt_min) & (abs(events.Jet.eta) < self.jet_abseta_max) & (events.Jet.btagDeepFlavB > self.btagThreshold)][event_level][:, 0]
+                
+                
+
             ####################
             # Weight & Geninfo #
             ####################
@@ -158,19 +190,35 @@ class NanoProcessor(processor.ProcessorABC):
                     print(f"LHEWeight is not there for dataset {dataset}; adding +1s as LHEWeightSign")
                     weights.add("LHEWeightSign", weight = np.ones(sum(event_level), dtype = float))
                 
-                if "HLT" in cuts:
+                if region=="Total":
+                    # print("%^%^%^%^%^*&^%^%^$#%#%")
                     try:
                         ext = extractor()
                         ext.add_weight_sets(["* * SFs/UL2016_preVFP_Tight.root"])
                         ext.finalize()
                         evaluator = ext.make_evaluator()
-                        eleSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
-                        eleSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
-                        weights.add("eleSF",weight=eleSF,weightUp=eleSF + eleSFerror,weightDown = eleSF - eleSFerror)
+                        HLTSF = evaluator["EGamma_SF2D"](sel.eta, sel.pt)
+                        HLTSFerror = evaluator["EGamma_SF2D_error"](sel.eta, sel.pt)
+                        weights.add("TriggerSF",weight=HLTSF,weightUp=HLTSF + HLTSFerror,weightDown = HLTSF - HLTSFerror)
                         # print("Added HLT SF")
-                    except:
+                    except Exception as e:
+                        print(f"error is {e}")
                         print(f"HLT Scale factors is not working for dataset {dataset}; adding +1s as Scale factor weight")
-                        weights.add("eleSF", weight = np.ones(sum(event_level), dtype = float))
+                        weights.add("TriggerSF", weight = np.ones(sum(event_level), dtype = float))
+                        
+                if region=="Total":
+                        print("gfgdgdfgdfg")
+                        elIDeval = correctionlib.CorrectionSet.from_file(self.eleTightID_file)
+                        IDsf = ak.unflatten(
+                            elIDeval["UL-Electron-ID-SF"].evaluate("2016preVFP","sf","Medium",sel.eta, sel.pt),
+                            counts= ak.num(sel, axis=-1))[0,:]
+                        IDsfup = ak.unflatten(
+                            elIDeval["UL-Electron-ID-SF"].evaluate("2016preVFP","sfup","Medium",sel.eta, sel.pt),
+                            counts= ak.num(sel, axis=-1))[0,:]
+                        IDsfdown = ak.unflatten(
+                            elIDeval["UL-Electron-ID-SF"].evaluate("2016preVFP","sfdown","Medium",sel.eta, sel.pt),
+                            counts= ak.num(sel, axis=-1))[0,:]  
+                        weights.add("IDSF",weight= IDsf, weightUp= IDsfup, weightDown = IDsfdown)
             ####################
             #  Fill histogram  #
             ####################
@@ -184,6 +232,7 @@ class NanoProcessor(processor.ProcessorABC):
             if "jet_pt" in output[region]:
                 output[region]["jet_pt"].fill(ak.flatten(sjet.pt, axis=-1), weight=weights.weight())
                 output[region]["jet_eta"].fill(ak.flatten(sjet.eta, axis=-1), weight=weights.weight())
+
 
         return {dataset: output}
 
