@@ -98,8 +98,8 @@ def scptoEOS(outputFile, eosLogDir):
     # SSH connection parameters
     hostname = "lxplus.cern.ch"
     port = 22  # SSH port (typically 22)
-    username = "mshelake"
-    password = "Mkshp400"
+    username = "*********"
+    password = "*********"
 
 
 
