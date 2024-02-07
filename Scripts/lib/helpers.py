@@ -1,5 +1,4 @@
 import glob, os, ROOT
-import ROOT
 import os
 import time
 import paramiko
@@ -37,11 +36,15 @@ def getfileset(DirList):
 			fileset[setName] = lst
 	return fileset
 
-def getFiles(folder_path):
+def getFiles(folder_path, flag):
     file_list = []
-    for file_name in os.listdir(folder_path):
+    searchString = '*.root'
+    if flag == 'sample':
+          searchString = 'tree_1.root'
+    for file_name in glob.glob(os.path.join(folder_path,searchString)):
         if os.path.isfile(os.path.join(folder_path, file_name)):
-            file_list.append(os.path.join(folder_path, file_name))
+            if isValidRootFile(file_name) and file_name not in problemFiles:
+                file_list.append(os.path.join(folder_path, file_name))
     return file_list
 
 

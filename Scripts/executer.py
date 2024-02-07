@@ -1,8 +1,8 @@
 import argparse
-import os
+import os, json
 import traceback
 from datetime import datetime
-from lib.helpers import getfileset, getFiles, logScript, scptoEOS
+from lib.helpers import logScript, scptoEOS
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -10,16 +10,28 @@ from coffea.nanoevents import NanoAODSchema
 from coffea import processor
 from coffea.util import load, save
 
-def executeAndLog(processor_address, era, lep, istest, noLog, meta_info=""):
+def executeAndLog(processor_address, era, lep, istest, issample, isttbar, noLog, meta_info=""):
     # era = 'SIXTEEN_preVFP'
     # lep = 'el'
-    DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
-    MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
+    # DataDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/Data_{lep}'
+    # MCDir = f'/nfs/home/common/RUN2_UL/Tree_crab/{era}/MC'
 
-    inputDir = [DataDir, MCDir] 
+    # inputDir = [DataDir, MCDir] 
 
     # Generate the fileset in the appropriate format for the input directory.
-    fileset = getfileset(inputDir) 
+    # fileset = getfileset(inputDir) 
+    jsonPath = f'Datasets/dataFiles_{era}.json'
+
+    if issample:
+        jsonPath = f'Datasets/sampleFiles_{era}.json'
+
+    with open(jsonPath, 'r') as json_file:
+        fileLists = json.load(json_file) 
+    
+    fileset = {**fileLists[f'Data_{lep}'], **fileLists[f'MC_{lep}']}
+
+    if isttbar:
+        fileset = {"ttbar_SemiLeptonic": fileLists[f'MC_{lep}']["ttbar_SemiLeptonic"]}
     processorName = os.path.splitext(processor_address)[0].split('/')[-1]
     # Generate a timestamp
     startTime = datetime.now()
@@ -86,9 +98,11 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--processor_address", required=True, help="Path to the processor to execute and log.")
     parser.add_argument("-m", "--meta_info", default="", help="Optional meta information.")
     parser.add_argument('--test', action = "store_true", default= False, help="Is this a test run or full run")
+    parser.add_argument('--sample', action = "store_true", default= False, help="Is this a sample run") 
+    parser.add_argument('--ttbar', action = "store_true", default= False, help="Is this a only for ttbar MC samples")   
     parser.add_argument('--noLog', action = "store_true", default= False, help="Should we log the scripts to EOS")
     # Parse the command-line arguments
     args = parser.parse_args()
 
     # Call the function with the specified script filename and meta information
-    executeAndLog(args.processor_address, args.era, args.lep, args.test, args.noLog, args.meta_info)
+    executeAndLog(args.processor_address, args.era, args.lep, args.test, args.sample, args.ttbar, args.noLog, args.meta_info)
