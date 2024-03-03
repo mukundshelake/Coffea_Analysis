@@ -1,2 +1,4 @@
-init:
-    pip install -r requirements.txt
+download:
+    @echo "Downloading files..."
+    python getSFs.py
+    @echo "Files downloaded successfully."

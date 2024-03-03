@@ -8,3 +8,6 @@ Scripts/logger.txt
 my_env
 *.pyc
 Scripts/lib/secrets.py
+SFs/
+src/Scripts/plots/
+src/Scripts/outputs/
