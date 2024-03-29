@@ -51,28 +51,39 @@ class MyProcessor(processor.ProcessorABC):
         tbarmass = antitops["mass"]
         ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt)) 
 
-        yt2D_higherYt = (
+        yt2D = (
             hda.Hist.new
-            # .StrCat(["higher_yt", "higher_ytbar"], name="sign")
-            .Reg(40, 0, 4., label="$y_t$", name = "y_t")
-            .Reg(40, 0, 4., label="$y_tbar$", name = "y_tbar")
+            .Bool(name="is_Yt_Higher")
+            .Bool(name = "is_x1_Higher")
+            .Bool(name = "is_uubar")
+            .Bool(name = "is_ddbar")
+            .Bool(name = "is_ubaru")
+            .Bool(name = "is_dbard")
+            .Reg(250, 0, 2.5, label="$y_t$", name = "y_t")
+            .Reg(250, 0, 2.5, label="$y_tbar$", name = "y_tbar")
             .Double()
         )
-        yt2D_higherYtbar = (
-            hda.Hist.new
-            # .StrCat(["higher_yt", "higher_ytbar"], name="sign")
-            .Reg(40, 0, 4., label="$y_t$", name = "y_t")
-            .Reg(40, 0, 4., label="$y_tbar$", name = "y_tbar")
-            .Double()
+        Yt_cut = yt > ytbar
+        x_cut = events.Generator_x1 > events.Generator_x2
+        uubar_cut = (events.Generator_id1 == 2) & (events.Generator_id2 == -2)
+        ubaru_cut = (events.Generator_id1 == -2) & (events.Generator_id2 == 2)
+        ddbar_cut = (events.Generator_id1 == 1) & (events.Generator_id2 == -1)
+        dbard_cut = (events.Generator_id1 == -1) & (events.Generator_id2 == 1)
+
+        yt2D.fill(
+            is_Yt_Higher = Yt_cut,
+            is_x1_Higher = x_cut,
+            is_uubar = uubar_cut,
+            is_ddbar = ddbar_cut,
+            is_ubaru = ubaru_cut,
+            is_dbard = dbard_cut,
+            y_t = yt,
+            y_tbar = ytbar
         )
-        cut = yt > ytbar
-        yt2D_higherYt.fill(y_t = yt[cut], y_tbar = ytbar[cut])
-        cut = ytbar > yt
-        yt2D_higherYtbar.fill(y_t = yt[cut], y_tbar = ytbar[cut])
+
         return {
                 "entries": ak.num(events, axis=0),
-                "yMatrix_higherYt": yt2D_higherYt,
-                "yMatrix_higherYtbar": yt2D_higherYtbar,
+                "yMatrix": yt2D,
             }
         rich_bar()
     def postprocess(self, accumulator):
@@ -84,10 +95,9 @@ def main():
     # to_analyze = 'ttbarSample_UL2016preVFP'
 
 
-
     if to_analyze=='fullRun2':
         fileset = {}
-        for era in ['UL2018']:#, 'UL2016postVFP', 'UL2017', 'UL2018']:
+        for era in ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']:
             with open(f'../Datasets/dataFiles_{era}.json', 'r') as json_file:
                 fileset[era]= {'files':json.load(json_file)['MC_el']['ttbar_SemiLeptonic']}
     elif to_analyze=='ttbarSample_UL2016preVFP':
@@ -122,7 +132,7 @@ def main():
                 )
     (out,) = dask.compute(to_compute, scheduler='threads')
     # print(out)
-    outputFile = "Output.coffea"
+    outputFile = "Output_new.coffea"
     save(out, os.path.join(outputDir, outputFile))
     pass
 

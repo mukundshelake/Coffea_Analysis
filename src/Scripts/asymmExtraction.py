@@ -22,8 +22,8 @@ Dd = 0.4098
 for era in ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']:
     print(f"Working on {era}")
     df = pd.DataFrame(columns = ['y0', 'A', 'A_', 'B', 'D', 'C', 'C_', 'inFactor', 'outFactor', 'C1', 'C2', 'C3', 'C4', 'Ain', 'Aout'])
-    ytHigher = out[f"{era}"][f"{era}"]["yMatrix_higherYt"]
-    ytbarHigher = out[f"{era}"][f"{era}"]["yMatrix_higherYtbar"]
+    ytHigher = out[f"{era}"]["yMatrix_higherYt"]
+    ytbarHigher = out[f"{era}"]["yMatrix_higherYtbar"]
 
     ytHigher_yt = ytHigher.project('y_t')
     ytHigher_ytbar = ytHigher.project('y_tbar')
