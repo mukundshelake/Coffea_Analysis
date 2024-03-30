@@ -92,7 +92,7 @@ class MyProcessor(processor.ProcessorABC):
 def main():
     outputDir = "outputs"
     to_analyze = 'fullRun2'
-    # to_analyze = 'ttbarSample_UL2016preVFP'
+    to_analyze = 'ttbarSample_UL2016preVFP'
 
 
     if to_analyze=='fullRun2':
