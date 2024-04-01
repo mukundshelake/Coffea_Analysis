@@ -9,6 +9,7 @@ Top asymmetry analysis using the Coffea framework
 
 
 ## Project structure
+```
 Coffea_Analysis/
 │
 ├── src/
@@ -36,6 +37,6 @@ Coffea_Analysis/
 ├── .gitignore
 └── binder.ipynb
 
-
+```
 
   
