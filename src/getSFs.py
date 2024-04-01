@@ -1,6 +1,7 @@
 import subprocess
 from SFs.sfPaths import SFs
 
+
 for sf in SFs:
     publicHash = SFs[sf]['publicHash']
     srcPath = SFs[sf]['srcPath']
