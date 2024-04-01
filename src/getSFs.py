@@ -2,8 +2,12 @@ import subprocess
 from SFs.sfPaths import SFs
 
 for sf in SFs:
-    SF = SFs[sf]
-    command = f"curl -JL https://cernbox.cern.ch/remote.php/dav/public-files/{SF['publicHash']}/{SF['srcPath']}/{SF["fileName"]} -o {SF['targetPath']}/{SF["fileName"]}"
+    publicHash = SFs[sf]['publicHash']
+    srcPath = SFs[sf]['srcPath']
+    fileName = SFs[sf]['fileName']
+    targetPath = SFs[sf]['targetPath']
+
+    command = f"curl -JL https://cernbox.cern.ch/remote.php/dav/public-files/{publicHash}/{srcPath}/{fileName} -o {targetPath}/{fileName}"
     print(command)
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
