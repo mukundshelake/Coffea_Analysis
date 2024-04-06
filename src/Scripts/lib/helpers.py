@@ -2,6 +2,12 @@ import glob, os, uproot
 import os
 import time
 import paramiko
+import yaml
+
+
+# Load the YAML file
+with open('credentials.yaml', 'r') as file:
+    credentials = yaml.safe_load(file)
 
 problemFiles = []
 def isValidRootFile(fname):
@@ -111,8 +117,8 @@ def scptoEOS(outputFile, eosLogDir):
     # SSH connection parameters
     hostname = "lxplus.cern.ch"
     port = 22  # SSH port (typically 22)
-    username = "mshelake"
-    password = "Mkshp400"
+    username = credentials['username']
+    password = credentials['password']
 
     # Create an SSH client
     ssh_client = paramiko.SSHClient()

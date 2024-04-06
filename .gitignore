@@ -13,3 +13,5 @@ src/Scripts/plots/
 src/Scripts/outputs/
 src/Datasets/sampleFiles*
 src/Datasets/dataFiles*
+src/Scripts/lib/credentials.yaml
+
