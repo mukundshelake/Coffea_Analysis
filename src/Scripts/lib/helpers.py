@@ -1,12 +1,18 @@
-import glob, os, uproot
+import glob, uproot
 import os
 import time
 import paramiko
 import yaml
 
 
-# Load the YAML file
-with open('credentials.yaml', 'r') as file:
+# Get the directory of the current script
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# Construct the absolute path to the credentials file
+credentials_path = os.path.join(dir_path, 'credentials.yaml')
+
+# Use the absolute path to open the file
+with open(credentials_path, 'r') as file:
     credentials = yaml.safe_load(file)
 
 problemFiles = []
