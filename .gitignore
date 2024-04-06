@@ -12,3 +12,6 @@ SFs/
 src/Scripts/plots/
 src/Scripts/outputs/
 src/Datasets/sampleFiles_UL2016preVFP.json
+src/Datasets/sampleFiles_UL2016postVFP.json
+src/Datasets/sampleFiles_UL2017.json
+src/Datasets/sampleFiles_UL2018.json
