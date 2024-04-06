@@ -11,3 +11,4 @@ Scripts/lib/secrets.py
 SFs/
 src/Scripts/plots/
 src/Scripts/outputs/
+src/Datasets/sampleFiles_UL2016preVFP.json
