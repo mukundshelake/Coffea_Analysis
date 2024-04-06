@@ -12,3 +12,4 @@ SFs/
 src/Scripts/plots/
 src/Scripts/outputs/
 src/Datasets/sampleFiles*
+src/Datasets/dataFiles*

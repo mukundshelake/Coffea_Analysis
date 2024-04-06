@@ -2,17 +2,31 @@
 ### {'Dataset_label':[file1, file2, ..], ...}
 
 ### Input: The Data Path json files for the eras to be updated
-
+import argparse
 from Scripts.lib.helpers import getFiles
 import json
 import os
+
+# Create the parser
+parser = argparse.ArgumentParser(description="Update the datasets")
+
+# Add arguments to the parser
+parser.add_argument('-s', '--sample', action='store_true', help="update only the sample datasets")
+# Parse the arguments
+args = parser.parse_args()
 
 eras = ["UL2016preVFP", "UL2016postVFP", "UL2017", "UL2018"]
 
 # Choose flag to update
 ## For sample from each dataset:'sample', Only TTbar MC files: "TTbar"; any other falg == Entire dataset
 
-flag = 'all'
+flag = 'full'
+
+if args.sample:
+    print(f"Updating the sample datasets for eras {eras}.")
+    flag = 'sample'
+else:
+    print(f"Updating the full Run2 datasets for eras {eras}.")
 
 #### If you want to update specific eras
 # eras = ["UL2016preVFP"]
