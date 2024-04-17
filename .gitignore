@@ -16,3 +16,4 @@ src/Datasets/dataFiles*
 src/Scripts/lib/credentials.yaml
 
 src/Scripts/DataMC/trial.ipynb
+binder.ipynb
