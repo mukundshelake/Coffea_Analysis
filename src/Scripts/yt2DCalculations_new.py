@@ -1,7 +1,7 @@
 import os
 import dask
 import numpy as np
-import awkward as ak
+import awkward as ak 
 import hist.dask as hda
 import dask_awkward as dak
 
@@ -92,12 +92,12 @@ class MyProcessor(processor.ProcessorABC):
 def main():
     outputDir = "outputs"
     to_analyze = 'fullRun2'
-    to_analyze = 'ttbarSample_UL2016preVFP'
+    # to_analyze = 'ttbarSample_UL2016preVFP'
 
 
     if to_analyze=='fullRun2':
         fileset = {}
-        for era in ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']:
+        for era in ['UL2016preVFP']:
             with open(f'../Datasets/dataFiles_{era}.json', 'r') as json_file:
                 fileset[era]= {'files':json.load(json_file)['MC_el']['ttbar_SemiLeptonic']}
     elif to_analyze=='ttbarSample_UL2016preVFP':
