@@ -12,3 +12,9 @@ Scripts/lib/secrets.py
 SFs/
 src/Scripts/plots/
 src/Scripts/outputs/
+src/Scripts/reports/*.aux
+src/Scripts/reports/*.fdb_latexmk
+src/Scripts/reports/*.fls
+src/Scripts/reports/*.log
+src/Scripts/reports/*.pdf
+src/Scripts/reports/*.synctex.gz
