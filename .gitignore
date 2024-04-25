@@ -1,5 +1,6 @@
 my_project_env/
 *.root
+*.ipynb
 Scripts/my_env/
 Scripts/SFs
 Logs/
