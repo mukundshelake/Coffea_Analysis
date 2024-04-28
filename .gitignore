@@ -18,3 +18,7 @@ src/Scripts/reports/*.fls
 src/Scripts/reports/*.log
 src/Scripts/reports/*.pdf
 src/Scripts/reports/*.synctex.gz
+src/Scripts/reports/filled.tex
+src/Scripts/reports/output.tex
+src/Scripts/reports/trial.txt
+

@@ -2,10 +2,44 @@
 \usepackage{graphicx}
 \usepackage{subcaption} % for subfigures
 
-
 \title{Test Document}
-\author{Your Name}
+\author{Youkkr Name}
 \date{\today}
+
+
+% Custom command for 2x2 grid of plots
+\newcommand{\twobytwofigures}[9]{%
+    \begin{figure}[htbp]
+        \centering
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{#1}
+            \caption{#2}
+            \label{fig:sub1}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{#3}
+            \caption{#4}
+            \label{fig:sub2}
+        \end{subfigure}
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{#5}
+            \caption{#6}
+            \label{fig:sub3}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{#7}
+            \caption{#8}
+            \label{fig:sub4}
+        \end{subfigure}
+        \caption{#9}
+        \label{fig:grid}
+    \end{figure}
+}
 
 \begin{document}
 
@@ -15,7 +49,7 @@
 This is the AN developed for the CMS analysis for the "Collider-independent asymmetries in the ttbar production".
 
 \section{Looking at the parameters}
-There are few parameters that go into the asymmetry equations, like fraction of uubar and ddbar events (Fu and Fd) and detector effect Du and Dd. 
+There are few parameters that go into the asymmetry equations, like fraction of uubar and ddbar events $($Fu and Fd$)$ and detector effect Du and Dd. 
 This chapter is dedicated to the study of these parameters and their distributions. 
 
 \subsection{$F_{q}$}
@@ -26,69 +60,10 @@ i.e. $$F_{q} = \frac{N(q\bar{q}\to t\bar{t})}{N(t\bar{t})}$$
 At the gen level, we are getting all the ttbar semileptonic events and checking if the parents, i.e. particle 2 and 3 are specific quarks or not.
 The distributions of the same for $u$ quark with variation of $|y_{0}|$ for the Run 2 sample are shown in Fig.1\\
 
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 1}
-        \label{fig:sub1}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 2}
-        \label{fig:sub2}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 3}
-        \label{fig:sub3}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 4}
-        \label{fig:sub4}
-    \end{subfigure}
-    \caption{Overall Caption for the 2x2 Grid}
-    \label{fig:grid}
-\end{figure}
+\twobytwofigures{((* Fu_UL2016preVFP_A *))}{UL2016preVFP}{((* Fu_UL2016postVFP_A *))}{UL2016postVFP}{((* Fu_UL2017_A *))}{UL2017}{((* Fu_UL2018_A *))}{UL2018}{Distribution of uubar fractions for different eras in Run2}
 
 \noindent Fig. 2 shows the similar plots for $d$ quark processes.
-\\
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 1}
-        \label{fig:sub1}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 2}
-        \label{fig:sub2}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 3}
-        \label{fig:sub3}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 4}
-        \label{fig:sub4}
-    \end{subfigure}
-    \caption{Overall Caption for the 2x2 Grid}
-    \label{fig:grid}
-\end{figure}
+\twobytwofigures{((* Fd_UL2016preVFP_A *))}{UL2016preVFP}{((* Fd_UL2016postVFP_A *))}{UL2016postVFP}{((* Fd_UL2017_A *))}{UL2017}{((* Fd_UL2018_A *))}{UL2018}{Distribution of ddbar fractions for different eras in Run2}
 
 \noindent The key feature we want to study is the correlation between these two fractions $F_{u} \ vs \ F_d$. These are shown in Fig.3
 
@@ -97,69 +72,9 @@ i.e.
 $$F_{u}' = \frac{N(u\bar{u})}{N(u\bar{u}) + N(d\bar{d})}$$ 
 
 \noindent Fig. 4 and 5 shows the distribution of these for u and d quarks respectively.
+\twobytwofigures{((* Fu_ud_UL2016preVFP_A *))}{UL2016preVFP}{((* Fu_ud_UL2016postVFP_A *))}{UL2016postVFP}{((* Fu_ud_UL2017_A *))}{UL2017}{((* Fu_ud_UL2018_A *))}{UL2018}{Distribution of uubar fractions with respect to (uubar + ddbar) events for different eras in Run2}
 
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 1}
-        \label{fig:sub1}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 2}
-        \label{fig:sub2}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 3}
-        \label{fig:sub3}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 4}
-        \label{fig:sub4}
-    \end{subfigure}
-    \caption{Overall Caption for the 2x2 Grid}
-    \label{fig:grid}
-\end{figure}
-
-
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 1}
-        \label{fig:sub1}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 2}
-        \label{fig:sub2}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 3}
-        \label{fig:sub3}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 4}
-        \label{fig:sub4}
-    \end{subfigure}
-    \caption{Overall Caption for the 2x2 Grid}
-    \label{fig:grid}
-\end{figure}
+\twobytwofigures{((* Fd_ud_UL2016preVFP_A *))}{UL2016preVFP}{((* Fd_ud_UL2016postVFP_A *))}{UL2016postVFP}{((* Fd_ud_UL2017_A *))}{UL2017}{((* Fd_ud_UL2018_A *))}{UL2018}{Distribution of ddbar fractions with respect to (uubar + ddbar) events for different eras in Run2}
 
 \subsection*{$D_q$}
 The other parameter that we are using in the model is $D_q$, which is supposed to quantify the detector effect.
@@ -169,71 +84,97 @@ $$D = \frac{N(x_q > x_{\bar{q}}) - N(x_q > x_{\bar{q}})}{N(x_q > x_{\bar{q}}) + 
 
 The obtained distribution of $D_u$ and $D_d$ is shown in Fig. 6 and 7 with variation of $|y_0|$. Fig. 8 shows the correlation between $D_u$ and $D_d$
 
-\begin{figure}[htbp]
+\twobytwofigures{((* Du_UL2016preVFP_A *))}{UL2016preVFP}{((* Du_UL2016postVFP_A *))}{UL2016postVFP}{((* Du_UL2017_A *))}{UL2017}{((* Du_UL2018_A *))}{UL2018}{Distribution of Du for different eras in Run2}
+
+\twobytwofigures{((* Dd_UL2016preVFP_A *))}{UL2016preVFP}{((* Dd_UL2016postVFP_A *))}{UL2016postVFP}{((* Dd_UL2017_A *))}{UL2017}{((* Dd_UL2018_A *))}{UL2018}{Distribution of Dd for different eras in Run2}
+
+\twobytwofigures{((* Du_vs_Dd_UL2016preVFP_A *))}{UL2016preVFP}{((* Du_vs_Dd_UL2016postVFP_A *))}{UL2016postVFP}{((* Du_vs_Dd_UL2017_A *))}{UL2017}{((* Du_vs_Dd_UL2018_A *))}{UL2018}{Distribution of Du vs Dd for different eras in Run2}
+
+\clearpage
+
+All the above plots were generated in the region A of the $y_{t}y_{\bar{t}}$ space. 
+Following Figures show the equivalent plots for the regions B, C and D.
+
+% \twobytwofigures{sample_image.jpg}{Caption for Image 1}{sample_image.jpg}{Caption for Image 2}{sample_image.jpg}{Caption for Image 3}{sample_image.jpg}{Caption for Image 4}{Overall Caption for the First 2x2 Grid}
+
+
+\subsubsection{Region B}
+
+\twobytwofigures{((* Fu_UL2016preVFP_B *))}{UL2016preVFP}{((* Fu_UL2016postVFP_B *))}{UL2016postVFP}{((* Fu_UL2017_B *))}{UL2017}{((* Fu_UL2018_B *))}{UL2018}{Distribution of uubar fractions for different eras in Run2}
+
+\twobytwofigures{((* Fd_UL2016preVFP_B *))}{UL2016preVFP}{((* Fd_UL2016postVFP_B *))}{UL2016postVFP}{((* Fd_UL2017_B *))}{UL2017}{((* Fd_UL2018_B *))}{UL2018}{Distribution of ddbar fractions for different eras in Run2}
+
+\twobytwofigures{((* Fu_ud_UL2016preVFP_B *))}{UL2016preVFP}{((* Fu_ud_UL2016postVFP_B *))}{UL2016postVFP}{((* Fu_ud_UL2017_B *))}{UL2017}{((* Fu_ud_UL2018_B *))}{UL2018}{Distribution of uubar fractions with respect to (uubar + ddbar) events for different eras in Run2}
+
+\twobytwofigures{((* Fd_ud_UL2016preVFP_B *))}{UL2016preVFP}{((* Fd_ud_UL2016postVFP_B *))}{UL2016postVFP}{((* Fd_ud_UL2017_B *))}{UL2017}{((* Fd_ud_UL2018_B *))}{UL2018}{Distribution of ddbar fractions with respect to (uubar + ddbar) events for different eras in Run2}
+
+\twobytwofigures{((* Du_UL2016preVFP_B *))}{UL2016preVFP}{((* Du_UL2016postVFP_B *))}{UL2016postVFP}{((* Du_UL2017_B *))}{UL2017}{((* Du_UL2018_B *))}{UL2018}{Distribution of Du for different eras in Run2}
+
+\twobytwofigures{((* Dd_UL2016preVFP_B *))}{UL2016preVFP}{((* Dd_UL2016postVFP_B *))}{UL2016postVFP}{((* Dd_UL2017_B *))}{UL2017}{((* Dd_UL2018_B *))}{UL2018}{Distribution of Dd for different eras in Run2}
+
+\twobytwofigures{((* Du_vs_Dd_UL2016preVFP_B *))}{UL2016preVFP}{((* Du_vs_Dd_UL2016postVFP_B *))}{UL2016postVFP}{((* Du_vs_Dd_UL2017_B *))}{UL2017}{((* Du_vs_Dd_UL2018_B *))}{UL2018}{Distribution of Du vs Dd for different eras in Run2}
+
+\clearpage
+
+\subsubsection{Region C}
+
+\twobytwofigures{((* Fu_UL2016preVFP_C *))}{UL2016preVFP}{((* Fu_UL2016postVFP_C *))}{UL2016postVFP}{((* Fu_UL2017_C *))}{UL2017}{((* Fu_UL2018_C *))}{UL2018}{Distribution of uubar fractions for different eras in Run2}
+
+\twobytwofigures{((* Fd_UL2016preVFP_C *))}{UL2016preVFP}{((* Fd_UL2016postVFP_C *))}{UL2016postVFP}{((* Fd_UL2017_C *))}{UL2017}{((* Fd_UL2018_C *))}{UL2018}{Distribution of ddbar fractions for different eras in Run2}
+
+\twobytwofigures{((* Fu_ud_UL2016preVFP_C *))}{UL2016preVFP}{((* Fu_ud_UL2016postVFP_C *))}{UL2016postVFP}{((* Fu_ud_UL2017_C *))}{UL2017}{((* Fu_ud_UL2018_C *))}{UL2018}{Distribution of uubar fractions with respect to (uubar + ddbar) events for different eras in Run2}
+
+\twobytwofigures{((* Fd_ud_UL2016preVFP_C *))}{UL2016preVFP}{((* Fd_ud_UL2016postVFP_C *))}{UL2016postVFP}{((* Fd_ud_UL2017_C *))}{UL2017}{((* Fd_ud_UL2018_C *))}{UL2018}{Distribution of ddbar fractions with respect to (uubar + ddbar) events for different eras in Run2}
+
+\twobytwofigures{((* Du_UL2016preVFP_C *))}{UL2016preVFP}{((* Du_UL2016postVFP_C *))}{UL2016postVFP}{((* Du_UL2017_C *))}{UL2017}{((* Du_UL2018_C *))}{UL2018}{Distribution of Du for different eras in Run2}
+
+\twobytwofigures{((* Dd_UL2016preVFP_C *))}{UL2016preVFP}{((* Dd_UL2016postVFP_C *))}{UL2016postVFP}{((* Dd_UL2017_C *))}{UL2017}{((* Dd_UL2018_C *))}{UL2018}{Distribution of Dd for different eras in Run2}
+
+\twobytwofigures{((* Du_vs_Dd_UL2016preVFP_C *))}{UL2016preVFP}{((* Du_vs_Dd_UL2016postVFP_C *))}{UL2016postVFP}{((* Du_vs_Dd_UL2017_C *))}{UL2017}{((* Du_vs_Dd_UL2018_C *))}{UL2018}{Distribution of Du vs Dd for different eras in Run2}
+
+\clearpage
+\subsubsection{Region D}
+
+\twobytwofigures{((* Fu_UL2016preVFP_D *))}{UL2016preVFP}{((* Fu_UL2016postVFP_D *))}{UL2016postVFP}{((* Fu_UL2017_D *))}{UL2017}{((* Fu_UL2018_D *))}{UL2018}{Distribution of uubar fractions for different eras in Run2}
+
+\twobytwofigures{((* Fd_UL2016preVFP_D *))}{UL2016preVFP}{((* Fd_UL2016postVFP_D *))}{UL2016postVFP}{((* Fd_UL2017_D *))}{UL2017}{((* Fd_UL2018_D *))}{UL2018}{Distribution of ddbar fractions for different eras in Run2}
+
+\twobytwofigures{((* Fu_ud_UL2016preVFP_D *))}{UL2016preVFP}{((* Fu_ud_UL2016postVFP_D *))}{UL2016postVFP}{((* Fu_ud_UL2017_D *))}{UL2017}{((* Fu_ud_UL2018_D *))}{UL2018}{Distribution of uubar fractions with respect to (uubar + ddbar) events for different eras in Run2}
+
+\twobytwofigures{((* Fd_ud_UL2016preVFP_D *))}{UL2016preVFP}{((* Fd_ud_UL2016postVFP_D *))}{UL2016postVFP}{((* Fd_ud_UL2017_D *))}{UL2017}{((* Fd_ud_UL2018_D *))}{UL2018}{Distribution of ddbar fractions with respect to (uubar + ddbar) events for different eras in Run2}
+
+\twobytwofigures{((* Du_UL2016preVFP_D *))}{UL2016preVFP}{((* Du_UL2016postVFP_D *))}{UL2016postVFP}{((* Du_UL2017_D *))}{UL2017}{((* Du_UL2018_D *))}{UL2018}{Distribution of Du for different eras in Run2}
+
+\twobytwofigures{((* Dd_UL2016preVFP_D *))}{UL2016preVFP}{((* Dd_UL2016postVFP_D *))}{UL2016postVFP}{((* Dd_UL2017_D *))}{UL2017}{((* Dd_UL2018_D *))}{UL2018}{Distribution of Dd for different eras in Run2}
+
+\twobytwofigures{((* Du_vs_Dd_UL2016preVFP_D *))}{UL2016preVFP}{((* Du_vs_Dd_UL2016postVFP_D *))}{UL2016postVFP}{((* Du_vs_Dd_UL2017_D *))}{UL2017}{((* Du_vs_Dd_UL2018_D *))}{UL2018}{Distribution of Du vs Dd for different eras in Run2}
+
+
+\clearpage
+
+\subsubsection{Full $|y_0|$ Range}
+
+The above parameters measured over the full $|y_0|$ range without $($with$)$ flow, i.e. within 2.5 $($maximum allowed$)$ are shown in next table.
+
+\begin{table}[htbp]
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 1}
-        \label{fig:sub1}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 2}
-        \label{fig:sub2}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 3}
-        \label{fig:sub3}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 4}
-        \label{fig:sub4}
-    \end{subfigure}
-    \caption{Overall Caption for the 2x2 Grid}
-    \label{fig:grid}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 1}
-        \label{fig:sub1}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 2}
-        \label{fig:sub2}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 3}
-        \label{fig:sub3}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{sample_image.jpg}
-        \caption{Caption for Image 4}
-        \label{fig:sub4}
-    \end{subfigure}
-    \caption{Overall Caption for the 2x2 Grid}
-    \label{fig:grid}
-\end{figure}
-    
-\begin{figure}
-    \includegraphics[width=\textwidth]{sample_image.jpg}
-\end{figure}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{} & \textbf{UL2016preVFP} & \textbf{UL2016postVFP} & \textbf{UL2017} & \textbf{UL2018}\\
+        \hline
+        $F_u$ & ((*Fu_UL2016preVFP_withoutFlow*)) $($ ((*Fu_UL2016preVFP_withFlow*)) $)$ & ((*Fu_UL2016postVFP_withoutFlow*)) $($ ((*Fu_UL2016postVFP_withFlow*)) $)$ & ((*Fu_UL2017_withoutFlow*)) $($ ((*Fu_UL2017_withFlow*)) $)$ & ((*Fu_UL2018_withoutFlow*)) $($ ((*Fu_UL2018_withFlow*)) $)$ \\
+        $F_d$ & ((*Fd_UL2016preVFP_withoutFlow*)) $($ ((*Fd_UL2016preVFP_withFlow*)) $)$ & ((*Fd_UL2016postVFP_withoutFlow*)) $($ ((*Fd_UL2016postVFP_withFlow*)) $)$ & ((*Fd_UL2017_withoutFlow*)) $($ ((*Fd_UL2017_withFlow*)) $)$ & ((*Fd_UL2018_withoutFlow*)) $($ ((*Fd_UL2018_withFlow*)) $)$ \\
+        $F_u$ wrt u and d & ((*Fu_ud_UL2016preVFP_withoutFlow*)) $($ ((*Fu_ud_UL2016preVFP_withFlow*)) $)$ & ((*Fu_ud_UL2016postVFP_withoutFlow*)) $($ ((*Fu_ud_UL2016postVFP_withFlow*)) $)$ & ((*Fu_ud_UL2017_withoutFlow*)) $($ ((*Fu_ud_UL2017_withFlow*)) $)$ & ((*Fu_ud_UL2018_withoutFlow*)) $($ ((*Fu_ud_UL2018_withFlow*)) $)$ \\
+        $F_d$ wrt u and d & ((*Fd_ud_UL2016preVFP_withoutFlow*)) $($ ((*Fd_ud_UL2016preVFP_withFlow*)) $)$ & ((*Fd_ud_UL2016postVFP_withoutFlow*)) $($ ((*Fd_ud_UL2016postVFP_withFlow*)) $)$ & ((*Fd_ud_UL2017_withoutFlow*)) $($ ((*Fd_ud_UL2017_withFlow*)) $)$ & ((*Fd_ud_UL2018_withoutFlow*)) $($ ((*Fd_ud_UL2018_withFlow*)) $)$ \\
+        $D_u$ & ((*Du_UL2016preVFP_withoutFlow*)) $($ ((*Du_UL2016preVFP_withFlow*)) $)$ & ((*Du_UL2016postVFP_withoutFlow*)) $($ ((*Du_UL2016postVFP_withFlow*)) $)$ & ((*Du_UL2017_withoutFlow*)) $($ ((*Du_UL2017_withFlow*)) $)$ & ((*Du_UL2018_withoutFlow*)) $($ ((*Du_UL2018_withFlow*)) $)$ \\
+        $D_d$ & ((*Dd_UL2016preVFP_withoutFlow*)) $($ ((*Dd_UL2016preVFP_withFlow*)) $)$ & ((*Dd_UL2016postVFP_withoutFlow*)) $($ ((*Dd_UL2016postVFP_withFlow*)) $)$ & ((*Dd_UL2017_withoutFlow*)) $($ ((*Dd_UL2017_withFlow*)) $)$ & ((*Dd_UL2018_withoutFlow*)) $($ ((*Dd_UL2018_withFlow*)) $)$ \\
+        $F_u D_u$ & ((*FuDu_UL2016preVFP_withoutFlow*)) $($ ((*FuDu_UL2016preVFP_withFlow*)) $)$ & ((*FuDu_UL2016postVFP_withoutFlow*)) $($ ((*FuDu_UL2016postVFP_withFlow*)) $)$ & ((*FuDu_UL2017_withoutFlow*)) $($ ((*FuDu_UL2017_withFlow*)) $)$ & ((*FuDu_UL2018_withoutFlow*)) $($ ((*FuDu_UL2018_withFlow*)) $)$ \\
+        $F_d D_d$ & ((*FdDd_UL2016preVFP_withoutFlow*)) $($ ((*FdDd_UL2016preVFP_withFlow*)) $)$ & ((*FdDd_UL2016postVFP_withoutFlow*)) $($ ((*FdDd_UL2016postVFP_withFlow*)) $)$ & ((*FdDd_UL2017_withoutFlow*)) $($ ((*FdDd_UL2017_withFlow*)) $)$ & ((*FdDd_UL2018_withoutFlow*)) $($ ((*FdDd_UL2018_withFlow*)) $)$ \\
+        \hline
+    \end{tabular}
+    \caption{Example Table}
+    \label{tab:example}
+\end{table}
 
 \end{document}
 
