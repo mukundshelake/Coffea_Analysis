@@ -21,4 +21,8 @@ src/Scripts/reports/*.synctex.gz
 src/Scripts/reports/filled.tex
 src/Scripts/reports/output.tex
 src/Scripts/reports/trial.txt
+src/Datasets/sampleFiles*
+src/Datasets/dataFiles*
+src/Scripts/lib/credentials.yaml
+src/Scripts/DataMC/trial.ipynb
 

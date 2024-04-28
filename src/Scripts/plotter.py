@@ -1,4 +1,4 @@
-from coffea.util import load
+from coffea.util import load, save
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -62,7 +62,3 @@ for era in out:
             plt.close()
 
 print("Figures saved in separate folders based on era and regions.")
-
-
-
-

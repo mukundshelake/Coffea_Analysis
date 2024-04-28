@@ -3,8 +3,6 @@ import dask
 import numpy as np
 import awkward as ak 
 import hist.dask as hda
-import dask_awkward as dak
-import argparse
 from coffea import processor
 # import warnings
 # warnings.filterwarnings("error", module="coffea.*")
@@ -19,7 +17,6 @@ from coffea.nanoevents import NanoEventsFactory, BaseSchema
 import matplotlib.pyplot as plt
 from coffea.util import save, rich_bar
 import json
-
 
 class MyProcessor(processor.ProcessorABC):
     def __init__(self):
@@ -61,8 +58,8 @@ class MyProcessor(processor.ProcessorABC):
             .Bool(name = "is_dbard")
             .Reg(250, 0, 2.5, label="$y_t$", name = "y_t")
             .Reg(250, 0, 2.5, label="$y_tbar$", name = "y_tbar")
-            .Reg(30, 140, 210, label = "m_t", name = "m_t")
-            .Reg(30, 140, 210, label = "m_tbar", name = "m_tbar")
+            .Reg(100, 120, 240, label = "$m_t$", name = "m_t")
+            # .Reg(100, 120, 240, label = "$m_tbar$", name = "m_tbar")
             .Double()
         )
         Yt_cut = yt > ytbar
@@ -82,7 +79,7 @@ class MyProcessor(processor.ProcessorABC):
             y_t = yt,
             y_tbar = ytbar,
             m_t = tmass,
-            m_tbar = tbarmass
+            # m_tbar = tbarmass
         )
 
         return {
@@ -93,10 +90,11 @@ class MyProcessor(processor.ProcessorABC):
     def postprocess(self, accumulator):
         pass
 
+
 def main():
     outputDir = "outputs"
     to_analyze = 'fullRun2'
-    # to_analyze = 'ttbarSample_UL2016preVFP'
+    to_analyze = 'ttbarSample_UL2016preVFP'
 
 
     if to_analyze=='fullRun2':
@@ -139,6 +137,7 @@ def main():
     outputFile = "Output_fullRun2_withMass.coffea"
     save(out, os.path.join(outputDir, outputFile))
     pass
+
 
 if __name__ == '__main__':
     # On Windows, this prevents the fork bomb issue when starting new processes.

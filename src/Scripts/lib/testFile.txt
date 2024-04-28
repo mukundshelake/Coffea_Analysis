@@ -1,0 +1,1 @@
+This is a text file to check the scp to EOS function in the helpers.py

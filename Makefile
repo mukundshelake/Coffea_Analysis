@@ -1,4 +1,4 @@
 download:
-    @echo "Downloading files..."
-    python getSFs.py
-    @echo "Files downloaded successfully."
+	@echo "Downloading SF files..."
+	cd src && python -m getSFs
+	@echo "Files downloaded successfully."

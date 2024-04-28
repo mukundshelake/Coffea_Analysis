@@ -1,7 +1,19 @@
-import glob, os, uproot
+import glob, uproot
 import os
 import time
 import paramiko
+import yaml
+
+
+# Get the directory of the current script
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# Construct the absolute path to the credentials file
+credentials_path = os.path.join(dir_path, 'credentials.yaml')
+
+# Use the absolute path to open the file
+with open(credentials_path, 'r') as file:
+    credentials = yaml.safe_load(file)
 
 problemFiles = []
 def isValidRootFile(fname):
@@ -111,8 +123,8 @@ def scptoEOS(outputFile, eosLogDir):
     # SSH connection parameters
     hostname = "lxplus.cern.ch"
     port = 22  # SSH port (typically 22)
-    username = "mshelake"
-    password = "Mkshp400"
+    username = credentials['username']
+    password = credentials['password']
 
     # Create an SSH client
     ssh_client = paramiko.SSHClient()
