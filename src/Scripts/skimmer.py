@@ -16,7 +16,7 @@ from coffea.dataset_tools import (
 from coffea.nanoevents import NanoEventsFactory, BaseSchema
 import matplotlib.pyplot as plt
 from coffea.util import save, rich_bar
-import json
+import json, argparse
 
 class MyProcessor(processor.ProcessorABC):
     def __init__(self):
@@ -24,7 +24,7 @@ class MyProcessor(processor.ProcessorABC):
 
     def process(self, events):
         dataset = events.metadata['dataset']
-        print(dataset)
+        # print(dataset)
         tops = ak.zip(
             {
                 "pt" : events.GenPart_pt[:, 2],
@@ -56,10 +56,10 @@ class MyProcessor(processor.ProcessorABC):
             .Bool(name = "is_ddbar")
             .Bool(name = "is_ubaru")
             .Bool(name = "is_dbard")
-            .Reg(250, 0, 2.5, label="$y_t$", name = "y_t")
-            .Reg(250, 0, 2.5, label="$y_tbar$", name = "y_tbar")
-            .Reg(100, 120, 240, label = "$m_t$", name = "m_t")
-            # .Reg(100, 120, 240, label = "$m_tbar$", name = "m_tbar")
+            .Reg(25, 0, 2.5, label="$y_t$", name = "y_t")
+            .Reg(25, 0, 2.5, label="$y_tbar$", name = "y_tbar")
+            .Reg(24, 120, 240, label = "$m_t$", name = "m_t")
+            .Reg(24, 120, 240, label = "$m_tbar$", name = "m_tbar")
             .Double()
         )
         Yt_cut = yt > ytbar
@@ -79,7 +79,7 @@ class MyProcessor(processor.ProcessorABC):
             y_t = yt,
             y_tbar = ytbar,
             m_t = tmass,
-            # m_tbar = tbarmass
+            m_tbar = tbarmass
         )
 
         return {
@@ -92,9 +92,19 @@ class MyProcessor(processor.ProcessorABC):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Do you want to run it on sample')
+    parser.add_argument('-s', '--sample', action='store_true', help='run on sample')
+
+    args = parser.parse_args()
+
+
     outputDir = "outputs"
     to_analyze = 'fullRun2'
-    to_analyze = 'ttbarSample_UL2016preVFP'
+
+    if args.sample:
+        to_analyze = 'ttbarSample_UL2016preVFP'
+
+    print(f"\n\nWorking on {to_analyze}")
 
 
     if to_analyze=='fullRun2':
@@ -117,15 +127,16 @@ def main():
                     'file://../../tests/UL2016_preVFP_ttbarSemileptonic.root': "Events",
                 }
             }
-        }       
+        }
+
     # Your code that starts new processes goes here.
     dataset_runnable, dataset_updated = preprocess(
-    fileset,
-    align_clusters=False,
-    # maybe_step_size=100_000,
-    files_per_batch=1,
-    skip_bad_files=True,
-    save_form=False,)
+        fileset,
+        align_clusters=False,
+        # maybe_step_size=100_000,
+        files_per_batch=1,
+        skip_bad_files=True,
+        save_form=False,)
 
     to_compute = apply_to_fileset(
                     MyProcessor(),
@@ -134,8 +145,9 @@ def main():
                 )
     (out,) = dask.compute(to_compute, scheduler='threads')
     # print(out)
-    outputFile = "Output_fullRun2_withMass.coffea"
+    outputFile = "skimmerOutput.coffea"
     save(out, os.path.join(outputDir, outputFile))
+    print(f"output file is stored in {os.path.join(outputDir, outputFile)}")
     pass
 
 

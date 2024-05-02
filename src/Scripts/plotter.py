@@ -6,7 +6,7 @@ import pandas as pd
 import os
 
 outputDir = 'outputs'
-coffeaFile = "Fq_results.coffea"
+coffeaFile = "extractorOutput.coffea"
 
 
 # out = load("Output.coffea")
@@ -25,6 +25,8 @@ plotDictionary = {
     "FuDu Distribution" : {'xAxis' : 'y0', 'yAxis' : 'FuDu', 'figName' : 'FuDu'},
     "FdDd Distribution" : {'xAxis' : 'y0', 'yAxis' : 'FdDd', 'figName' : 'FdDd'},
     "FuDu vs FdDd Distribution" : {'xAxis' : 'FuDu', 'yAxis' : 'FdDd', 'figName' : 'FuDu_vs_FdDd'},
+    "Ain" : {'xAxis' : 'y0', 'yAxis' : 'Ain', 'figName' : "Ain"},
+    "Aout" : {'xAxis' : 'y0', 'yAxis' : 'Aout', 'figName' : "Aout"}
 }
 
 regions = ['A', 'B', 'C', 'D']
