@@ -29,57 +29,62 @@ class MyProcessor(processor.ProcessorABC):
             {
                 "pt" : events.GenPart_pt[:, 2],
                 "eta": events.GenPart_eta[:, 2],
-                "mass": events.GenPart_mass[:, 2]
+                "mass": events.GenPart_mass[:, 2],
+                "phi" : events.GenPart_phi[:, 2]
             }
         )
         antitops = ak.zip(
             {
                 "pt" : events.GenPart_pt[:, 3],
                 "eta": events.GenPart_eta[:, 3],
-                "mass": events.GenPart_mass[:, 3]
+                "mass": events.GenPart_mass[:, 3],
+                "phi" : events.GenPart_phi[:, 3]
             }
         )
         tpt = tops["pt"]
         teta = tops["eta"]
         tmass = tops["mass"]
+        tphi = tops["phi"]
         yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
         tbarpt = antitops["pt"]
         tbareta = antitops["eta"]
         tbarmass = antitops["mass"]
-        ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt)) 
+        tbarphi = antitops["phi"]
+        ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
+
+
+        tpx = tpt*np.cos(tphi)
+        tpy = tpt*np.sin(tphi)
+        tpz = tpt*np.sinh(teta)
+        tE = np.sqrt(tpt*tpt*np.cosh(teta)*np.cosh(teta) + tmass*tmass)
+
+        tbarpx = tbarpt*np.cos(tbarphi)
+        tbarpy = tbarpt*np.sin(tbarphi)
+        tbarpz = tbarpt*np.sinh(tbareta)
+        tbarE = np.sqrt(tbarpt*tbarpt*np.cosh(tbareta)*np.cosh(tbareta) + tbarmass*tbarmass)
+
+        ttbarpx = tpx + tbarpx
+        ttbarpy = tpy + tbarpy
+        ttbarpz = tpz + tbarpz
+        ttbarE = tE + tbarE
+
+        mtt = np.sqrt(ttbarE*ttbarE - (ttbarpx*ttbarpx + ttbarpy*ttbarpy + ttbarpz*ttbarpz))
+
+        betatt = abs(ttbarpz)/ttbarE
 
         yt2D = (
             hda.Hist.new
             .Bool(name="is_Yt_Higher")
-            .Bool(name = "is_x1_Higher")
-            .Bool(name = "is_uubar")
-            .Bool(name = "is_ddbar")
-            .Bool(name = "is_ubaru")
-            .Bool(name = "is_dbard")
-            .Reg(25, 0, 2.5, label="$y_t$", name = "y_t")
-            .Reg(25, 0, 2.5, label="$y_tbar$", name = "y_tbar")
-            .Reg(24, 120, 240, label = "$m_t$", name = "m_t")
-            .Reg(24, 120, 240, label = "$m_tbar$", name = "m_tbar")
+            .Reg(20, 0, 900, label = "$m_tt$", name = "m_tt")
+            .Reg(25, 0, 1.5, label = "$beta_tt$", name = "beta_tt")
             .Double()
         )
         Yt_cut = yt > ytbar
-        x_cut = events.Generator_x1 > events.Generator_x2
-        uubar_cut = (events.Generator_id1 == 2) & (events.Generator_id2 == -2)
-        ubaru_cut = (events.Generator_id1 == -2) & (events.Generator_id2 == 2)
-        ddbar_cut = (events.Generator_id1 == 1) & (events.Generator_id2 == -1)
-        dbard_cut = (events.Generator_id1 == -1) & (events.Generator_id2 == 1)
 
         yt2D.fill(
             is_Yt_Higher = Yt_cut,
-            is_x1_Higher = x_cut,
-            is_uubar = uubar_cut,
-            is_ddbar = ddbar_cut,
-            is_ubaru = ubaru_cut,
-            is_dbard = dbard_cut,
-            y_t = yt,
-            y_tbar = ytbar,
-            m_t = tmass,
-            m_tbar = tbarmass
+            m_tt = mtt,
+            beta_tt = betatt
         )
 
         return {
