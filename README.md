@@ -1,37 +1,13 @@
 # Coffea_Analysis
 Top asymmetry analysis using the Coffea framework 
 
+# Branch documentation
 
-
-## Project structure
-```
-Coffea_Analysis/
-│
-├── src/
-│   ├── __init__.py
-│   ├── getSFs.py
-│   ├── updateDatasets.py
-│   │ 
-│   ├── Datasets/
-│   │   ├── filePaths_{era}.json files for eras = ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
-│   │   ├── dataFiles_{era}.json files for eras = ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
-│   │   └── sampleFiles_{era}.json files for eras = ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
-│   │ 
-│   │ 
-│   └── SFs/
-│       ├── __init__.py
-│       └── sfPaths.py
-│
-├── docs
-├── Logs
-├── tests
-├── Makefile
-├── LICENSE
-├── README.md
-├── requirements.txt
-├── .gitignore
-└── binder.ipynb
-
-```
+## Objective 1
+* Is developed to look at the distributions in $A_C$, $A_{in}$, $A_{out}$ and other relates stuff.
+* Has it's own set of skimmer, extractor, plotter and jinjaCode.
 
   
+## Objective 2
+* Is being developed to study distribution of $A_C$ with respect to $m_{t\bar{t}}$ and $\beta_{t\bar{t}}$.
+* Has it's own set of skimmer, extractor, plotter and jinjaCode.
