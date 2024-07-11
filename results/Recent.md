@@ -12,31 +12,20 @@ Correlation coefficients are as follows
 
 ### $A_{FB}$ and $A_C$
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-    <img src="plots/AFB_AC_UL2016preVFP.png" alt="Image 1" style="width: 100%;">
-    <img src="plots/AFB_AC_UL2016postVFP.png" alt="Image 2" style="width: 100%;">
-    <img src="plots/AFB_AC_UL2017.png" alt="Image 3" style="width: 100%;">
-    <img src="plots/AFB_AC_UL2018.png" alt="Image 4" style="width: 100%;">
-</div>
-
-#### $A_{FB}$ and $A_{out}$
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-    <img src="plots/AFB_Aout_UL2016preVFP.png" alt="Image 1" style="width: 100%;">
-    <img src="plots/AFB_Aout_UL2016postVFP.png" alt="Image 2" style="width: 100%;">
-    <img src="plots/AFB_Aout_UL2017.png" alt="Image 3" style="width: 100%;">
-    <img src="plots/AFB_Aout_UL2018.png" alt="Image 4" style="width: 100%;">
-</div>
-
-#### $A_{FB}$ and $A_{in}$
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-    <img src="plots/AFB_Ain_UL2016preVFP.png" alt="Image 1" style="width: 100%;">
-    <img src="plots/AFB_Ain_UL2016postVFP.png" alt="Image 2" style="width: 100%;">
-    <img src="plots/AFB_Ain_UL2017.png" alt="Image 3" style="width: 100%;">
-    <img src="plots/AFB_Ain_UL2018.png" alt="Image 4" style="width: 100%;">
-</div>
-
-| ![Image 1](plots/AFB_Ain_UL2016preVFP.png) | ![Image 2](plots/AFB_Ain_UL2016preVFP.png) |
+| ![Image 1](plots/AFB_AC_UL2016preVFP.png) | ![Image 2](plots/AFB_AC_UL2016postVFP.png) |
 |--------------------------------|--------------------------------|
-| ![Image 3](plots/AFB_Ain_UL2016preVFP.png) | ![Image 4](plots/AFB_Ain_UL2016preVFP.png) |
+| ![Image 3](plots/AFB_AC_UL2017.png) | ![Image 4](plots/AFB_AC_UL2018.png) |
+
+
+### $A_{FB}$ and $A_{out}$
+
+| ![Image 1](plots/AFB_Aout_UL2016preVFP.png) | ![Image 2](plots/AFB_Aout_UL2016postVFP.png) |
+|--------------------------------|--------------------------------|
+| ![Image 3](plots/AFB_Aout_UL2017.png) | ![Image 4](plots/AFB_Aout_UL2018.png) |
+
+
+### $A_{FB}$ and $A_{in}$
+
+| ![Image 1](plots/AFB_Ain_UL2016preVFP.png) | ![Image 2](plots/AFB_Ain_UL2016postVFP.png) |
+|--------------------------------|--------------------------------|
+| ![Image 3](plots/AFB_Ain_UL2017.png) | ![Image 4](plots/AFB_Ain_UL2018.png) |
