@@ -37,3 +37,6 @@ Correlation coefficients are as follows
     <img src="plots/AFB_Ain_UL2018.png" alt="Image 4" style="width: 100%;">
 </div>
 
+| ![Image 1](plots/AFB_Ain_UL2016preVFP.png) | ![Image 2](plots/AFB_Ain_UL2016preVFP.png) |
+|--------------------------------|--------------------------------|
+| ![Image 3](plots/AFB_Ain_UL2016preVFP.png) | ![Image 4](plots/AFB_Ain_UL2016preVFP.png) |
