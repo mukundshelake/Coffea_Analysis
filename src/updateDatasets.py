@@ -43,7 +43,7 @@ for era in eras:
     for DataMC in DatasetPaths:
         DataFiles[DataMC] = {}
         for process in DatasetPaths[DataMC]:
-            # print(process)
+            print(process)
             DataFiles[DataMC][process] = getFiles(DatasetPaths[DataMC][process], 4, flag)  
     json_file_path = f"dataFiles_{era}.json"
     if flag=='sample':

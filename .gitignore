@@ -26,3 +26,4 @@ src/Datasets/dataFiles*
 src/Scripts/lib/credentials.yaml
 src/Scripts/DataMC/trial.ipynb
 src/Scripts/workflow.sh
+*.npy
