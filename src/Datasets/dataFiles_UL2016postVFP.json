@@ -1375,18 +1375,7 @@
         }
     },
     "MC_el": {
-        "DYJetsToLL": {
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_1.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_10.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_2.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_3.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_4.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_5.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_6.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_7.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_8.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_9.root": "Events"
-        },
+        "DYJetsToLL": {},
         "QCD_Pt-120to170_EMEnriched": {
             "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/QCD_Pt-120to170_EMEnriched/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV-pythia8/Tree_11_Dec23_MCUL2016postVFP_QCD_Pt-120to170_EMEnriched/231211_114624/0000/tree_1.root": "Events",
             "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/QCD_Pt-120to170_EMEnriched/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV-pythia8/Tree_11_Dec23_MCUL2016postVFP_QCD_Pt-120to170_EMEnriched/231211_114624/0000/tree_2.root": "Events",
@@ -2092,18 +2081,7 @@
         }
     },
     "MC_mu": {
-        "DYJetsToLL": {
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_1.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_10.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_2.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_3.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_4.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_5.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_6.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_7.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_8.root": "Events",
-            "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/DYJetsToLL/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/Tree_09_Dec23_MCUL2016postVFP_DYJetsToLL/231209_173720/0000/tree_9.root": "Events"
-        },
+        "DYJetsToLL": {},
         "QCD_Pt-1000_MuEnriched": {
             "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/QCD_Pt-1000_MuEnriched/QCD_Pt-1000_MuEnrichedPt5_TuneCP5_13TeV-pythia8/Tree_11_Dec23_MCUL2016postVFP_QCD_Pt-1000_MuEnriched/231211_114522/0000/tree_1.root": "Events",
             "/nfs/home/common/RUN2_UL/Tree_crab/SIXTEEN_postVFP/MC/QCD_Pt-1000_MuEnriched/QCD_Pt-1000_MuEnrichedPt5_TuneCP5_13TeV-pythia8/Tree_11_Dec23_MCUL2016postVFP_QCD_Pt-1000_MuEnriched/231211_114522/0000/tree_10.root": "Events",
