@@ -64,17 +64,11 @@ log "Files added and committed to Git" false  # No timestamp for this message
 commit_hash=$(get_git_commit)
 log "Current Git commit hash: $commit_hash" false  # No timestamp for this message
 
-# Don't touch anything above
-# -------------------------------------------------------------------------------------------
-# Your script commands below
-log "Running command: python newskimmer.py $skimmer_args -o $output_file"
-python newskimmer.py $skimmer_args -o $output_file 2>&1 | tee -a "$log_file"
+# Your script commands
+log "Running command: python skimmer.py $skimmer_args -o $output_file"
+python skimmer.py $skimmer_args -o $output_file 2>&1 | tee -a "$log_file"
 
 log "Running command: python messageBot.py"
 python messageBot.py 2>&1 | tee -a "$log_file"
 
-
-
-
-#--------------------------------------------------------------------------------------------------
 log "Script completed"

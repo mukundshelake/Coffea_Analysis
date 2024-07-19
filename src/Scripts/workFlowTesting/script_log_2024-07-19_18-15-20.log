@@ -1,1 +1,11 @@
 2024-07-19 18:15:20 - Script started
+Files added and committed to Git
+Current Git commit hash: ca4338ac31025d80de6f52a23be457baa0ff244c
+2024-07-19 18:15:20 - Running command: ls -l
+total 20
+-rw-r--r--. 1 mukund mukund 1536 Jul 19 18:02 script_log_2024-07-19_18-02-51.log
+-rw-r--r--. 1 mukund mukund  434 Jul 19 18:06 script_log_2024-07-19_18-06-44.log
+-rw-r--r--. 1 mukund mukund  493 Jul 19 18:12 script_log_2024-07-19_18-12-09.log
+-rw-r--r--. 1 mukund mukund  181 Jul 19 18:15 script_log_2024-07-19_18-15-20.log
+-rw-r--r--. 1 mukund mukund 1526 Jul 19 18:15 test.sh
+2024-07-19 18:15:20 - Script completed
