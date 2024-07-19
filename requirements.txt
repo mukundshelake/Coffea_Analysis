@@ -9,6 +9,7 @@ attrs==23.2.0
 awkward==2.6.1
 awkward-cpp==29
 Babel==2.14.0
+bcrypt==4.1.2
 beautifulsoup4==4.12.3
 bleach==6.1.0
 bokeh==3.4.0
@@ -27,6 +28,7 @@ comm==0.2.2
 contourpy==1.2.0
 correctionlib==2.5.0
 cramjam==2.8.3
+cryptography==42.0.5
 cycler==0.12.1
 cytoolz==0.12.3
 dask==2024.3.1
@@ -102,6 +104,7 @@ overrides==7.7.0
 packaging==24.0
 pandas==2.2.1
 pandocfilters==1.5.0
+paramiko==3.4.0
 parso==0.8.3
 partd==1.4.1
 pexpect==4.9.0
@@ -122,10 +125,12 @@ pycparser==2.21
 pydantic==2.6.4
 pydantic_core==2.16.3
 Pygments==2.17.2
+PyNaCl==1.5.0
 pyparsing==3.1.2
 PySocks==1.7.1
 python-dateutil==2.9.0
 python-json-logger==2.0.7
+python-telegram-bot==21.1.1
 pytz==2024.1
 PyYAML==6.0.1
 pyzmq==25.1.2

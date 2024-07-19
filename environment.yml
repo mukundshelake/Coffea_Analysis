@@ -376,4 +376,10 @@ dependencies:
   - zipp=3.17.0=pyhd8ed1ab_0
   - zlib=1.2.13=hd590300_5
   - zstd=1.5.5=hfc55251_0
+  - pip:
+      - bcrypt==4.1.2
+      - cryptography==42.0.5
+      - paramiko==3.4.0
+      - pynacl==1.5.0
+      - python-telegram-bot==21.1.1
 prefix: /home/mukund/miniconda3/envs/newcoffea
