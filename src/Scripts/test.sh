@@ -66,9 +66,9 @@ log "Current Git commit hash: $commit_hash" false  # No timestamp for this messa
 
 # Your script commands
 log "Running command: python skimmer.py $skimmer_args -o $output_file"
-python skimmer.py $skimmer_args -o $output_file 2>&1 | tee -a "$log_file"
+python newskimmer.py $skimmer_args -o $output_file 2>&1 | tee -a "$log_file"
 
 log "Running command: python messageBot.py"
-python messageBot.py 2>&1 | tee -a "$log_file"
+python messegeBot.py 2>&1 | tee -a "$log_file"
 
 log "Script completed"
