@@ -1,1 +1,29 @@
 2024-07-19 18:52:30 - Script started
+Files added and committed to Git
+Current Git commit hash: fd1e8b740233e3569ee997500ad76548379e6a9e
+2024-07-19 18:52:30 - Running command: python skimmer.py  -o output_2024-07-19_18-52-30.coffea
+total 84
+-rw-r--r--. 1 mukund mukund 2041 May 21 17:15 asymmExtraction.py
+-rw-r--r--. 1 mukund mukund   73 May 21 17:15 botConfig.py
+-rw-r--r--. 1 mukund mukund   28 May 21 17:15 config.yaml
+drwxr-xr-x. 2 mukund mukund   68 May 21 17:15 DataMC
+-rw-r--r--. 1 mukund mukund 6373 May 21 17:15 extractor.py
+drwxr-xr-x. 3 mukund mukund  126 May 21 17:15 lib
+-rw-r--r--. 1 mukund mukund  231 Jul 19 18:52 log_2024-07-19_18-52-30.log
+-rw-r--r--. 1 mukund mukund  680 May 21 17:15 messegeBOT.py
+-rw-r--r--. 1 mukund mukund 6433 Jul 19 17:45 newskimmer.py
+drwxr-xr-x. 2 mukund mukund  222 Jul 19 17:17 notebooks
+drwxr-xr-x. 2 mukund mukund 4096 Jul 19 17:20 outputs
+drwxr-xr-x. 3 mukund mukund  158 Apr 28 23:28 plots
+-rw-r--r--. 1 mukund mukund 2940 May 21 17:15 plotter.py
+drwxr-xr-x. 2 mukund mukund 4096 May 21 19:49 __pycache__
+-rw-r--r--. 1 mukund mukund  439 May 21 17:15 README.md
+drwxr-xr-x. 3 mukund mukund 4096 May 21 17:15 reports
+-rw-r--r--. 1 mukund mukund 6337 Jul 18 22:11 skimmer.py
+-rw-r--r--. 1 mukund mukund 2018 Jul 19 18:52 workflow.sh
+drwxr-xr-x. 2 mukund mukund  189 Jul 19 18:15 workFlowTesting
+-rw-r--r--. 1 mukund mukund 4686 May 21 17:15 yt2DCalculations_new.py
+-rw-r--r--. 1 mukund mukund 4149 May 21 17:15 yt2DCalculations.py
+2024-07-19 18:52:30 - Running command: python messageBot.py
+python: can't open file '/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/messegeBot.py': [Errno 2] No such file or directory
+2024-07-19 18:52:30 - Script completed
