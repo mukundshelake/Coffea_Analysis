@@ -139,7 +139,6 @@ class MyProcessor(processor.ProcessorABC):
 def main():
     parser = argparse.ArgumentParser(description='Run processor on sample')
     parser.add_argument('-s', '--sample', action='store_true', help='run on sample')
-    parser.add_argument('-o', '--output', type=str, help='Specify the output filename', default='skimmerOutput.coffea')
     args = parser.parse_args()
 
     outputDir = "outputs"
@@ -188,7 +187,7 @@ def main():
 
     (out,) = dask.compute(to_compute, scheduler='threads')
     
-    outputFile = args.output
+    outputFile = "skimmerOutput_cStar_withID.coffea"
     save(out, os.path.join(outputDir, outputFile))
     print(f"Output file is stored in {os.path.join(outputDir, outputFile)}")
 
