@@ -1,0 +1,24 @@
+2024-07-19 18:02:51 - Script started
+2024-07-19 18:02:51 - Running command: ls -l
+total 8
+-rw-r--r--. 1 mukund mukund  82 Jul 19 18:02 script_log_2024-07-19_18-02-51.log
+-rw-r--r--. 1 mukund mukund 587 Jul 19 18:02 test.sh
+2024-07-19 18:02:51 - Running command: df -h
+Filesystem                        Size  Used Avail Use% Mounted on
+devtmpfs                           24G     0   24G   0% /dev
+tmpfs                              24G   56M   24G   1% /dev/shm
+tmpfs                              24G  171M   23G   1% /run
+tmpfs                              24G     0   24G   0% /sys/fs/cgroup
+/dev/mapper/cc00-root              50G   23G   28G  45% /
+/dev/loop0                        128K  128K     0 100% /var/lib/snapd/snap/bare/5
+/dev/loop2                        497M  497M     0 100% /var/lib/snapd/snap/gnome-42-2204/141
+/dev/loop3                         41M   41M     0 100% /var/lib/snapd/snap/snapd/20290
+/dev/loop1                         92M   92M     0 100% /var/lib/snapd/snap/gtk-common-themes/1535
+/dev/loop4                         74M   74M     0 100% /var/lib/snapd/snap/core22/864
+/dev/nvme0n1p8                   1014M  285M  730M  29% /boot
+/dev/nvme0n1p1                     96M   37M   60M  38% /boot/efi
+/dev/mapper/cc00-home             104G   42G   63G  41% /home
+tmpfs                             4.7G  8.0K  4.7G   1% /run/user/0
+cms01.hecr.tifr.res.in:/nfs/home   28T   22T  6.1T  78% /nfs/home
+tmpfs                             4.7G   32K  4.7G   1% /run/user/1000
+2024-07-19 18:02:51 - Script completed
