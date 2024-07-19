@@ -14,7 +14,7 @@ fi
 # Generate a timestamp for the log filename and output filename
 timestamp=$(date +"%Y-%m-%d_%H-%M-%S${sample_indicator}")
 log_file="script_log_${timestamp}.log"
-output_file="output_${timestamp}.csv"
+output_file="output_${timestamp}.coffea"
 
 # Function to log messages with an optional timestamp
 log() {
@@ -71,7 +71,7 @@ log "Running command: python newskimmer.py $skimmer_args -o $output_file"
 python newskimmer.py $skimmer_args -o $output_file 2>&1 | tee -a "$log_file"
 
 log "Running command: python messageBot.py"
-python messageBot.py 2>&1 | tee -a "$log_file"
+python messegeBot.py 2>&1 | tee -a "$log_file"
 
 
 
