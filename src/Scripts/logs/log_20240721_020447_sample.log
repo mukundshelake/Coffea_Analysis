@@ -1,3 +1,23 @@
 ---------------Script Timeline -------------------------
 2024-07-21 02:04:47 - Script started
 2024-07-21 02:04:47 - Adding and committing scripts to git
+2024-07-21 02:04:47 - Files added and committed to Git
+2024-07-21 02:04:47 - Fetching the current git hash
+2024-07-21 02:04:47 - Current Git commit hash: 1269075bbfcebc46a8b560865e1663679c12c15f
+2024-07-21 02:04:47 - python skimmer.py -s -o skimmerOutput_20240721_020447_sample.coffea
+
+
+Working on ttbarSample_UL2016preVFP
+Output file is stored in outputs/skimmerOutput_20240721_020447_sample.coffea
+2024-07-21 02:04:56 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1110, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1721507677, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-21 02:04:56 - Script completed
+===========================================================
+2024-07-21 02:04:56 - ---------------Summary -------------------------
+Description: Trying complete skim in single scoop
+Timestamp: 20240721_020447_sample
+Log filename: logs/log_20240721_020447_sample.log
+Skimmer output filename: skimmerOutput_20240721_020447_sample.coffea
+Git hash: 1269075bbfcebc46a8b560865e1663679c12c15f
+Script Status: Successfully run
+===========================================================
