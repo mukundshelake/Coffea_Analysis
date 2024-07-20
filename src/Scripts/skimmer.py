@@ -58,12 +58,7 @@ class MyProcessor(processor.ProcessorABC):
 
         p_add = p1_id + p2_id
 
-        if p_add == 0:
-            pIdx = 0
-        elif p_add == 42:
-            pIdx = 1
-        else:
-            pIdx = 2
+        pIdx = ak.where(p_add == 0, 0, ak.where(p_add == 42, 1, 2))
 
         tpx = tpt*np.cos(tphi)
         tpy = tpt*np.sin(tphi)
