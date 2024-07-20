@@ -1,0 +1,19 @@
+---------------Script Timeline -------------------------
+2024-07-19 19:12:25 - Script started
+2024-07-19 19:12:25 - Adding and commiting scripts to git
+2024-07-19 19:12:25 - Files added and committed to Git
+2024-07-19 19:12:25 - Fetching the current git hash
+2024-07-19 19:12:25 - Current Git commit hash: f85a2dcf2afdc5e67f7abea86f4611c5347c69b4
+2024-07-19 19:12:25 - python skimmer.py -s -o output_2024-07-19_19-12-25_sample.coffea
+usage: skimmer.py [-h] [-s]
+skimmer.py: error: unrecognized arguments: -o output_2024-07-19_19-12-25_sample.coffea
+2024-07-19 19:12:26 - python messageBot.py
+python: can't open file '/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/messageBot.py': [Errno 2] No such file or directory
+2024-07-19 19:12:26 - Script completed
+===========================================================
+2024-07-19 19:12:26 - ---------------Summary -------------------------
+Timestamp: 2024-07-19_19-12-25_sample
+Log filename: log_2024-07-19_19-12-25_sample.log
+Skimmer output filename: output_2024-07-19_19-12-25_sample.coffea
+git hash : f85a2dcf2afdc5e67f7abea86f4611c5347c69b4
+===========================================================

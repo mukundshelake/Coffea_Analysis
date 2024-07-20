@@ -1,3 +1,23 @@
 ---------------Script Timeline -------------------------
 2024-07-21 02:13:21 - Script started
 2024-07-21 02:13:21 - Adding and committing scripts to git
+2024-07-21 02:13:21 - Files added and committed to Git
+2024-07-21 02:13:21 - Fetching the current git hash
+2024-07-21 02:13:21 - Current Git commit hash: 4c35cd3d44af1f00b91bcb626273fa14732fac7d
+2024-07-21 02:13:21 - python skimmer.py  -o skimmerOutput_20240721_021321.coffea
+
+
+Working on fullRun2
+Output file is stored in outputs/skimmerOutput_20240721_021321.coffea
+2024-07-21 03:37:33 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1112, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1721513236, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-21 03:37:36 - Script completed
+===========================================================
+2024-07-21 03:37:36 - ---------------Summary -------------------------
+Description: Again trying complete skim on full run2 after SHIFTING
+Timestamp: 20240721_021321
+Log filename: logs/log_20240721_021321.log
+Skimmer output filename: skimmerOutput_20240721_021321.coffea
+Git hash: 4c35cd3d44af1f00b91bcb626273fa14732fac7d
+Script Status: Successfully run
+===========================================================

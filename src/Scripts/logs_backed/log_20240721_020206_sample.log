@@ -1,0 +1,23 @@
+---------------Script Timeline -------------------------
+2024-07-21 02:02:06 - Script started
+2024-07-21 02:02:06 - Adding and committing scripts to git
+2024-07-21 02:02:06 - Files added and committed to Git
+2024-07-21 02:02:06 - Fetching the current git hash
+2024-07-21 02:02:06 - Current Git commit hash: bfe27106d013e2b6f629d100e35096e31fe79a22
+2024-07-21 02:02:06 - python skimmer.py -s -o skimmerOutput_20240721_020206_sample.coffea
+
+
+Working on ttbarSample_UL2016preVFP
+Output file is stored in outputs/skimmerOutput_20240721_020206_sample.coffea
+2024-07-21 02:02:42 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1109, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1721507544, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-21 02:02:44 - Script completed
+===========================================================
+2024-07-21 02:02:44 - ---------------Summary -------------------------
+Description: Trying it out in cms01
+Timestamp: 20240721_020206_sample
+Log filename: logs/log_20240721_020206_sample.log
+Skimmer output filename: skimmerOutput_20240721_020206_sample.coffea
+Git hash: bfe27106d013e2b6f629d100e35096e31fe79a22
+Script Status: Successfully run
+===========================================================
