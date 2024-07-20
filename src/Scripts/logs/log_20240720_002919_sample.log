@@ -1,0 +1,19 @@
+---------------Script Timeline -------------------------
+2024-07-20 00:29:19 - Script started
+2024-07-20 00:29:19 - Adding and committing scripts to git
+2024-07-20 00:29:19 - Files added and committed to Git
+2024-07-20 00:29:19 - Fetching the current git hash
+2024-07-20 00:29:19 - Current Git commit hash: 7b2aa0fb72a7deade9d189fe0e70f21f117bdf18
+2024-07-20 00:29:19 - python newskimmer.py -s -o output_20240720_002919_sample.coffea
+python: can't open file '/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/newskimmer.py': [Errno 2] No such file or directory
+2024-07-20 00:29:19 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1100, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1721415322, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-20 00:29:20 - Script completed
+===========================================================
+2024-07-20 00:29:20 - ---------------Summary -------------------------
+Timestamp: 20240720_002919_sample
+Log filename: log_20240720_002919_sample.log
+Skimmer output filename: output_20240720_002919_sample.coffea
+Git hash: 7b2aa0fb72a7deade9d189fe0e70f21f117bdf18
+Script Status: Successfully run
+===========================================================

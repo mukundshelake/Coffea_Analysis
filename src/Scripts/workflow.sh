@@ -1,23 +1,28 @@
+############################################################################
 #!/bin/bash
 
-# Initialize status variable
-success=true
+# Initialize variables
+run_sample=false
+sample_indicator=""
+skimmer_args=""
+description=""
 
 # Check if running on sample data
 if [ "$1" == "sample" ]; then
     run_sample=true
     sample_indicator="_sample"
     skimmer_args="-s"
-else
-    run_sample=false
-    sample_indicator=""
-    skimmer_args=""
+fi
+
+# Check if a description is provided
+if [ -n "$2" ]; then
+    description=$2
 fi
 
 # Generate a timestamp for the log filename and output filename
 timestamp=$(date +"%Y%m%d_%H%M%S${sample_indicator}")
-log_file="log_${timestamp}.log"
-output_file="output_${timestamp}.coffea"
+log_file="logs/log_${timestamp}.log"
+output_file="skimmerOutput_${timestamp}.coffea"
 
 # Function to log messages with an optional timestamp
 log() {
@@ -59,12 +64,14 @@ add_and_commit_to_git() {
 # Function to check the status of the last executed command
 check_status() {
     local status=$1
-    echo $status
     if [ $status -ne 0 ]; then
         log "Error: Last command failed with status $status" false
         success=false  # Mark script as failed
     fi
 }
+
+# Initialize status variable
+success=true
 
 # Example usage
 log "---------------Script Timeline -------------------------" false
@@ -87,17 +94,20 @@ message_bot_command="python messegeBOT.py"
 
 # Log and execute the commands
 log "$skimmer_command"
-eval $skimmer_command 2>&1 | tee -a "$log_file"
+eval "$skimmer_command" 2>&1 | tee -a "$log_file"
 check_status $?  # Check if the skimmer command was successful
 
 log "$message_bot_command"
-eval $message_bot_command 2>&1 | tee -a "$log_file"
+eval "$message_bot_command" 2>&1 | tee -a "$log_file"
 check_status $?  # Check if the message bot command was successful
 
 log "Script completed"
 log "===========================================================" false
 
 log "---------------Summary -------------------------"
+if [ -n "$description" ]; then
+    log "Description: $description" false
+fi
 log "Timestamp: $timestamp" false
 log "Log filename: $log_file" false
 log "Skimmer output filename: $output_file" false

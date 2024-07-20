@@ -46,31 +46,26 @@ class MyProcessor(processor.ProcessorABC):
         teta = tops["eta"]
         tmass = tops["mass"]
         tphi = tops["phi"]
-        yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
+        # yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
         tbarpt = antitops["pt"]
         tbareta = antitops["eta"]
         tbarmass = antitops["mass"]
         tbarphi = antitops["phi"]
-        ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
+        # ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
 
         p1_id = events.GenPart_pdgId[:, 0]
         p2_id = events.GenPart_pdgId[:, 1]
 
         p_add = p1_id + p2_id
 
-        if p_add == 0:
-            pIdx = 0
-        elif p_add == 42:
-            pIdx = 1
-        else:
-            pIdx = 2
+        pIdx = ak.where(p_add == 0, 0, ak.where(p_add == 42, 1, 2))
 
         tpx = tpt*np.cos(tphi)
         tpy = tpt*np.sin(tphi)
         tpz = tpt*np.sinh(teta)
         tE = np.sqrt(tpt*tpt*np.cosh(teta)*np.cosh(teta) + tmass*tmass)
 
-        deltay = yt - ytbar
+        # deltay = yt - ytbar
 
         tbarpx = tbarpt*np.cos(tbarphi)
         tbarpy = tbarpt*np.sin(tbarphi)
@@ -84,23 +79,23 @@ class MyProcessor(processor.ProcessorABC):
         ttbarE = tE + tbarE
 
 
-        # # Boost velocity of the tbar system
-        # beta_ttbar_x = ttbarpx/ttbarE
-        # beta_ttbar_y = ttbarpy/ttbarE
-        # beta_ttbar_z = ttbarpz/ttbarE
+        # Boost velocity of the tbar system
+        beta_ttbar_x = ttbarpx/ttbarE
+        beta_ttbar_y = ttbarpy/ttbarE
+        beta_ttbar_z = ttbarpz/ttbarE
 
-        # beta = np.sqrt(beta_ttbar_x*beta_ttbar_x + beta_ttbar_y*beta_ttbar_y + beta_ttbar_z*beta_ttbar_z)
+        beta = np.sqrt(beta_ttbar_x*beta_ttbar_x + beta_ttbar_y*beta_ttbar_y + beta_ttbar_z*beta_ttbar_z)
 
-        # gamma = 1.0 / np.sqrt(1 - beta**2)
+        gamma = 1.0 / np.sqrt(1 - beta**2)
 
-        # bp = beta_ttbar_x*tpx + beta_ttbar_y*tpy + beta_ttbar_z*tpz
-        # E_prime = gamma * (tE - bp)
-        # p_prime_x = tpx + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_x
-        # p_prime_y = tpy + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_y
-        # p_prime_z = tpz + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_z
+        bp = beta_ttbar_x*tpx + beta_ttbar_y*tpy + beta_ttbar_z*tpz
+        E_prime = gamma * (tE - bp)
+        p_prime_x = tpx + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_x
+        p_prime_y = tpy + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_y
+        p_prime_z = tpz + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_z
 
         # Calculate the angle between the top quark and the z-axis in the tbar rest frame
-        # cos_theta = p_prime_z/ np.sqrt(p_prime_x*p_prime_x + p_prime_y*p_prime_y + p_prime_z*p_prime_z)
+        cos_theta = p_prime_z/ np.sqrt(p_prime_x*p_prime_x + p_prime_y*p_prime_y + p_prime_z*p_prime_z)
 
         mtt = np.sqrt(ttbarE*ttbarE - (ttbarpx*ttbarpx + ttbarpy*ttbarpy + ttbarpz*ttbarpz))
 
@@ -110,22 +105,22 @@ class MyProcessor(processor.ProcessorABC):
 
         yt2D = (
             hda.Hist.new
-            # .Reg(20, -1.0, 1.0, label = "$c*$", name = "c")
+            .Reg(20, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(20, 250, 1250, label = "$m_tt$", name = "m_tt")
             .Reg(16, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
-            .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
-            .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
-            .Reg(2, -2.4, 2.4, label="$deltay$", name = "deltay")
+            # .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
+            # .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
+            # .Reg(2, -2.4, 2.4, label="$deltay$", name = "deltay")
             .IntCategory(pIdx_bins, label="prodId", name="prodID")
             .Double()
         )
         yt2D.fill(
-            # c = cos_theta,
+            c = cos_theta,
             m_tt = mtt,
             beta_ttz = betattz,
-            y_t = yt,
-            y_tbar = ytbar,
-            deltay = deltay,
+            # y_t = yt,
+            # y_tbar = ytbar,
+            # deltay = deltay,
             prodID = pIdx,
         )
         return {
