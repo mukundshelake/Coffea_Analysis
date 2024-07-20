@@ -21,8 +21,8 @@ fi
 
 # Generate a timestamp for the log filename and output filename
 timestamp=$(date +"%Y%m%d_%H%M%S${sample_indicator}")
-log_file="log_${timestamp}.log"
-output_file="output_${timestamp}.coffea"
+log_file="logs/log_${timestamp}.log"
+output_file="skimmerOutput_${timestamp}.coffea"
 
 # Function to log messages with an optional timestamp
 log() {
