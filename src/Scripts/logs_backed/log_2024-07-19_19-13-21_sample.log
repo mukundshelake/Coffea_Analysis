@@ -1,0 +1,21 @@
+---------------Script Timeline -------------------------
+2024-07-19 19:13:21 - Script started
+2024-07-19 19:13:21 - Adding and commiting scripts to git
+2024-07-19 19:13:21 - Files added and committed to Git
+2024-07-19 19:13:21 - Fetching the current git hash
+2024-07-19 19:13:21 - Current Git commit hash: 8d5bb464829e929cbe741b425e42d514714f133f
+2024-07-19 19:13:21 - python newskimmer.py -s -o output_2024-07-19_19-13-21_sample.coffea
+
+
+Working on ttbarSample_UL2016preVFP
+Output file is stored in outputs/output_2024-07-19_19-13-21_sample.coffea
+2024-07-19 19:13:29 - python messageBot.py
+python: can't open file '/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/messageBot.py': [Errno 2] No such file or directory
+2024-07-19 19:13:29 - Script completed
+===========================================================
+2024-07-19 19:13:29 - ---------------Summary -------------------------
+Timestamp: 2024-07-19_19-13-21_sample
+Log filename: log_2024-07-19_19-13-21_sample.log
+Skimmer output filename: output_2024-07-19_19-13-21_sample.coffea
+git hash : 8d5bb464829e929cbe741b425e42d514714f133f
+===========================================================

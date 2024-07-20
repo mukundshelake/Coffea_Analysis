@@ -12,11 +12,12 @@ if [ "$1" == "sample" ]; then
     run_sample=true
     sample_indicator="_sample"
     skimmer_args="-s"
+    shift  # Shift the arguments to the left so that $2 becomes $1, $3 becomes $2, etc.
 fi
 
 # Check if a description is provided
-if [ -n "$2" ]; then
-    description=$2
+if [ -n "$1" ]; then
+    description=$1
 fi
 
 # Generate a timestamp for the log filename and output filename

@@ -1,0 +1,20 @@
+---------------Script Timeline -------------------------
+2024-07-21 01:22:27 - Script started
+2024-07-21 01:22:27 - Adding and committing scripts to git
+2024-07-21 01:22:27 - Files added and committed to Git
+2024-07-21 01:22:27 - Fetching the current git hash
+2024-07-21 01:22:27 - Current Git commit hash: a26e77686787ce621c2142ccde9a21f40a665e03
+2024-07-21 01:22:27 - python newskimmer.py -s -o output_20240721_012227_sample.coffea
+python: can't open file '/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/newskimmer.py': [Errno 2] No such file or directory
+2024-07-21 01:22:27 - python messageBOT.py
+python: can't open file '/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/messageBOT.py': [Errno 2] No such file or directory
+2024-07-21 01:22:27 - Script completed
+===========================================================
+2024-07-21 01:22:27 - ---------------Summary -------------------------
+Description: Messed up filling of pIdx last time
+Timestamp: 20240721_012227_sample
+Log filename: log_20240721_012227_sample.log
+Skimmer output filename: output_20240721_012227_sample.coffea
+Git hash: a26e77686787ce621c2142ccde9a21f40a665e03
+Script Status: Successfully run
+===========================================================
