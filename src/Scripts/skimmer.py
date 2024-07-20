@@ -46,12 +46,12 @@ class MyProcessor(processor.ProcessorABC):
         teta = tops["eta"]
         tmass = tops["mass"]
         tphi = tops["phi"]
-        # yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
+        yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
         tbarpt = antitops["pt"]
         tbareta = antitops["eta"]
         tbarmass = antitops["mass"]
         tbarphi = antitops["phi"]
-        # ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
+        ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
 
         p1_id = events.GenPart_pdgId[:, 0]
         p2_id = events.GenPart_pdgId[:, 1]
@@ -65,7 +65,7 @@ class MyProcessor(processor.ProcessorABC):
         tpz = tpt*np.sinh(teta)
         tE = np.sqrt(tpt*tpt*np.cosh(teta)*np.cosh(teta) + tmass*tmass)
 
-        # deltay = yt - ytbar
+        deltay = yt - ytbar
 
         tbarpx = tbarpt*np.cos(tbarphi)
         tbarpy = tbarpt*np.sin(tbarphi)
@@ -108,9 +108,9 @@ class MyProcessor(processor.ProcessorABC):
             .Reg(20, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(20, 250, 1250, label = "$m_tt$", name = "m_tt")
             .Reg(16, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
-            # .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
-            # .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
-            # .Reg(2, -2.4, 2.4, label="$deltay$", name = "deltay")
+            .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
+            .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
+            .Reg(2, -2.4, 2.4, label="$deltay$", name = "deltay")
             .IntCategory(pIdx_bins, label="prodId", name="prodID")
             .Double()
         )
@@ -118,9 +118,9 @@ class MyProcessor(processor.ProcessorABC):
             c = cos_theta,
             m_tt = mtt,
             beta_ttz = betattz,
-            # y_t = yt,
-            # y_tbar = ytbar,
-            # deltay = deltay,
+            y_t = yt,
+            y_tbar = ytbar,
+            deltay = deltay,
             prodID = pIdx,
         )
         return {
