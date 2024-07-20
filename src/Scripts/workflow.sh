@@ -89,8 +89,8 @@ commit_hash=$(get_git_commit)
 log "Current Git commit hash: $commit_hash"  # No timestamp for this message
 
 # Store the commands in variables
-skimmer_command="python newskimmer.py $skimmer_args -o $output_file"
-message_bot_command="python messageBOT.py"
+skimmer_command="python skimmer.py $skimmer_args -o $output_file"
+message_bot_command="python messegeBOT.py"
 
 # Log and execute the commands
 log "$skimmer_command"
