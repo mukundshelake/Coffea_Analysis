@@ -60,15 +60,27 @@ def getfileset(DirList):
 #                 file_list.append(os.path.join(folder_path, file_name))
 #     return file_list
 
-def getFiles(folder_path, depth, flag):
+# def getFiles(folder_path, depth, flag):
+#     file_list = {}
+#     searchString = '*/'*depth + '*.root'
+#     if flag == 'sample':
+#         searchString = '*/'*depth + 'tree_1.root'
+#     for file_name in glob.glob(os.path.join(folder_path,searchString)):
+#         if os.path.isfile(os.path.join(folder_path, file_name)):
+#             if isValidRootFile(file_name) and file_name not in problemFiles:
+#                 file_list[os.path.join(folder_path, file_name)] = "Events"
+#     return file_list
+
+
+def getFiles(folder_path,flag):
     file_list = {}
-    searchString = '*/'*depth + '*.root'
-    if flag == 'sample':
-        searchString = '*/'*depth + 'tree_1.root'
-    for file_name in glob.glob(os.path.join(folder_path,searchString)):
-        if os.path.isfile(os.path.join(folder_path, file_name)):
-            if isValidRootFile(file_name) and file_name not in problemFiles:
-                file_list[os.path.join(folder_path, file_name)] = "Events"
+    searchString = 'tree*.root'
+    for root, dirnames, filenames in os.walk(folder_path):
+        for filename in glob.glob(os.path.join(root, searchString)):
+            if os.path.isfile(filename) and isValidRootFile(filename):
+                file_list[filename] = 'Events'
+                if flag == 'sample':
+                      return file_list
     return file_list
 
 def getSamples(DirList):

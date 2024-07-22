@@ -27,3 +27,4 @@ src/Scripts/lib/credentials.yaml
 src/Scripts/DataMC/trial.ipynb
 *.npy
 *.log
+*.coffea
