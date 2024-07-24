@@ -1,3 +1,24 @@
 ---------------Script Timeline -------------------------
 2024-07-25 04:33:06 - Script started
 2024-07-25 04:33:06 - Adding and committing scripts to git
+2024-07-25 04:33:06 - Files added and committed to Git
+2024-07-25 04:33:06 - Fetching the current git hash
+2024-07-25 04:33:06 - Current Git commit hash: c5dcf6a20a3bb1a57040c9c1140fb423e9d9773a
+2024-07-25 04:33:06 - python skimmer.py -s -o skimmerOutput_20240725_043306_sample.coffea -c ttbar_SemiLeptonic
+Selected eras: ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+Sample mode: True
+Output file: skimmerOutput_20240725_043306_sample.coffea
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/skimmerOutput_20240725_043306_sample.coffea
+2024-07-25 04:33:53 - python messegeBOT.py
+python: can't open file '/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/Fitting_AFB/messegeBOT.py': [Errno 2] No such file or directory
+2024-07-25 04:33:53 - Script completed
+===========================================================
+2024-07-25 04:33:53 - ---------------Summary -------------------------
+Description: Trying out for first time in new folder
+Timestamp: 20240725_043306_sample
+Log filename: logs/log_20240725_043306_sample.log
+Skimmer output filename: skimmerOutput_20240725_043306_sample.coffea
+Git hash: c5dcf6a20a3bb1a57040c9c1140fb423e9d9773a
+Script Status: Successfully run
+===========================================================
