@@ -1,3 +1,24 @@
 ---------------Script Timeline -------------------------
 2024-07-25 04:36:39 - Script started
 2024-07-25 04:36:39 - Adding and committing scripts to git
+2024-07-25 04:36:39 - Files added and committed to Git
+2024-07-25 04:36:39 - Fetching the current git hash
+2024-07-25 04:36:39 - Current Git commit hash: a622d93126c90dc81c107a7a00c9fd07b053edf1
+2024-07-25 04:36:39 - python skimmer.py -s -o skimmerOutput_20240725_043639_sample.coffea -c ttbar_SemiLeptonic -e UL2016preVFP
+Selected eras: ['UL2016preVFP']
+Sample mode: True
+Output file: skimmerOutput_20240725_043639_sample.coffea
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/skimmerOutput_20240725_043639_sample.coffea
+2024-07-25 04:37:07 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1113, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1721862416, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-25 04:37:09 - Script completed
+===========================================================
+2024-07-25 04:37:09 - ---------------Summary -------------------------
+Description: Msg failed last time, checking it again
+Timestamp: 20240725_043639_sample
+Log filename: logs/log_20240725_043639_sample.log
+Skimmer output filename: skimmerOutput_20240725_043639_sample.coffea
+Git hash: a622d93126c90dc81c107a7a00c9fd07b053edf1
+Script Status: Successfully run
+===========================================================
