@@ -56,6 +56,28 @@ class MyProcessor(processor.ProcessorABC):
         p1_id = events.GenPart_pdgId[:, 0]
         p2_id = events.GenPart_pdgId[:, 1]
 
+        p_add = p1_id + p2_id
+        p_minus = p1_id - p2_id
+        x_cut = events.Generator_x1 > events.Generator_x2
+
+        pIdx = ak.where(p_add == 0, 0, ak.where(p_add == 42, 3, 4))
+
+        # Apply conditions
+        condition1 = (p_add == 0) & (p_minus == 4) & x_cut ## for uubar with high q1: 1
+        condition2 = (p_add == 0) & (p_minus == 4) & ~x_cut ## for uubar with high q2: -1
+        condition3 = (p_add == 0) & (p_minus == -4) & x_cut ## for ubaru with high q1: -1
+        condition4 = (p_add == 0) & (p_minus == -4) & ~x_cut ## for ubaru with high q2: 1
+        condition5 = (p_add == 0) & (p_minus == 2) & x_cut ## for uubar with high q1: 2
+        condition6 = (p_add == 0) & (p_minus == 2) & ~x_cut ## for uubar with high q2: -2
+        condition7 = (p_add == 0) & (p_minus == -2) & x_cut ## for ubaru with high q1: -2
+        condition8 = (p_add == 0) & (p_minus == -2) & ~x_cut ## for ubaru with high q2: 2
+
+        pIdx = ak.where(condition1 | condition4, 1, pIdx)
+        pIdx = ak.where(condition2 | condition3, -1, pIdx)
+        pIdx = ak.where(condition5 | condition8, 2, pIdx)
+        pIdx = ak.where(condition7 | condition6, -2, pIdx)
+
+
         tpx = tpt*np.cos(tphi)
         tpy = tpt*np.sin(tphi)
         tpz = tpt*np.sinh(teta)
@@ -96,31 +118,27 @@ class MyProcessor(processor.ProcessorABC):
 
         betattz = abs(ttbarpz)/ttbarE
 
-        pIdx_bins = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 21]
-        x_cut = events.Generator_x1 > events.Generator_x2
+        pIdx_bins = [-2, -1, 0, 1, 2, 3, 4]
+        
         yt2D = (
             hda.Hist.new
-            .Bool(name = "is_x1_Higher")
             .Reg(10, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(20, 250, 1250, label = "$m_tt$", name = "m_tt")
             .Reg(10, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
             .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label="$deltay$", name = "deltay")
-            .IntCategory(pIdx_bins, label="p1", name="p1")
-            .IntCategory(pIdx_bins, label="p2", name="p2")
+            .IntCategory(pIdx_bins, label="pIndex", name="pIndex")
             .Double()
         )
         yt2D.fill(
-            is_x1_Higher = x_cut,
             c = cos_theta,
             m_tt = mtt,
             beta_ttz = betattz,
             y_t = yt,
             y_tbar = ytbar,
             deltay = deltay,
-            p1 = p1_id,
-            p2 = p2_id
+            pIndex = pIdx
         )
         return {
                 "entries": ak.num(events, axis=0),

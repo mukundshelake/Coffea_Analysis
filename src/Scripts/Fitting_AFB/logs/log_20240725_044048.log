@@ -1,3 +1,39 @@
 ---------------Script Timeline -------------------------
 2024-07-25 04:40:48 - Script started
 2024-07-25 04:40:48 - Adding and committing scripts to git
+2024-07-25 04:40:48 - Files added and committed to Git
+2024-07-25 04:40:48 - Fetching the current git hash
+2024-07-25 04:40:48 - Current Git commit hash: cdf66d64c15c0ab1d7e0f02e54c021c945ffb67d
+2024-07-25 04:40:48 - python skimmer.py  -o skimmerOutput_20240725_044048.coffea -c ttbar_SemiLeptonic -e UL2016preVFP
+Selected eras: ['UL2016preVFP']
+Sample mode: False
+Output file: skimmerOutput_20240725_044048.coffea
+Channels: ['ttbar_SemiLeptonic']
+Traceback (most recent call last):
+  File "/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/Fitting_AFB/skimmer.py", line 251, in <module>
+    main()
+  File "/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/Fitting_AFB/skimmer.py", line 242, in main
+    (out,) = dask.compute(to_compute, scheduler='threads')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/dask/base.py", line 661, in compute
+    results = schedule(dsk, keys, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/dask_histogram/core.py", line 481, in _blocked_multi_dak
+    else bh.Histogram(*histref[0], storage=histref[1], metadata=histref[2])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/boost_histogram/_internal/hist.py", line 246, in __init__
+    self._hist = h(axes, storage)  # type: ignore[unreachable]
+                 ^^^^^^^^^^^^^^^^
+MemoryError: std::bad_alloc
+2024-07-25 04:47:57 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1114, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1721863067, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-25 04:48:01 - Script completed
+===========================================================
+2024-07-25 04:48:01 - ---------------Summary -------------------------
+Description: First try with full data
+Timestamp: 20240725_044048
+Log filename: logs/log_20240725_044048.log
+Skimmer output filename: skimmerOutput_20240725_044048.coffea
+Git hash: cdf66d64c15c0ab1d7e0f02e54c021c945ffb67d
+Script Status: Successfully run
+===========================================================
