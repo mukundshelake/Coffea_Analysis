@@ -96,6 +96,22 @@ class MyProcessor(processor.ProcessorABC):
         ttbarpz = tpz + tbarpz
         ttbarE = tE + tbarE
 
+        # Boost velocity of the tbar system
+        beta_ttbar_x = ttbarpx/ttbarE
+        beta_ttbar_y = ttbarpy/ttbarE
+        beta_ttbar_z = ttbarpz/ttbarE
+
+        beta = np.sqrt(beta_ttbar_x*beta_ttbar_x + beta_ttbar_y*beta_ttbar_y + beta_ttbar_z*beta_ttbar_z)
+
+        gamma = 1.0 / np.sqrt(1 - beta**2)
+
+        bp = beta_ttbar_x*tpx + beta_ttbar_y*tpy + beta_ttbar_z*tpz
+        p_prime_x = tpx + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_x
+        p_prime_y = tpy + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_y
+        p_prime_z = tpz + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_z
+
+        # Calculate the angle between the top quark and the z-axis in the tbar rest frame
+        cos_theta = p_prime_z/ np.sqrt(p_prime_x*p_prime_x + p_prime_y*p_prime_y + p_prime_z*p_prime_z)
 
 
         # Calculate the angle between the top quark and the z-axis in the tbar rest frame
@@ -108,6 +124,7 @@ class MyProcessor(processor.ProcessorABC):
         
         yt2D = (
             hda.Hist.new
+            .Reg(20, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(20, 250, 1250, label = "$m_tt$", name = "m_tt")
             .Reg(16, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
             .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
@@ -117,6 +134,7 @@ class MyProcessor(processor.ProcessorABC):
             .Double()
         )
         yt2D.fill(
+            c = cos_theta,
             m_tt = mtt,
             beta_ttz = betattz,
             y_t = yt,
