@@ -66,10 +66,36 @@ for era in out:
 
 
     data = {
-    'A_FB': '$A_{FB}$',
-    'A_C': '$A_{C}$',
-    'A_in': '$A_{in}$',
-    'A_out': '$A_{out}$'
+        'Du': '$D_{u}$',
+        'Dd': '$D_{d}$',
+        'Fu_Nq': '$F_{u}\ w.r.t.\ N_{q}$',
+        'Fd_Nq': '$F_{d}\ w.r.t.\ N_{q}$',
+        'Fu_NEvents': '$F_{u}\ w.r.t.\ N_{total}$',
+        'Fd_NEvents': '$F_{d}\ w.r.t.\ N_{total}$',
+        'Du_out': '$Out\ Region\ D_{u}$',
+        'Dd_out': '$Out\ Region\ D_{d}$',
+        'Fu_Nq_out': '$Out\ Region\ F_{u}\ w.r.t.\ N_{q}$',
+        'Fd_Nq_out': '$Out\ Region\ F_{d}\ w.r.t.\ N_{q}$',
+        'Fu_NEvents_out': '$Out\ Region\ F_{u}\ w.r.t.\ N_{total}$',
+        'Fd_NEvents_out': '$Out\ Region\ F_{d}\ w.r.t.\ N_{total}$',
+        'Du_in': '$In\ Region\ D_{u}$',
+        'Dd_in': '$In\ Region\ D_{d}$',
+        'Fu_Nq_in': '$In\ Region\ F_{u}\ w.r.t.\ N_{q}$',
+        'Fd_Nq_in': '$In\ Region\ F_{d}\ w.r.t.\ N_{q}$',
+        'Fu_NEvents_in': '$In\ Region\ F_{u}\ w.r.t.\ N_{total}$',
+        'Fd_NEvents_in': '$In\ Region\ F_{d}\ w.r.t.\ N_{total}$',
+        'Du_notIN': '$Non-In\ Region\ D_{u}$',
+        'Dd_notIN': '$Non-In\ Region\ D_{d}$',
+        'Fu_Nq_notIN': '$Non-In\ Region\ F_{u}\ w.r.t.\ N_{q}$',
+        'Fd_Nq_notIN': '$Non-In\ Region\ F_{d}\ w.r.t.\ N_{q}$',
+        'Fu_NEvents_notIN': '$Non-In\ Region\ F_{u}\ w.r.t.\ N_{total}$',
+        'Fd_NEvents_notIN': '$Non-In\ Region\ F_{d}\ w.r.t.\ N_{total}$',
+        'Du_notOUT': '$Non-Out\ Region\ D_{u}$',
+        'Dd_notOUT': '$Non-Out\ Region\ D_{d}$',
+        'Fu_Nq_notOUT': '$Non-Out\ Region\ F_{u}\ w.r.t.\ N_{q}$',
+        'Fd_Nq_notOUT': '$Non-Out\ Region\ F_{d}\ w.r.t.\ N_{q}$',
+        'Fu_NEvents_notOUT': '$Non-Out\ Region\ F_{u}\ w.r.t.\ N_{total}$',
+        'Fd_NEvents_notOUT': '$Non-Out\ Region\ F_{d}\ w.r.t.\ N_{total}$',
     }
 
     # Loop through the dictionary and plot each array
