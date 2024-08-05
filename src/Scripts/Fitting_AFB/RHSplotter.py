@@ -110,3 +110,4 @@ for era in out:
         fig.colorbar(c, ax=ax, label=value)
         plt.savefig(f'results/plots/{key}_{era}_{timeStamp}.png')
         # plt.show()
+        plt.close()
