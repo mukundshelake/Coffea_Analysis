@@ -92,6 +92,11 @@ log "Current Git commit hash: $commit_hash"  # No timestamp for this message
 # Store the commands in variables
 skimmer_command="python skimmer.py $skimmer_args -o $output_file -c ttbar_SemiLeptonic"
 message_bot_command="python messegeBOT.py"
+LHSextractor_command="python LHSextractor.py -t $timestamp"
+RHSextractor_command="python RHSextractor.py -t $timestamp"
+LHSplotter_command="python LHSplotter.py -t $timestamp"
+RHSplotter_command="python RHSplotter.py -t $timestamp"
+
 
 # Log and execute the commands
 log "$skimmer_command"
@@ -101,6 +106,23 @@ check_status $?  # Check if the skimmer command was successful
 log "$message_bot_command"
 eval "$message_bot_command" 2>&1 | tee -a "$log_file"
 check_status $?  # Check if the message bot command was successful
+
+log "$LHSextractor_command"
+eval "$LHSextractor_command" 2>&1 | tee -a "$log_file"
+check_status $?  # Check if the LHSextractor_command was successful
+
+log "$RHSextractor_command"
+eval "$RHSextractor_command" 2>&1 | tee -a "$log_file"
+check_status $?  # Check if the RHSextractor_command was successful
+
+log "$LHSplotter_command"
+eval "$LHSplotter_command" 2>&1 | tee -a "$log_file"
+check_status $?  # Check if the LHSplotter_command was successful
+
+log "$RHSplotter_command"
+eval "$RHSplotter_command" 2>&1 | tee -a "$log_file"
+check_status $?  # Check if the RHSplotter_command was successful
+
 
 log "Script completed"
 log "===========================================================" false

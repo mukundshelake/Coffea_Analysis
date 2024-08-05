@@ -124,11 +124,11 @@ class MyProcessor(processor.ProcessorABC):
         
         yt2D = (
             hda.Hist.new
-            .Reg(20, -1.0, 1.0, label = "$c*$", name = "c")
+            .Reg(10, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(20, 250, 1250, label = "$m_tt$", name = "m_tt")
-            .Reg(16, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
-            .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
-            .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
+            .Reg(10, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
+            .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
+            .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
             .IntCategory(pIdx_bins, label="pIndex", name="pIndex")
             .Double()
