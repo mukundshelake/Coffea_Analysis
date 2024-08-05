@@ -4,7 +4,7 @@ import numpy as np
 import awkward as ak
 import hist.dask as hda
 from coffea import processor
-from coffea.nanoevents import NanoEventsFactory, BaseSchema
+from coffea.nanoevents import NanoEventsFactory, NanoAODSchema
 from coffea.dataset_tools import apply_to_fileset, max_chunks, preprocess
 import matplotlib.pyplot as plt
 import json, argparse
@@ -56,10 +56,6 @@ class MyProcessor(processor.ProcessorABC):
         p1_id = events.GenPart_pdgId[:, 0]
         p2_id = events.GenPart_pdgId[:, 1]
 
-        p_add = p1_id + p2_id
-
-        pIdx = ak.where(p_add == 0, 0, ak.where(p_add == 42, 1, 2))
-
         tpx = tpt*np.cos(tphi)
         tpy = tpt*np.sin(tphi)
         tpz = tpt*np.sinh(teta)
@@ -89,7 +85,6 @@ class MyProcessor(processor.ProcessorABC):
         gamma = 1.0 / np.sqrt(1 - beta**2)
 
         bp = beta_ttbar_x*tpx + beta_ttbar_y*tpy + beta_ttbar_z*tpz
-        E_prime = gamma * (tE - bp)
         p_prime_x = tpx + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_x
         p_prime_y = tpy + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_y
         p_prime_z = tpz + ((gamma - 1) * bp / beta**2 - gamma * tE) * beta_ttbar_z
@@ -101,27 +96,31 @@ class MyProcessor(processor.ProcessorABC):
 
         betattz = abs(ttbarpz)/ttbarE
 
-        pIdx_bins = [0, 1, 2]
-
+        pIdx_bins = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 21]
+        x_cut = events.Generator_x1 > events.Generator_x2
         yt2D = (
             hda.Hist.new
+            .Bool(name = "is_x1_Higher")
             .Reg(20, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(20, 250, 1250, label = "$m_tt$", name = "m_tt")
             .Reg(16, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
             .Reg(8, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(8, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label="$deltay$", name = "deltay")
-            .IntCategory(pIdx_bins, label="prodId", name="prodID")
+            .IntCategory(pIdx_bins, label="p1", name="p1")
+            .IntCategory(pIdx_bins, label="p2", name="p2")
             .Double()
         )
         yt2D.fill(
+            is_x1_Higher = x_cut,
             c = cos_theta,
             m_tt = mtt,
             beta_ttz = betattz,
             y_t = yt,
             y_tbar = ytbar,
             deltay = deltay,
-            prodID = pIdx,
+            p1 = p1_id,
+            p2 = p2_id
         )
         return {
                 "entries": ak.num(events, axis=0),
@@ -132,40 +131,97 @@ class MyProcessor(processor.ProcessorABC):
         pass
 
 def main():
-    parser = argparse.ArgumentParser(description='Run processor on sample')
-    parser.add_argument('-s', '--sample', action='store_true', help='run on sample')
-    parser.add_argument('-o', '--output', type=str, help='Specify the output filename', default='skimmerOutput.coffea')
+    parser = argparse.ArgumentParser(description="Process some eras.")
+    
+    # Define the allowed choices
+    allowed_eras = ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+
+    # Add the --eras argument with choices and default value
+    parser.add_argument(
+        '-e', '--eras', 
+        choices=allowed_eras, 
+        nargs='*', 
+        default=allowed_eras,
+        help="Specify one or more eras. Allowed values are: 'UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018'. If not provided, all eras will be used by default."
+    )
+
+    parser.add_argument(
+        '-c', '--channels',
+        nargs='+',  # Accept one or more values
+        type=str,
+        default=[],  # Default to an empty list if no arguments are provided
+        help="Specify one or more channels to process. By default, all channels"
+    )
+
+
+    # Add the --sample flag argument
+    parser.add_argument(
+        '-s', '--sample',
+        action='store_true',
+        help="If provided, the sample mode will be enabled."
+    )
+
+    parser.add_argument(
+        '--onlyData',
+        action='store_true',
+        help="If provided, only the data will be processed."
+    )
+
+    parser.add_argument(
+        '--onlyMC',
+        action='store_true',
+        help="If provided, only the MC will be processed."
+    )
+
+    # Add the --output argument
+    parser.add_argument(
+        '-o','--output',
+        type=str,
+        default='output.coffea',
+        help="Specify the output file name. Default is 'output.coffea'."
+    )
+
     args = parser.parse_args()
 
-    outputDir = "outputs"
-    to_analyze = 'fullRun2'
+    # Display the parsed arguments
+    print(f"Selected eras: {args.eras}")
+    print(f"Sample mode: {args.sample}")
+    print(f"Output file: {args.output}")
+    if len(args.channels) > 0:
+        print(f"Channels: {args.channels}")
+    else:
+        print("Channels: All")
+
+    outputDir = "../outputs"
+    datasetFlag = 'data'
 
     if args.sample:
-        to_analyze = 'ttbarSample_UL2016preVFP'
+        datasetFlag = 'sample'
 
-    print(f"\n\nWorking on {to_analyze}")
-
-    if to_analyze=='fullRun2':
-        fileset = {}
-        for era in ['UL2016preVFP', 'UL2016postVFP' , 'UL2017', 'UL2018']:
-            with open(f'../Datasets/dataFiles_{era}.json', 'r') as json_file:
-                fileset[era]= {'files':json.load(json_file)['MC_el']['ttbar_SemiLeptonic']}
-    elif to_analyze=='ttbarSample_UL2016preVFP':
-        fileset = {
-            'ttbarSample_UL2016preVFP': {
-                "files": {
-                    'file://../../tests/UL2016_preVFP_ttbarSemileptonic.root': "Events",
-                }
-            }
-        }
-    else:
-        fileset = {
-            'ttbarSample_UL2016preVFP': {
-                "files": {
-                    'file://../../tests/UL2016_preVFP_ttbarSemileptonic.root': "Events",
-                }
-            }
-        }
+    fileset = {}
+    for era in args.eras:
+        with open(f'../../Datasets/{datasetFlag}Files_{era}.json', 'r') as json_file:
+            dicti = json.load(json_file)
+            for pr in dicti['Data_el']:
+                if args.onlyMC:
+                    print("Working on only the MC, ignoring data")
+                    continue
+                if len(args.channels) > 0:
+                    if pr not in args.channels:
+                        # print(f'skipping {era}_{pr} as not in list')
+                        continue
+                datasetName = f'{era}_{pr}'
+                fileset[datasetName] = {"files": dicti['Data_el'][pr]}
+            for pr in dicti['MC_el']:
+                if args.onlyData:
+                    print("Working on only the data, ignoring MC")
+                    continue
+                if len(args.channels) > 0:
+                    if pr not in args.channels:
+                        # print(f'skipping {era}_{pr} as not in list')
+                        continue
+                datasetName = f'{era}_{pr}'
+                fileset[datasetName] = {"files": dicti['MC_el'][pr]}
 
     dataset_runnable, dataset_updated = preprocess(
         fileset,
@@ -178,7 +234,7 @@ def main():
     to_compute = apply_to_fileset(
         MyProcessor(),
         max_chunks(dataset_runnable, 300),
-        schemaclass=BaseSchema,
+        schemaclass=NanoAODSchema,
     )
 
     (out,) = dask.compute(to_compute, scheduler='threads')

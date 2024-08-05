@@ -1,3 +1,24 @@
 ---------------Script Timeline -------------------------
 2024-07-29 03:05:46 - Script started
 2024-07-29 03:05:46 - Adding and committing scripts to git
+2024-07-29 03:05:47 - Files added and committed to Git
+2024-07-29 03:05:47 - Fetching the current git hash
+2024-07-29 03:05:47 - Current Git commit hash: 5736789d8e79e530fb755c1e9897b6b00a3d47d9
+2024-07-29 03:05:47 - python skimmer.py  -o skimmerOutput_20240729_030546.coffea -c ttbar_SemiLeptonic
+Selected eras: ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+Sample mode: False
+Output file: skimmerOutput_20240729_030546.coffea
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/skimmerOutput_20240729_030546.coffea
+2024-07-29 04:36:06 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1121, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1722207962, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-07-29 04:36:09 - Script completed
+===========================================================
+2024-07-29 04:36:09 - ---------------Summary -------------------------
+Description: Running on full data for single skimming
+Timestamp: 20240729_030546
+Log filename: logs/log_20240729_030546.log
+Skimmer output filename: skimmerOutput_20240729_030546.coffea
+Git hash: 5736789d8e79e530fb755c1e9897b6b00a3d47d9
+Script Status: Successfully run
+===========================================================
