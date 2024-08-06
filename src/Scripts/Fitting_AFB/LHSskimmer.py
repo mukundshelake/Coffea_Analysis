@@ -53,30 +53,9 @@ class MyProcessor(processor.ProcessorABC):
         tbarphi = antitops["phi"]
         ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
 
-        p1_id = events.GenPart_pdgId[:, 0]
-        p2_id = events.GenPart_pdgId[:, 1]
 
-        p_add = p1_id + p2_id
-        p_minus = p1_id - p2_id
-        x_cut = events.Generator_x1 > events.Generator_x2
 
-        pIdx = ak.where(p_add == 0, 0, ak.where(p_add == 42, 3, 4))
-
-        # Apply conditions
-        condition1 = (p_add == 0) & (p_minus == 4) & x_cut ## for uubar with high q1: 1
-        condition2 = (p_add == 0) & (p_minus == 4) & ~x_cut ## for uubar with high q2: -1
-        condition3 = (p_add == 0) & (p_minus == -4) & x_cut ## for ubaru with high q1: -1
-        condition4 = (p_add == 0) & (p_minus == -4) & ~x_cut ## for ubaru with high q2: 1
-        condition5 = (p_add == 0) & (p_minus == 2) & x_cut ## for ddbar with high q1: 2
-        condition6 = (p_add == 0) & (p_minus == 2) & ~x_cut ## for ddbar with high q2: -2
-        condition7 = (p_add == 0) & (p_minus == -2) & x_cut ## for dbard with high q1: -2
-        condition8 = (p_add == 0) & (p_minus == -2) & ~x_cut ## for dbard with high q2: 2
-
-        pIdx = ak.where(condition1 | condition4, 1, pIdx)
-        pIdx = ak.where(condition2 | condition3, -1, pIdx)
-        pIdx = ak.where(condition5 | condition8, 2, pIdx)
-        pIdx = ak.where(condition7 | condition6, -2, pIdx)
-
+        # Apply conditi
 
         tpx = tpt*np.cos(tphi)
         tpy = tpt*np.sin(tphi)
@@ -119,8 +98,6 @@ class MyProcessor(processor.ProcessorABC):
         mtt = np.sqrt(ttbarE*ttbarE - (ttbarpx*ttbarpx + ttbarpy*ttbarpy + ttbarpz*ttbarpz))
 
         betattz = abs(ttbarpz)/ttbarE
-
-        pIdx_bins = [-2, -1, 0, 1, 2, 3, 4]
         
         yt2D = (
             hda.Hist.new
@@ -130,7 +107,6 @@ class MyProcessor(processor.ProcessorABC):
             .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
-            .IntCategory(pIdx_bins, label="pIndex", name="pIndex")
             .Double()
         )
         yt2D.fill(

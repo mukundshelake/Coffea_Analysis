@@ -1,3 +1,292 @@
 ---------------Script Timeline -------------------------
 2024-08-06 01:12:38 - Script started
 2024-08-06 01:12:38 - Adding and committing scripts to git
+2024-08-06 01:12:41 - Files added and committed to Git
+2024-08-06 01:12:41 - Fetching the current git hash
+2024-08-06 01:12:41 - Current Git commit hash: 33bcab8d73e8860b66a1c6543073948131a3bf38
+2024-08-06 01:12:41 - python skimmer.py -s -o skimmerOutput_20240806_011238_sample.coffea -c ttbar_SemiLeptonic
+Selected eras: ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+Sample mode: True
+Output file: skimmerOutput_20240806_011238_sample.coffea
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/skimmerOutput_20240806_011238_sample.coffea
+2024-08-06 01:13:23 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1539, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1722887008, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-08-06 01:13:25 - python LHSextractor.py -t 20240806_011238_sample
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype  
+---  ------  --------------  -----  
+ 0   A_FB    200 non-null    float64
+ 1   A_C     200 non-null    float64
+ 2   A_in    200 non-null    float64
+ 3   A_out   200 non-null    float64
+dtypes: float64(4)
+memory usage: 6.4 KB
+None
+   A_FB  A_C  A_in  A_out
+0   0.0  0.0   0.0    0.0
+1   0.0  0.0   0.0    0.0
+2   0.0  0.0   0.0    0.0
+3   0.0  0.0   0.0    0.0
+4   0.0  0.0   0.0    0.0
+DataFrame saved to outputs/LHSdata_UL2016preVFP_ttbar_SemiLeptonic_20240806_011238_sample.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype  
+---  ------  --------------  -----  
+ 0   A_FB    200 non-null    float64
+ 1   A_C     200 non-null    float64
+ 2   A_in    200 non-null    float64
+ 3   A_out   200 non-null    float64
+dtypes: float64(4)
+memory usage: 6.4 KB
+None
+   A_FB  A_C  A_in  A_out
+0   1.0 -1.0   1.0   -1.0
+1   0.0  0.0   0.0    0.0
+2  -1.0 -1.0   0.0    1.0
+3   0.0  0.0   0.0    0.0
+4   0.0  0.0   0.0    0.0
+DataFrame saved to outputs/LHSdata_UL2016postVFP_ttbar_SemiLeptonic_20240806_011238_sample.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype  
+---  ------  --------------  -----  
+ 0   A_FB    200 non-null    float64
+ 1   A_C     200 non-null    float64
+ 2   A_in    200 non-null    float64
+ 3   A_out   200 non-null    float64
+dtypes: float64(4)
+memory usage: 6.4 KB
+None
+   A_FB  A_C  A_in  A_out
+0   1.0  0.0   0.0    0.0
+1   0.0  0.0   0.0    0.0
+2   0.0  0.0   0.0    0.0
+3   0.0  0.0   0.0    0.0
+4   0.0  0.0   0.0    0.0
+DataFrame saved to outputs/LHSdata_UL2017_ttbar_SemiLeptonic_20240806_011238_sample.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype  
+---  ------  --------------  -----  
+ 0   A_FB    200 non-null    float64
+ 1   A_C     200 non-null    float64
+ 2   A_in    200 non-null    float64
+ 3   A_out   200 non-null    float64
+dtypes: float64(4)
+memory usage: 6.4 KB
+None
+   A_FB  A_C  A_in  A_out
+0   0.0  0.0   0.0    0.0
+1   0.0  0.0   0.0    0.0
+2   1.0 -1.0   1.0   -1.0
+3   1.0  0.0  -1.0    0.0
+4  -1.0  0.0   0.0    1.0
+DataFrame saved to outputs/LHSdata_UL2018_ttbar_SemiLeptonic_20240806_011238_sample.csv
+2024-08-06 01:14:39 - python RHSextractor.py -t 20240806_011238_sample
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 30 columns):
+ #   Column             Non-Null Count  Dtype  
+---  ------             --------------  -----  
+ 0   Du                 200 non-null    float64
+ 1   Dd                 200 non-null    float64
+ 2   Fu_Nq              200 non-null    float64
+ 3   Fd_Nq              200 non-null    float64
+ 4   Fu_NEvents         200 non-null    float64
+ 5   Fd_NEvents         200 non-null    float64
+ 6   Du_out             200 non-null    float64
+ 7   Dd_out             200 non-null    float64
+ 8   Fu_Nq_out          200 non-null    float64
+ 9   Fd_Nq_out          200 non-null    float64
+ 10  Fu_NEvents_out     200 non-null    float64
+ 11  Fd_NEvents_out     200 non-null    float64
+ 12  Du_in              200 non-null    float64
+ 13  Dd_in              200 non-null    float64
+ 14  Fu_Nq_in           200 non-null    float64
+ 15  Fd_Nq_in           200 non-null    float64
+ 16  Fu_NEvents_in      200 non-null    float64
+ 17  Fd_NEvents_in      200 non-null    float64
+ 18  Du_notIN           200 non-null    float64
+ 19  Dd_notIN           200 non-null    float64
+ 20  Fu_Nq_notIN        200 non-null    float64
+ 21  Fd_Nq_notIN        200 non-null    float64
+ 22  Fu_NEvents_notIN   200 non-null    float64
+ 23  Fd_NEvents_notIN   200 non-null    float64
+ 24  Du_notOUT          200 non-null    float64
+ 25  Dd_notOUT          200 non-null    float64
+ 26  Fu_Nq_notOUT       200 non-null    float64
+ 27  Fd_Nq_notOUT       200 non-null    float64
+ 28  Fu_NEvents_notOUT  200 non-null    float64
+ 29  Fd_NEvents_notOUT  200 non-null    float64
+dtypes: float64(30)
+memory usage: 47.0 KB
+None
+    Du   Dd     Fu_Nq  ...  Fd_Nq_notOUT  Fu_NEvents_notOUT  Fd_NEvents_notOUT
+0 -1.0 -1.0  0.500000  ...      0.500000           0.500000           0.500000
+1 -1.0 -1.0  0.300000  ...      0.666667           0.300000           0.600000
+2 -1.0 -1.0  0.173913  ...      0.826087           0.173913           0.826087
+3 -1.0 -0.8  0.411765  ...      0.588235           0.368421           0.526316
+4 -1.0 -1.0  0.136364  ...      0.857143           0.130435           0.782609
+
+[5 rows x 30 columns]
+DataFrame saved to outputs/RHSdata_UL2016preVFP_ttbar_SemiLeptonic_20240806_011238_sample.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 30 columns):
+ #   Column             Non-Null Count  Dtype  
+---  ------             --------------  -----  
+ 0   Du                 200 non-null    float64
+ 1   Dd                 200 non-null    float64
+ 2   Fu_Nq              200 non-null    float64
+ 3   Fd_Nq              200 non-null    float64
+ 4   Fu_NEvents         200 non-null    float64
+ 5   Fd_NEvents         200 non-null    float64
+ 6   Du_out             200 non-null    float64
+ 7   Dd_out             200 non-null    float64
+ 8   Fu_Nq_out          200 non-null    float64
+ 9   Fd_Nq_out          200 non-null    float64
+ 10  Fu_NEvents_out     200 non-null    float64
+ 11  Fd_NEvents_out     200 non-null    float64
+ 12  Du_in              200 non-null    float64
+ 13  Dd_in              200 non-null    float64
+ 14  Fu_Nq_in           200 non-null    float64
+ 15  Fd_Nq_in           200 non-null    float64
+ 16  Fu_NEvents_in      200 non-null    float64
+ 17  Fd_NEvents_in      200 non-null    float64
+ 18  Du_notIN           200 non-null    float64
+ 19  Dd_notIN           200 non-null    float64
+ 20  Fu_Nq_notIN        200 non-null    float64
+ 21  Fd_Nq_notIN        200 non-null    float64
+ 22  Fu_NEvents_notIN   200 non-null    float64
+ 23  Fd_NEvents_notIN   200 non-null    float64
+ 24  Du_notOUT          200 non-null    float64
+ 25  Dd_notOUT          200 non-null    float64
+ 26  Fu_Nq_notOUT       200 non-null    float64
+ 27  Fd_Nq_notOUT       200 non-null    float64
+ 28  Fu_NEvents_notOUT  200 non-null    float64
+ 29  Fd_NEvents_notOUT  200 non-null    float64
+dtypes: float64(30)
+memory usage: 47.0 KB
+None
+    Du        Dd     Fu_Nq  ...  Fd_Nq_notOUT  Fu_NEvents_notOUT  Fd_NEvents_notOUT
+0 -1.0 -1.000000  0.200000  ...      0.750000           0.190476           0.714286
+1 -1.0 -1.000000  0.304348  ...      0.695652           0.304348           0.695652
+2 -1.0 -1.000000  0.227273  ...      0.727273           0.217391           0.695652
+3 -1.0 -1.000000  0.357143  ...      0.629630           0.370370           0.629630
+4 -1.0 -0.913043  0.206897  ...      0.793103           0.206897           0.793103
+
+[5 rows x 30 columns]
+DataFrame saved to outputs/RHSdata_UL2016postVFP_ttbar_SemiLeptonic_20240806_011238_sample.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 30 columns):
+ #   Column             Non-Null Count  Dtype  
+---  ------             --------------  -----  
+ 0   Du                 200 non-null    float64
+ 1   Dd                 200 non-null    float64
+ 2   Fu_Nq              200 non-null    float64
+ 3   Fd_Nq              200 non-null    float64
+ 4   Fu_NEvents         200 non-null    float64
+ 5   Fd_NEvents         200 non-null    float64
+ 6   Du_out             200 non-null    float64
+ 7   Dd_out             200 non-null    float64
+ 8   Fu_Nq_out          200 non-null    float64
+ 9   Fd_Nq_out          200 non-null    float64
+ 10  Fu_NEvents_out     200 non-null    float64
+ 11  Fd_NEvents_out     200 non-null    float64
+ 12  Du_in              200 non-null    float64
+ 13  Dd_in              200 non-null    float64
+ 14  Fu_Nq_in           200 non-null    float64
+ 15  Fd_Nq_in           200 non-null    float64
+ 16  Fu_NEvents_in      200 non-null    float64
+ 17  Fd_NEvents_in      200 non-null    float64
+ 18  Du_notIN           200 non-null    float64
+ 19  Dd_notIN           200 non-null    float64
+ 20  Fu_Nq_notIN        200 non-null    float64
+ 21  Fd_Nq_notIN        200 non-null    float64
+ 22  Fu_NEvents_notIN   200 non-null    float64
+ 23  Fd_NEvents_notIN   200 non-null    float64
+ 24  Du_notOUT          200 non-null    float64
+ 25  Dd_notOUT          200 non-null    float64
+ 26  Fu_Nq_notOUT       200 non-null    float64
+ 27  Fd_Nq_notOUT       200 non-null    float64
+ 28  Fu_NEvents_notOUT  200 non-null    float64
+ 29  Fd_NEvents_notOUT  200 non-null    float64
+dtypes: float64(30)
+memory usage: 47.0 KB
+None
+         Du        Dd  ...  Fu_NEvents_notOUT  Fd_NEvents_notOUT
+0 -0.777778 -1.000000  ...           0.360000           0.560000
+1 -1.000000 -1.000000  ...           0.333333           0.666667
+2 -1.000000 -1.000000  ...           0.333333           0.666667
+3 -1.000000 -0.909091  ...           0.312500           0.687500
+4 -0.866667 -1.000000  ...           0.416667           0.583333
+
+[5 rows x 30 columns]
+DataFrame saved to outputs/RHSdata_UL2017_ttbar_SemiLeptonic_20240806_011238_sample.csv
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 30 columns):
+ #   Column             Non-Null Count  Dtype  
+---  ------             --------------  -----  
+ 0   Du                 200 non-null    float64
+ 1   Dd                 200 non-null    float64
+ 2   Fu_Nq              200 non-null    float64
+ 3   Fd_Nq              200 non-null    float64
+ 4   Fu_NEvents         200 non-null    float64
+ 5   Fd_NEvents         200 non-null    float64
+ 6   Du_out             200 non-null    float64
+ 7   Dd_out             200 non-null    float64
+ 8   Fu_Nq_out          200 non-null    float64
+ 9   Fd_Nq_out          200 non-null    float64
+ 10  Fu_NEvents_out     200 non-null    float64
+ 11  Fd_NEvents_out     200 non-null    float64
+ 12  Du_in              200 non-null    float64
+ 13  Dd_in              200 non-null    float64
+ 14  Fu_Nq_in           200 non-null    float64
+ 15  Fd_Nq_in           200 non-null    float64
+ 16  Fu_NEvents_in      200 non-null    float64
+ 17  Fd_NEvents_in      200 non-null    float64
+ 18  Du_notIN           200 non-null    float64
+ 19  Dd_notIN           200 non-null    float64
+ 20  Fu_Nq_notIN        200 non-null    float64
+ 21  Fd_Nq_notIN        200 non-null    float64
+ 22  Fu_NEvents_notIN   200 non-null    float64
+ 23  Fd_NEvents_notIN   200 non-null    float64
+ 24  Du_notOUT          200 non-null    float64
+ 25  Dd_notOUT          200 non-null    float64
+ 26  Fu_Nq_notOUT       200 non-null    float64
+ 27  Fd_Nq_notOUT       200 non-null    float64
+ 28  Fu_NEvents_notOUT  200 non-null    float64
+ 29  Fd_NEvents_notOUT  200 non-null    float64
+dtypes: float64(30)
+memory usage: 47.0 KB
+None
+         Du        Dd  ...  Fu_NEvents_notOUT  Fd_NEvents_notOUT
+0 -0.666667 -1.000000  ...           0.181818           0.818182
+1 -0.777778 -0.882353  ...           0.360000           0.600000
+2 -1.000000 -1.000000  ...           0.315789           0.631579
+3 -1.000000 -1.000000  ...           0.242424           0.696970
+4 -0.800000 -0.882353  ...           0.333333           0.566667
+
+[5 rows x 30 columns]
+DataFrame saved to outputs/RHSdata_UL2018_ttbar_SemiLeptonic_20240806_011238_sample.csv
+2024-08-06 01:14:50 - python LHSplotter.py -t 20240806_011238_sample
+2024-08-06 01:14:53 - python RHSplotter.py -t 20240806_011238_sample
+2024-08-06 01:15:02 - Script completed
+===========================================================
+2024-08-06 01:15:02 - ---------------Summary -------------------------
+Description: Added plot.close
+Timestamp: 20240806_011238_sample
+Log filename: logs/log_20240806_011238_sample.log
+Skimmer output filename: skimmerOutput_20240806_011238_sample.coffea
+Git hash: 33bcab8d73e8860b66a1c6543073948131a3bf38
+Script Status: Successfully run
+===========================================================

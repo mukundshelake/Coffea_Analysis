@@ -25,8 +25,7 @@ out = load(os.path.join(outputDir,coffeaFile))
 
 
 for era in out:
-    eraHist = out[era]['yMatrix']
-    cHist = eraHist[:,:,:,:,:,:,0]
+    cHist = out[era]['yMatrix']
 
     proj = cHist.project('m_tt', 'beta_ttz')
     # Get the bin edges for m_tt and beta_ttz
