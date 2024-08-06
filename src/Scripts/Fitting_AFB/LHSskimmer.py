@@ -236,7 +236,7 @@ def main():
 
     (out,) = dask.compute(to_compute, scheduler='threads')
     
-    outputFile = f"LHSskimmerOutput_{args.output}.coffea"
+    outputFile = f"LHSskimmerOutput_{args.timestamp}.coffea"
     save(out, os.path.join(outputDir, outputFile))
     print(f"Output file is stored in {os.path.join(outputDir, outputFile)}")
 
