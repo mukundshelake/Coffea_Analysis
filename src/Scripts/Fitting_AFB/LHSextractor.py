@@ -27,10 +27,8 @@ out = load(os.path.join(outputDir,coffeaFile))
 for era in out:
     cHist = out[era]['yMatrix']
 
-    proj = cHist.project('m_tt', 'beta_ttz')
-    # Get the bin edges for m_tt and beta_ttz
-    m_tt_edges = proj.axes[0].edges
-    beta_ttz_edges = proj.axes[1].edges
+    m_tt_edges = np.array([300., 400., 450., 500., 550., 600., 650., 700., 900., 1200.])
+    beta_ttz_edges = np.array([0., 1.0])
 
     # Initialize the A_FB matrix
     A_FB = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))

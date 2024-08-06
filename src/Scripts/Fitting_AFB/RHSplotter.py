@@ -109,5 +109,5 @@ for era in out:
         plt.title(value)
         fig.colorbar(c, ax=ax, label=value)
         plt.savefig(f'{outputDir}/{key}_{era}_{timeStamp}.png')
-        # plt.show()
+        plt.show()
         plt.close()

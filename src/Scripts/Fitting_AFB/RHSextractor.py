@@ -23,15 +23,24 @@ coffeaFile = f"RHSskimmerOutput_{timeStamp}.coffea"
 # out = load("Output.coffea")
 out = load(os.path.join(outputDir,coffeaFile))
 
+bbarIdx = 0
+cbadIdx = 1
+sbarIdx = 2
+ubarIdx = 3
+dbarIdx = 4
+gIdx = 5
+dIdx = 6
+uIdx = 7
+sIdx = 8
+cIdx = 9
+bIdx = 10
 
 for era in out:
-    eraHist = out[era]['yMatrix']
-    fHist = eraHist[sum,:,:,:,:,sum,:]
+    fHist = out[era]['yMatrix']
 
-    proj = fHist.project('m_tt', 'beta_ttz')
     # Get the bin edges for m_tt and beta_ttz
-    m_tt_edges = proj.axes[0].edges
-    beta_ttz_edges = proj.axes[1].edges
+    m_tt_edges = np.array([300., 400., 450., 500., 550., 600., 650., 700., 900., 1200.])
+    beta_ttz_edges = np.array([0., 1.0])
 
     # Initialize the A_FB matrix
     Du = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
@@ -78,18 +87,37 @@ for era in out:
             # Select the bin range for m_tt and beta_ttz
             m_tt_range = (m_tt_edges[i]*1j, m_tt_edges[i + 1]*1j)
             beta_ttz_range = (beta_ttz_edges[j]*1j, beta_ttz_edges[j + 1]*1j)
-            Nuubar_highq = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, 1].sum()
-            Nuubar_highqbar = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, -1].sum()
-            Nddbar_highq = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, 2].sum()
-            Nddbar_highqbar = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, -2].sum()
 
-            NEvents = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum].sum()
-            N_non_udQ = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, 0].sum()
+            Nuubar_highq1 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, uIdx, ubarIdx, 1].sum()
+            Nuubar_highq2 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, uIdx, ubarIdx, 0].sum()
+
+            Nubaru_highq1 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, ubarIdx, uIdx, 1].sum()
+            Nubaru_highq2 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, ubarIdx, uIdx, 0].sum()
+
+            Nuubar_highq = Nuubar_highq1 + Nubaru_highq2
+            Nuubar_highqbar = Nuubar_highq2 + Nubaru_highq1
+
+
+            Nddbar_highq1 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, dIdx, dbarIdx, 1].sum()
+            Nddbar_highq2 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, dIdx, dbarIdx, 0].sum()
+
+            Ndbard_highq1 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, dbarIdx, dIdx, 1].sum()
+            Ndbard_highq2 = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, dbarIdx, dIdx, 0].sum()
+
+            Nddbar_highq = Nddbar_highq1 + Ndbard_highq2
+            Nddbar_highqbar = Nddbar_highq2 + Ndbard_highq1
+
+
+            NEvents = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, sum, sum, sum].sum()
+            N_gg = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, gIdx, gIdx, sum].sum()
+            N_gx = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, gIdx, :, sum].sum()
+            N_xg = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], sum, sum, sum, :, gIdx, sum].sum()
+
 
             Nuubar = Nuubar_highq + Nuubar_highqbar
             Nddbar = Nddbar_highq + Nddbar_highqbar
 
-            Nq = Nuubar + Nddbar + N_non_udQ
+            Nq = NEvents - N_gx - N_xg + N_gg
 
 
             if (Nuubar_highq + Nuubar_highqbar) > 0:
@@ -126,18 +154,37 @@ for era in out:
             y0 = 1.2j
 
             #### For region out
-            Nuubar_highq_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, 1].sum()
-            Nuubar_highqbar_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, -1].sum()
-            Nddbar_highq_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, 2].sum()
-            Nddbar_highqbar_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, -2].sum()
+            Nuubar_highq1_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, uIdx,ubarIdx, 1].sum()
+            Nuubar_highq2_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, uIdx,ubarIdx, 0].sum()
 
-            NEvents_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, sum].sum()
-            N_non_udQ_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, 0].sum()
+            Nubaru_highq1_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, ubarIdx,uIdx, 1].sum()
+            Nubaru_highq2_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, ubarIdx,uIdx, 0].sum()
+
+            Nuubar_highq_out = Nuubar_highq1_out + Nubaru_highq2_out
+            Nuubar_highqbar_out = Nuubar_highq2_out + Nubaru_highq1_out
+
+
+            Nddbar_highq1_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, dIdx,dbarIdx, 1].sum()
+            Nddbar_highq2_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, dIdx,dbarIdx, 0].sum()
+
+            Ndbard_highq1_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, dbarIdx,dIdx, 1].sum()
+            Ndbard_highq2_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:,sum, dbarIdx,dIdx, 0].sum()
+
+            Nddbar_highq_out = Nddbar_highq1_out + Ndbard_highq2_out
+            Nddbar_highqbar_out = Nddbar_highq2_out + Ndbard_highq1_out
+
+
+
+            NEvents_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, sum, sum, sum, sum].sum()
+            N_gg_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, sum, gIdx, gIdx, sum].sum()
+            N_gx_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, sum, gIdx, :, sum].sum()
+            N_xg_out = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, sum, :, gIdx, sum].sum()
+
 
             Nuubar_out = Nuubar_highq_out + Nuubar_highqbar_out
             Nddbar_out = Nddbar_highq_out + Nddbar_highqbar_out
 
-            Nq_out = Nuubar_out + Nddbar_out + N_non_udQ_out
+            Nq_out = NEvents_out - N_gx_out - N_xg_out + N_gg_out
 
             if (Nuubar_highq_out + Nuubar_highqbar_out) > 0:
                 Du_out[i, j] = (Nuubar_highq_out - Nuubar_highqbar_out)/(Nuubar_highq_out + Nuubar_highqbar_out)
@@ -171,50 +218,67 @@ for era in out:
 
 
             #### For region IN
+            Nuubar_highq1_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, uIdx,ubarIdx, 1].sum()
+            Nuubar_highq2_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, uIdx,ubarIdx, 0].sum()
 
-            Nuubar_highq_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, 1].sum()
-            Nuubar_highqbar_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, -1].sum()
-            Nddbar_highq_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, 2].sum()
-            Nddbar_highqbar_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, -2].sum()
+            Nubaru_highq1_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, ubarIdx,uIdx, 1].sum()
+            Nubaru_highq2_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, ubarIdx,uIdx, 0].sum()
 
-            NEvents_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, sum].sum()
-            N_non_udQ_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, 0].sum()
+            Nuubar_highq_in = Nuubar_highq1_in + Nubaru_highq2_in
+            Nuubar_highqbar_in = Nuubar_highq2_in + Nubaru_highq1_in
+
+
+            Nddbar_highq1_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, dIdx,dbarIdx, 1].sum()
+            Nddbar_highq2_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, dIdx,dbarIdx, 0].sum()
+
+            Ndbard_highq1_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, dbarIdx,dIdx, 1].sum()
+            Ndbard_highq2_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0,sum, dbarIdx,dIdx, 0].sum()
+
+            Nddbar_highq_in = Nddbar_highq1_in + Ndbard_highq2_in
+            Nddbar_highqbar_in = Nddbar_highq2_in + Ndbard_highq1_in
+
+
+
+            NEvents_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, sum, sum, sum, sum].sum()
+            N_gg_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, sum, gIdx, gIdx, sum].sum()
+            N_gx_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, sum, gIdx, :, sum].sum()
+            N_xg_in = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, sum, :, gIdx, sum].sum()
+
 
             Nuubar_in = Nuubar_highq_in + Nuubar_highqbar_in
             Nddbar_in = Nddbar_highq_in + Nddbar_highqbar_in
 
-            Nq_in = Nuubar_in + Nddbar_in + N_non_udQ_in
+            Nq_in = NEvents_in - N_gx_in - N_xg_in + N_gg_in
 
             if (Nuubar_highq_in + Nuubar_highqbar_in) > 0:
                 Du_in[i, j] = (Nuubar_highq_in - Nuubar_highqbar_in)/(Nuubar_highq_in + Nuubar_highqbar_in)
             else:
-                Du_in[i, j] = 0.0  # Handle bins with zero total counts
+                Du_in[i, j] = 0.0  # Handle bouts with zero total counts
 
             if (Nddbar_highq_in + Nddbar_highqbar_in) > 0:
                 Dd_in[i, j] = (Nddbar_highq_in - Nddbar_highqbar_in)/(Nddbar_highq_in + Nddbar_highqbar_in)
             else:
-                Dd_in[i, j] = 0.0  # Handle bins with zero total counts
+                Dd_in[i, j] = 0.0  # Handle bouts with zero total counts
 
             if Nq_in > 0:
                 Fu_Nq_in[i, j] = Nuubar_in/Nq_in
             else:
-                Fu_Nq_in[i, j] = 0.0  # Handle bins with zero total counts
+                Fu_Nq_in[i, j] = 0.0  # Handle bouts with zero total counts
 
             if Nq_in > 0:
                 Fd_Nq_in[i, j] = Nddbar_in/Nq_in
             else:
-                Fd_Nq_in[i, j] = 0.0  # Handle bins with zero total counts
+                Fd_Nq_in[i, j] = 0.0  # Handle bouts with zero total counts
 
             if NEvents_in > 0:
                 Fu_NEvents_in[i, j] = Nuubar_in/NEvents_in
             else:
-                Fu_NEvents_in[i, j] = 0.0  # Handle bins with zero total counts
+                Fu_NEvents_in[i, j] = 0.0  # Handle bouts with zero total counts
 
             if NEvents_in > 0:
                 Fd_NEvents_in[i, j] = Nddbar_in/NEvents_in
             else:
-                Fd_NEvents_in[i, j] = 0.0  # Handle bins with zero total counts
-
+                Fd_NEvents_in[i, j] = 0.0  # Handle bouts with zero total counts
 
 
             
@@ -226,12 +290,11 @@ for era in out:
             Nddbar_highqbar_notIN = Nddbar_highqbar - Nddbar_highqbar_in
 
             NEvents_notIN = NEvents - NEvents_in
-            N_non_udQ_notIN = N_non_udQ - N_non_udQ_in
 
             Nuubar_notIN = Nuubar_highq_notIN + Nuubar_highqbar_notIN
             Nddbar_notIN = Nddbar_highq_notIN + Nddbar_highqbar_notIN
 
-            Nq_notIN = Nuubar_notIN + Nddbar_notIN + N_non_udQ_notIN
+            Nq_notIN = Nq - Nq_in
 
             if (Nuubar_highq_notIN + Nuubar_highqbar_notIN) > 0:
                 Du_notIN[i, j] = (Nuubar_highq_notIN - Nuubar_highqbar_notIN)/(Nuubar_highq_notIN + Nuubar_highqbar_notIN)
@@ -271,12 +334,11 @@ for era in out:
             Nddbar_highqbar_notOUT = Nddbar_highqbar - Nddbar_highqbar_out
 
             NEvents_notOUT = NEvents - NEvents_out
-            N_non_udQ_notOUT = N_non_udQ - N_non_udQ_out
 
             Nuubar_notOUT = Nuubar_highq_notOUT + Nuubar_highqbar_notOUT
             Nddbar_notOUT = Nddbar_highq_notOUT + Nddbar_highqbar_notOUT
 
-            Nq_notOUT = Nuubar_notOUT + Nddbar_notOUT + N_non_udQ_notOUT
+            Nq_notOUT = Nq - Nq_out
 
             if (Nuubar_highq_notOUT + Nuubar_highqbar_notOUT) > 0:
                 Du_notOUT[i, j] = (Nuubar_highq_notOUT - Nuubar_highqbar_notOUT)/(Nuubar_highq_notOUT + Nuubar_highqbar_notOUT)

@@ -1,3 +1,50 @@
 ---------------Script Timeline -------------------------
 2024-08-07 00:51:15 - Script started
 2024-08-07 00:51:15 - Adding and committing scripts to git
+2024-08-07 00:51:42 - Files added and committed to Git
+2024-08-07 00:51:42 - Fetching the current git hash
+2024-08-07 00:51:42 - Current Git commit hash: 9d0d27412637062ab22ac4d655a856a566aeeab7
+2024-08-07 00:51:42 - 
+2024-08-07 00:51:42 - python RHSskimmer.py -s -t 20240807_005115_sample -c ttbar_SemiLeptonic
+Selected eras: ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+Sample mode: True
+Timestamp for book-keeping: 20240807_005115_sample
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/20240807_005115_sample/RHSskimmerOutput_20240807_005115_sample.coffea
+2024-08-07 01:05:05 - python messegeBOT.py
+{'ok': True, 'result': {'message_id': 1545, 'from': {'id': 6939748954, 'is_bot': True, 'first_name': 'msgerFromCode', 'username': 'MessengerfromCodeBot'}, 'chat': {'id': 977112746, 'first_name': 'Mukund', 'last_name': 'Shelake', 'username': 'mksh_pune', 'type': 'private'}, 'date': 1722972942, 'text': 'Hello, this is a direct message from my code! The run is complete'}}
+2024-08-07 01:05:37 - 
+2024-08-07 01:05:37 - python RHSextractor.py -t 20240807_005115_sample
+Traceback (most recent call last):
+  File "/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/Fitting_AFB/RHSextractor.py", line 29, in <module>
+    fHist = eraHist[sum,:,:,:,:,sum,:]
+            ~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/hist/basehist.py", line 400, in __getitem__
+    return super().__getitem__(self._index_transform(index))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/boost_histogram/_internal/hist.py", line 812, in __getitem__
+    indexes = self._compute_commonindex(index)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/boost_histogram/_internal/hist.py", line 717, in _compute_commonindex
+    raise IndexError("Wrong number of indices for histogram")
+IndexError: Wrong number of indices for histogram
+2024-08-07 01:10:02 - 
+2024-08-07 01:10:02 - python RHSplotter.py -t 20240807_005115_sample
+Traceback (most recent call last):
+  File "/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/Scripts/Fitting_AFB/RHSplotter.py", line 28, in <module>
+    Du = np.load(f'{outputDir}/Du_{era}_{timeStamp}.npy')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/home/mukund/miniconda3/envs/newcoffea/lib/python3.11/site-packages/numpy/lib/npyio.py", line 427, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'outputs/20240807_005115_sample/Du_UL2016preVFP_ttbar_SemiLeptonic_20240807_005115_sample.npy'
+2024-08-07 01:13:48 - Script completed
+===========================================================
+2024-08-07 01:13:48 - ---------------Summary -------------------------
+Description: Trying out RHS side
+Timestamp: 20240807_005115_sample
+Log filename: logs/log_20240807_005115_sample.log
+Skimmer output filename: 
+Git hash: 9d0d27412637062ab22ac4d655a856a566aeeab7
+Script Status: Successfully run
+===========================================================

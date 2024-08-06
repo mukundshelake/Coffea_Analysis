@@ -51,6 +51,6 @@ for era in out:
         ax.set_ylabel('$beta_{tt}^z$')
         plt.title(value)
         fig.colorbar(c, ax=ax, label=value)
-        plt.savefig(f'results/plots/{key}_{era}_{timeStamp}.png')
+        plt.savefig(f'{outputDir}/{key}_{era}_{timeStamp}.png')
         # plt.show()
         plt.close()
