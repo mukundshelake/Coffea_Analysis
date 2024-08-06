@@ -23,7 +23,6 @@ fi
 # Generate a timestamp for the log filename and output filename
 timestamp=$(date +"%Y%m%d_%H%M%S${sample_indicator}")
 log_file="logs/log_${timestamp}.log"
-output_file="skimmerOutput_${timestamp}.coffea"
 
 # Function to log messages with an optional timestamp
 log() {
@@ -90,12 +89,12 @@ commit_hash=$(get_git_commit)
 log "Current Git commit hash: $commit_hash"  # No timestamp for this message
 
 # Store the commands in variables
-skimmer_command="python skimmer.py $skimmer_args -o $output_file -c ttbar_SemiLeptonic"
+skimmer_command="python LHSskimmer.py $skimmer_args -o $timestamp -c ttbar_SemiLeptonic"
 message_bot_command="python messegeBOT.py"
 LHSextractor_command="python LHSextractor.py -t $timestamp"
-RHSextractor_command="python RHSextractor.py -t $timestamp"
+# RHSextractor_command="python RHSextractor.py -t $timestamp"
 LHSplotter_command="python LHSplotter.py -t $timestamp"
-RHSplotter_command="python RHSplotter.py -t $timestamp"
+# RHSplotter_command="python RHSplotter.py -t $timestamp"
 
 
 # Log and execute the commands

@@ -170,10 +170,10 @@ def main():
 
     # Add the --output argument
     parser.add_argument(
-        '-o','--output',
+        '-t','--timestamp',
         type=str,
-        default='output.coffea',
-        help="Specify the output file name. Default is 'output.coffea'."
+        default='timestamp',
+        help="Specify the timestamp'."
     )
 
     args = parser.parse_args()
@@ -181,13 +181,13 @@ def main():
     # Display the parsed arguments
     print(f"Selected eras: {args.eras}")
     print(f"Sample mode: {args.sample}")
-    print(f"Output file: {args.output}")
+    print(f"Timestamp for book keeping: {args.timestamp}")
     if len(args.channels) > 0:
         print(f"Channels: {args.channels}")
     else:
         print("Channels: All")
 
-    outputDir = "outputs"
+    outputDir = f"outputs/{args.timestamp}"
     datasetFlag = 'data'
 
     if args.sample:
@@ -236,7 +236,7 @@ def main():
 
     (out,) = dask.compute(to_compute, scheduler='threads')
     
-    outputFile = args.output
+    outputFile = f"LHSskimmerOutput_{args.output}.coffea"
     save(out, os.path.join(outputDir, outputFile))
     print(f"Output file is stored in {os.path.join(outputDir, outputFile)}")
 
