@@ -236,6 +236,10 @@ def main():
 
     (out,) = dask.compute(to_compute, scheduler='threads')
     
+
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
+
     outputFile = f"LHSskimmerOutput_{args.timestamp}.coffea"
     save(out, os.path.join(outputDir, outputFile))
     print(f"Output file is stored in {os.path.join(outputDir, outputFile)}")
