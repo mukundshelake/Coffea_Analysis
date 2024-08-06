@@ -89,18 +89,25 @@ commit_hash=$(get_git_commit)
 log "Current Git commit hash: $commit_hash"  # No timestamp for this message
 
 # Store the commands in variables
-skimmer_command="python LHSskimmer.py $skimmer_args -t $timestamp -c ttbar_SemiLeptonic"
+# LHSskimmer_command="python LHSskimmer.py $skimmer_args -t $timestamp -c ttbar_SemiLeptonic"
+RHSskimmer_command="python RHSskimmer.py $skimmer_args -t $timestamp -c ttbar_SemiLeptonic"
 message_bot_command="python messegeBOT.py"
-LHSextractor_command="python LHSextractor.py -t $timestamp"
-# RHSextractor_command="python RHSextractor.py -t $timestamp"
-LHSplotter_command="python LHSplotter.py -t $timestamp"
-# RHSplotter_command="python RHSplotter.py -t $timestamp"
+# LHSextractor_command="python LHSextractor.py -t $timestamp"
+RHSextractor_command="python RHSextractor.py -t $timestamp"
+# LHSplotter_command="python LHSplotter.py -t $timestamp"
+RHSplotter_command="python RHSplotter.py -t $timestamp"
 
 
 # Log and execute the commands
-log "$skimmer_command"
-eval "$skimmer_command" 2>&1 | tee -a "$log_file"
+log "$LHSskimmer_command"
+eval "$LHSskimmer_command" 2>&1 | tee -a "$log_file"
 check_status $?  # Check if the skimmer command was successful
+
+
+log "$RHSskimmer_command"
+eval "$RHSskimmer_command" 2>&1 | tee -a "$log_file"
+check_status $?  # Check if the skimmer command was successful
+
 
 log "$message_bot_command"
 eval "$message_bot_command" 2>&1 | tee -a "$log_file"

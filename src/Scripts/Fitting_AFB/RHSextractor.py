@@ -16,8 +16,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 timeStamp = args.timestamp
-outputDir = 'outputs'
-coffeaFile = f"skimmerOutput_{timeStamp}.coffea"
+outputDir = f'outputs/{timeStamp}'
+coffeaFile = f"RHSskimmerOutput_{timeStamp}.coffea"
 
 
 # out = load("Output.coffea")

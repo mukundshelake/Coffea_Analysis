@@ -16,8 +16,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 timeStamp = args.timestamp
-outputDir = 'outputs'
-coffeaFile = f"skimmerOutput_{timeStamp}.coffea"
+outputDir = f'outputs/{timeStamp}'
+coffeaFile = f"RHSskimmerOutput_{timeStamp}.coffea"
 
 
 # out = load("Output.coffea")
@@ -108,6 +108,6 @@ for era in out:
         ax.set_ylabel('$beta_{tt}^z$')
         plt.title(value)
         fig.colorbar(c, ax=ax, label=value)
-        plt.savefig(f'results/plots/{key}_{era}_{timeStamp}.png')
+        plt.savefig(f'{outputDir}/{key}_{era}_{timeStamp}.png')
         # plt.show()
         plt.close()
