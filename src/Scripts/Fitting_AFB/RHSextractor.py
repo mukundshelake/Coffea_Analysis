@@ -56,6 +56,7 @@ for era in out:
     Fd_Nq_out = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
     Fu_NEvents_out = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
     Fd_NEvents_out = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
+    outFactor = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
 
 
     Du_in = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
@@ -64,6 +65,7 @@ for era in out:
     Fd_Nq_in = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
     Fu_NEvents_in = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
     Fd_NEvents_in = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
+    inFactor = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
 
     Du_notIN = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
     Dd_notIN = np.zeros((len(m_tt_edges) - 1, len(beta_ttz_edges) - 1))
@@ -186,6 +188,12 @@ for era in out:
 
             Nq_out = NEvents_out - N_gx_out - N_xg_out + N_gg_out
 
+            N_C = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, 0j:, sum, sum, sum].sum()
+            N_Cprime = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, y0:, :0j, sum, sum, sum].sum()
+            N_B = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], y0:, :y0, 0j:, sum, sum, sum].sum()
+            N_D = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, y0:, 0j:, sum, sum, sum].sum()
+
+
             if (Nuubar_highq_out + Nuubar_highqbar_out) > 0:
                 Du_out[i, j] = (Nuubar_highq_out - Nuubar_highqbar_out)/(Nuubar_highq_out + Nuubar_highqbar_out)
             else:
@@ -215,6 +223,12 @@ for era in out:
                 Fd_NEvents_out[i, j] = Nddbar_out/NEvents_out
             else:
                 Fd_NEvents_out[i, j] = 0.0  # Handle bouts with zero total counts
+
+            if (N_B + N_D) > 0:
+                outFactor[i, j] = 1/(1+2*((N_C + N_Cprime)/(N_B + N_D)))
+            else:
+                outFactor[i, j] = 0.0
+
 
 
             #### For region IN
@@ -250,6 +264,11 @@ for era in out:
 
             Nq_in = NEvents_in - N_gx_in - N_xg_in + N_gg_in
 
+            N_A = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, 0j:, sum, sum, sum].sum()
+            N_Aprime = fHist[m_tt_range[0]:m_tt_range[1], beta_ttz_range[0]: beta_ttz_range[1], :y0, :y0, :0j, sum, sum, sum].sum()
+
+
+
             if (Nuubar_highq_in + Nuubar_highqbar_in) > 0:
                 Du_in[i, j] = (Nuubar_highq_in - Nuubar_highqbar_in)/(Nuubar_highq_in + Nuubar_highqbar_in)
             else:
@@ -280,7 +299,10 @@ for era in out:
             else:
                 Fd_NEvents_in[i, j] = 0.0  # Handle bouts with zero total counts
 
-
+            if (N_B + N_D) > 0:
+                inFactor[i, j] = -1/(1+2*((N_A + N_Aprime)/(N_B + N_D)))
+            else:
+                inFactor[i, j] = 0.0
             
             #### For region notIN
 
@@ -383,6 +405,7 @@ for era in out:
     np.save(f'{outputDir}/Fd_Nq_out_{era}_{timeStamp}.npy', Fd_Nq_out)
     np.save(f'{outputDir}/Fu_NEvents_out_{era}_{timeStamp}.npy', Fu_NEvents_out)
     np.save(f'{outputDir}/Fd_NEvents_out_{era}_{timeStamp}.npy', Fd_NEvents_out)
+    np.save(f'{outputDir}/outFactor_{era}_{timeStamp}.npy', outFactor)
 
     np.save(f'{outputDir}/Du_in_{era}_{timeStamp}.npy', Du_in)
     np.save(f'{outputDir}/Dd_in_{era}_{timeStamp}.npy', Dd_in)
@@ -390,6 +413,7 @@ for era in out:
     np.save(f'{outputDir}/Fd_Nq_in_{era}_{timeStamp}.npy', Fd_Nq_in)
     np.save(f'{outputDir}/Fu_NEvents_in_{era}_{timeStamp}.npy', Fu_NEvents_in)
     np.save(f'{outputDir}/Fd_NEvents_in_{era}_{timeStamp}.npy', Fd_NEvents_in)
+    np.save(f'{outputDir}/inFactor_{era}_{timeStamp}.npy', inFactor)
 
     np.save(f'{outputDir}/Du_notIN_{era}_{timeStamp}.npy', Du_notIN)
     np.save(f'{outputDir}/Dd_notIN_{era}_{timeStamp}.npy', Dd_notIN)
@@ -424,6 +448,7 @@ for era in out:
     Fd_Nq_out_flat = Fd_Nq_out.flatten()
     Fu_NEvents_out_flat = Fu_NEvents_out.flatten()
     Fd_NEvents_out_flat = Fd_NEvents_out.flatten()
+    outFactor_flat = outFactor.flatten()
 
     Du_in_flat = Du_in.flatten()
     Dd_in_flat = Dd_in.flatten()
@@ -431,6 +456,7 @@ for era in out:
     Fd_Nq_in_flat = Fd_Nq_in.flatten()
     Fu_NEvents_in_flat = Fu_NEvents_in.flatten()
     Fd_NEvents_in_flat = Fd_NEvents_in.flatten()
+    inFactor_flat = inFactor.flatten()
 
     Du_notIN_flat = Du_notIN.flatten()
     Dd_notIN_flat = Dd_notIN.flatten()
@@ -460,12 +486,14 @@ for era in out:
         'Fd_Nq_out': Fd_Nq_out_flat,
         'Fu_NEvents_out': Fu_NEvents_out_flat,
         'Fd_NEvents_out': Fd_NEvents_out_flat,
+        'outFactor': outFactor_flat,
         'Du_in': Du_in_flat,
         'Dd_in': Dd_in_flat,
         'Fu_Nq_in': Fu_Nq_in_flat,
         'Fd_Nq_in': Fd_Nq_in_flat,
         'Fu_NEvents_in': Fu_NEvents_in_flat,
         'Fd_NEvents_in': Fd_NEvents_in_flat,
+        'inFactor': inFactor_flat,
         'Du_notIN': Du_notIN_flat,
         'Dd_notIN': Dd_notIN_flat,
         'Fu_Nq_notIN': Fu_Nq_notIN_flat,
