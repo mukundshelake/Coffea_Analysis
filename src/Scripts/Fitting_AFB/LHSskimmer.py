@@ -42,6 +42,12 @@ class MyProcessor(processor.ProcessorABC):
             }
         )
         
+        p1_id = events.GenPart_pdgId[:, 0]
+        p2_id = events.GenPart_pdgId[:, 1]
+
+        p1ID = ak.where(p1_id == 21, 0, p1_id)
+        p2ID = ak.where(p2_id == 21, 0, p2_id)
+
         tpt = tops["pt"]
         teta = tops["eta"]
         tmass = tops["mass"]
@@ -107,6 +113,8 @@ class MyProcessor(processor.ProcessorABC):
             .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
+            .Integer(-5, 6, label="p1", name="p1")
+            .Integer(-5, 6, label="p2", name="p2")
             .Double()
         )
         yt2D.fill(
@@ -115,7 +123,9 @@ class MyProcessor(processor.ProcessorABC):
             beta_ttz = betattz,
             y_t = yt,
             y_tbar = ytbar,
-            deltay = deltay
+            deltay = deltay,
+            p1 = p1ID,
+            p2 = p2ID
         )
         return {
                 "entries": ak.num(events, axis=0),
