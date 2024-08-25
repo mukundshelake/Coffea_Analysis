@@ -1,3 +1,28 @@
 ---------------Script Timeline -------------------------
 2024-08-25 20:48:20 - Script started
 2024-08-25 20:48:20 - Adding and committing scripts to git
+2024-08-25 20:48:20 - Files added and committed to Git
+2024-08-25 20:48:20 - Fetching the current git hash
+2024-08-25 20:48:20 - Current Git commit hash: 4d3d7702fcdf37221dc00dd1f6b76cc04b089499
+2024-08-25 20:48:20 - python LHSskimmer.py -s -t 20240825_204820_sample -c ttbar_SemiLeptonic
+Selected eras: ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+Sample mode: True
+Timestamp for book keeping: 20240825_204820_sample
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/20240825_204820_sample/LHSskimmerOutput_20240825_204820_sample.coffea
+2024-08-25 20:48:47 - 
+2024-08-25 20:48:47 - 
+2024-08-25 20:48:47 - 
+2024-08-25 20:48:47 - 
+2024-08-25 20:48:47 - 
+2024-08-25 20:48:47 - 
+2024-08-25 20:48:47 - Script completed
+===========================================================
+2024-08-25 20:48:47 - ---------------Summary -------------------------
+Description: Only AFB with mtt
+Timestamp: 20240825_204820_sample
+Log filename: logs/log_20240825_204820_sample.log
+Skimmer output filename: 
+Git hash: 4d3d7702fcdf37221dc00dd1f6b76cc04b089499
+Script Status: Successfully run
+===========================================================
