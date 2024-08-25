@@ -1,3 +1,28 @@
 ---------------Script Timeline -------------------------
 2024-08-19 21:20:43 - Script started
 2024-08-19 21:20:43 - Adding and committing scripts to git
+2024-08-19 21:20:43 - Files added and committed to Git
+2024-08-19 21:20:43 - Fetching the current git hash
+2024-08-19 21:20:43 - Current Git commit hash: a77276d71c8c19932f63d8b708e6584bc4ed6dc6
+2024-08-19 21:20:43 - python LHSskimmer.py  -t 20240819_212043 -c ttbar_SemiLeptonic
+Selected eras: ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
+Sample mode: False
+Timestamp for book keeping: 20240819_212043
+Channels: ['ttbar_SemiLeptonic']
+Output file is stored in outputs/20240819_212043/LHSskimmerOutput_20240819_212043.coffea
+2024-08-19 22:47:45 - 
+2024-08-19 22:47:45 - 
+2024-08-19 22:47:45 - 
+2024-08-19 22:47:45 - 
+2024-08-19 22:47:45 - 
+2024-08-19 22:47:45 - 
+2024-08-19 22:47:45 - Script completed
+===========================================================
+2024-08-19 22:47:45 - ---------------Summary -------------------------
+Description: Run after readding p1 and p2 to the LHS Skimmer
+Timestamp: 20240819_212043
+Log filename: logs/log_20240819_212043.log
+Skimmer output filename: 
+Git hash: a77276d71c8c19932f63d8b708e6584bc4ed6dc6
+Script Status: Successfully run
+===========================================================
