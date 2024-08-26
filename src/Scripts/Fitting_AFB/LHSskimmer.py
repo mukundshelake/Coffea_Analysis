@@ -92,13 +92,13 @@ class MyProcessor(processor.ProcessorABC):
 
         mtt = np.sqrt(ttbarE*ttbarE - (ttbarpx*ttbarpx + ttbarpy*ttbarpy + ttbarpz*ttbarpz))
 
-        betattz = abs(ttbarpz)/ttbarE
+        # betattz = abs(ttbarpz)/ttbarE
         
         yt2D = (
             hda.Hist.new
             .Reg(4, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(18, 300, 1200, label = "$m_tt$", name = "m_tt")
-            .Reg(4, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
+            # .Reg(4, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
             .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
@@ -109,7 +109,7 @@ class MyProcessor(processor.ProcessorABC):
         yt2D.fill(
             c = cos_theta,
             m_tt = mtt,
-            beta_ttz = betattz,
+            # beta_ttz = betattz,
             y_t = yt,
             y_tbar = ytbar,
             deltay = deltay,
