@@ -6,22 +6,13 @@ import hist.dask as hda
 from coffea import processor
 from coffea.nanoevents import NanoEventsFactory,  BaseSchema
 from coffea.dataset_tools import apply_to_fileset, max_chunks, preprocess
-import matplotlib.pyplot as plt
 import json, argparse
-from coffea.util import save, rich_bar
+from coffea.util import save
 
 
 class MyProcessor(processor.ProcessorABC):
     def __init__(self):
         pass
-
-    def lorentz_transform(self, E, p, beta):
-        beta_mag = dask.array.linalg.norm(beta)
-        gamma = 1.0 / dask.array.sqrt(1 - beta_mag**2)
-        bp = dask.array.dot(beta, p)
-        E_prime = gamma * (E - bp)
-        p_prime = p + ((gamma - 1) * bp / beta_mag**2 - gamma * E) * beta
-        return E_prime, p_prime
 
     def process(self, events):
         dataset = events.metadata['dataset']
@@ -52,14 +43,12 @@ class MyProcessor(processor.ProcessorABC):
         teta = tops["eta"]
         tmass = tops["mass"]
         tphi = tops["phi"]
-        # yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
+        yt = abs(teta - 0.50*np.tanh(teta)*np.square(tmass/tpt))
         tbarpt = antitops["pt"]
         tbareta = antitops["eta"]
         tbarmass = antitops["mass"]
         tbarphi = antitops["phi"]
-        # ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
-
-
+        ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
 
         # Apply conditi
 
@@ -68,7 +57,7 @@ class MyProcessor(processor.ProcessorABC):
         tpz = tpt*np.sinh(teta)
         tE = np.sqrt(tpt*tpt*np.cosh(teta)*np.cosh(teta) + tmass*tmass)
 
-        # deltay = yt - ytbar
+        deltay = yt - ytbar
 
         tbarpx = tbarpt*np.cos(tbarphi)
         tbarpy = tbarpt*np.sin(tbarphi)
@@ -103,16 +92,16 @@ class MyProcessor(processor.ProcessorABC):
 
         mtt = np.sqrt(ttbarE*ttbarE - (ttbarpx*ttbarpx + ttbarpy*ttbarpy + ttbarpz*ttbarpz))
 
-        # betattz = abs(ttbarpz)/ttbarE
+        betattz = abs(ttbarpz)/ttbarE
         
         yt2D = (
             hda.Hist.new
-            .Reg(10, -1.0, 1.0, label = "$c*$", name = "c")
+            .Reg(4, -1.0, 1.0, label = "$c*$", name = "c")
             .Reg(18, 300, 1200, label = "$m_tt$", name = "m_tt")
-            # .Reg(4, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
-            # .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
-            # .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
-            # .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
+            .Reg(4, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
+            .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
+            .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
+            .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
             .Integer(-5, 6, label="p1", name="p1")
             .Integer(-5, 6, label="p2", name="p2")
             .Double()
@@ -120,10 +109,10 @@ class MyProcessor(processor.ProcessorABC):
         yt2D.fill(
             c = cos_theta,
             m_tt = mtt,
-            # beta_ttz = betattz,
-            # y_t = yt,
-            # y_tbar = ytbar,
-            # deltay = deltay,
+            beta_ttz = betattz,
+            y_t = yt,
+            y_tbar = ytbar,
+            deltay = deltay,
             p1 = p1ID,
             p2 = p2ID
         )
