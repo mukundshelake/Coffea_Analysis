@@ -78,7 +78,6 @@ class MyProcessor(processor.ProcessorABC):
         yt2D = (
             hda.Hist.new
             .Reg(18, 300, 1200, label = "$m_tt$", name = "m_tt")
-            .Reg(4, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
             .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
             .Reg(2, -2.4, 2.4, label='$deltay$', name='deltay')
