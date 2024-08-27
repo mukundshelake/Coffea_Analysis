@@ -15,14 +15,6 @@ class MyProcessor(processor.ProcessorABC):
     def __init__(self):
         pass
 
-    def lorentz_transform(self, E, p, beta):
-        beta_mag = dask.array.linalg.norm(beta)
-        gamma = 1.0 / dask.array.sqrt(1 - beta_mag**2)
-        bp = dask.array.dot(beta, p)
-        E_prime = gamma * (E - bp)
-        p_prime = p + ((gamma - 1) * bp / beta_mag**2 - gamma * E) * beta
-        return E_prime, p_prime
-
     def process(self, events):
         dataset = events.metadata['dataset']
         tops = ak.zip(
@@ -82,8 +74,6 @@ class MyProcessor(processor.ProcessorABC):
         # Calculate the angle between the top quark and the z-axis in the tbar rest frame
 
         mtt = np.sqrt(ttbarE*ttbarE - (ttbarpx*ttbarpx + ttbarpy*ttbarpy + ttbarpz*ttbarpz))
-
-        betattz = abs(ttbarpz)/ttbarE
         
         yt2D = (
             hda.Hist.new
@@ -99,7 +89,6 @@ class MyProcessor(processor.ProcessorABC):
         )
         yt2D.fill(
             m_tt = mtt,
-            beta_ttz = betattz,
             y_t = yt,
             y_tbar = ytbar,
             deltay = deltay,
