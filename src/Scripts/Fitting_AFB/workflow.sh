@@ -89,10 +89,10 @@ commit_hash=$(get_git_commit)
 log "Current Git commit hash: $commit_hash"  # No timestamp for this message
 
 # Store the commands in variables
-# LHSskimmer_command="python LHSskimmer.py $skimmer_args -t $timestamp -c ttbar_SemiLeptonic"
+LHSskimmer_command="python LHSskimmer.py $skimmer_args -t $timestamp -c ttbar_SemiLeptonic"
 RHSskimmer_command="python RHSskimmer.py $skimmer_args -t $timestamp -c ttbar_SemiLeptonic"
 message_bot_command="python messegeBOT.py"
-# LHSextractor_command="python LHSextractor.py -t $timestamp"
+LHSextractor_command="python LHSextractor.py -t $timestamp"
 RHSextractor_command="python RHSextractor.py -t $timestamp"
 # LHSplotter_command="python LHSplotter.py -t $timestamp"
 # RHSplotter_command="python RHSplotter.py -t $timestamp"
