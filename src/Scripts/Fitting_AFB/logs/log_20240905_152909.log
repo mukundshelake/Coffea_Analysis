@@ -1,3 +1,7 @@
 ---------------Script Timeline -------------------------
 2024-09-05 15:29:09 - Script started
 2024-09-05 15:29:09 - Adding and committing scripts to git
+2024-09-05 15:29:11 - Files added and committed to Git
+2024-09-05 15:29:11 - Fetching the current git hash
+2024-09-05 15:29:11 - Current Git commit hash: 43b363ce0c5ef1743ee57055105537c647dd12a0
+2024-09-05 15:29:11 - python LHSskimmer.py  -t 20240905_152909 -c ttbar_SemiLeptonic
