@@ -38,7 +38,7 @@ for era in out:
     fHist = out[era]['yMatrix']
 
     # Get the bin edges for m_tt and beta_ttz
-    m_tt_edges = [400, 500, 600, 700, 900, 1200]
+    m_tt_edges = [300, 400, 500, 600, 700, 900, 1200]
 
     # Initialize the A_FB matrix
     Du = np.zeros(len(m_tt_edges) -1)

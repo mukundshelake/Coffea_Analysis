@@ -36,7 +36,7 @@ sIdx = 8
 cIdx = 9
 bIdx = 10
 
-m_tt_edges = [400, 500, 600, 700, 900, 1200]
+m_tt_edges = [300, 400, 500, 600, 700, 900, 1200]
 qqbarPairs = [(uIdx, ubarIdx), (dIdx, dbarIdx), (sIdx, sbarIdx), (cIdx, cbadIdx), (bIdx, bbarIdx)]
 
 
