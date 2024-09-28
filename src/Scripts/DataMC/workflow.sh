@@ -116,7 +116,7 @@ if [ -n "$description" ]; then
 fi
 log "Timestamp: $timestamp" false
 log "Log filename: $log_file" false
-log "Skimmer output filename: $output_file" false
+# log "Skimmer output filename: $output_file" false
 log "Git hash: $commit_hash" false
 
 if [ "$success" = true ]; then
