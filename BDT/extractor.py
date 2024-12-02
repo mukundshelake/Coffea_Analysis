@@ -9,18 +9,39 @@ from coffea.dataset_tools import apply_to_fileset, max_chunks, preprocess
 import json, argparse
 from coffea.util import save
 from coffea.analysis_tools import PackedSelection
+import logging
 
 
 ## Good Resource : https://indico.fnal.gov/event/11999/contributions/11335/attachments/7308/9405/JPilot_DPF2017.pdf
 
+# Configure logging
+def setup_logging(script_name, output_dir):
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    # Create handlers
+    console_handler = logging.StreamHandler()
+    file_handler = logging.FileHandler(os.path.join(output_dir, f"{script_name}.log"))
+
+    # Create formatters and add them to handlers
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    # Add handlers to the logger
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
 
 class MyProcessor(processor.ProcessorABC):
     def __init__(self):
+        logging.info("Initializing MyProcessor")
         pass
 
     def process(self, events):
+        logging.info("Starting process method")
         dataset = events.metadata['dataset']
-        print(dataset)
+        logging.info(f"Processing dataset: {dataset}")
 
         parts = dataset.split('_', 1)
 
@@ -69,7 +90,7 @@ class MyProcessor(processor.ProcessorABC):
         finalMask = results[-1][-1]
 
         nSelected = np.sum(finalMask.compute())
-        print(f"nSelected: {nSelected}")
+        logging.info(f"Number of selected events: {nSelected}")
 
         sevents = events[finalMask]
 
@@ -111,20 +132,23 @@ class MyProcessor(processor.ProcessorABC):
         p2_id = sevents.GenPart.pdgId[:, 1]
 
         MET = sevents.MET.pt
-
-
-
         tpt = tops["pt"]
         teta = tops["eta"]
+        tphi = tops["phi"]
+        tmass = tops["mass"]
         tbarpt = antitops["pt"]
         tbareta = antitops["eta"]
+        tbarphi = antitops["phi"]
+        tbarmass = antitops["mass"]
 
         tpz = tpt*np.sinh(teta)
-
         tbarpz = tbarpt*np.sinh(tbareta)
-
         ttbarpz = tpz + tbarpz
 
+        # Calculate t-tbar invariant mass
+        t_energy = np.sqrt(tpt**2 * np.cosh(teta)**2 + tmass**2)
+        tbar_energy = np.sqrt(tbarpt**2 * np.cosh(tbareta)**2 + tbarmass**2)
+        ttbar_mass = np.sqrt((t_energy + tbar_energy)**2 - (tpt*np.cos(tphi) + tbarpt*np.cos(tbarphi))**2 - (tpt*np.sin(tphi) + tbarpt*np.sin(tbarphi))**2 - (tpz + tbarpz)**2)
 
         params = {
             'p1_id': p1_id,
@@ -132,28 +156,33 @@ class MyProcessor(processor.ProcessorABC):
             'ttbarpz': ttbarpz,
             'MET': MET,
             'jet_details': jet_details,
-            'muon_details': muon_details
+            'muon_details': muon_details,
+            'ttbar_mass': ttbar_mass
         }
 
+        logging.info("Finished processing events")
         return {
             'nSelected': nSelected,
             'params': params
         }
 
     def postprocess(self, accumulator):
+        logging.info("Postprocessing")
         pass
 
 
 def split_fileset(fileset, num_chunks):
+    logging.info("Splitting fileset")
     files = fileset['UL2016preVFP_ttbar_SemiLeptonic']['files']
     items = list(files.items())
-    mid = len(items) // 2
-    chunk1 = dict(items[:mid])
-    chunk2 = dict(items[mid:])
-
-    files1 = {'UL2016preVFP_ttbar_SemiLeptonic': {'files': chunk1}}
-    files2 = {'UL2016preVFP_ttbar_SemiLeptonic': {'files': chunk2}}
-    return [files1, files2]
+    chunks = np.array_split(items, num_chunks)
+    
+    filesets = []
+    for i, chunk in enumerate(chunks):
+        chunk_dict = dict(chunk)
+        filesets.append({'UL2016preVFP_ttbar_SemiLeptonic': {'files': chunk_dict}})
+    
+    return filesets
 
 
 def main():
@@ -207,18 +236,31 @@ def main():
         help="Specify the timestamp'."
     )
 
+    parser.add_argument(
+        '-n', '--num_chunks',
+        type=int,
+        default=2,
+        help="Specify the number of chunks to split the fileset into."
+    )
+
     args = parser.parse_args()
 
-    # Display the parsed arguments
-    print(f"Selected eras: {args.eras}")
-    print(f"Sample mode: {args.sample}")
-    print(f"Timestamp for book keeping: {args.timestamp}")
-    if len(args.channels) > 0:
-        print(f"Channels: {args.channels}")
-    else:
-        print("Channels: All")
-
     outputDir = f"outputs/{args.timestamp}"
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
+
+    setup_logging(os.path.splitext(os.path.basename(__file__))[0], outputDir)
+
+    # Display the parsed arguments
+    logging.info(f"Selected eras: {args.eras}")
+    logging.info(f"Sample mode: {args.sample}")
+    logging.info(f"Timestamp for book keeping: {args.timestamp}")
+    logging.info(f"Number of chunks: {args.num_chunks}")
+    if len(args.channels) > 0:
+        logging.info(f"Channels: {args.channels}")
+    else:
+        logging.info("Channels: All")
+
     datasetFlag = 'data'
 
     if args.sample:
@@ -230,30 +272,32 @@ def main():
             dicti = json.load(json_file)
             for pr in dicti['Data_mu']:
                 if args.onlyMC:
-                    print("Working on only the MC, ignoring data")
+                    logging.info("Working on only the MC, ignoring data")
                     continue
                 if len(args.channels) > 0:
                     if pr not in args.channels:
-                        # print(f'skipping {era}_{pr} as not in list')
+                        # logging.info(f'skipping {era}_{pr} as not in list')
                         continue
                 datasetName = f'{era}_{pr}'
                 fileset[datasetName] = {"files": dicti['Data_mu'][pr]}
             for pr in dicti['MC_mu']:
                 if args.onlyData:
-                    print("Working on only the data, ignoring MC")
+                    logging.info("Working on only the data, ignoring MC")
                     continue
                 if len(args.channels) > 0:
                     if pr not in args.channels:
-                        # print(f'skipping {era}_{pr} as not in list')
+                        # logging.info(f'skipping {era}_{pr} as not in list')
                         continue
                 datasetName = f'{era}_{pr}'
                 fileset[datasetName] = {"files": dicti['MC_mu'][pr]}
 
-    # print(fileset)
+    # logging.info(fileset)
     # exit()
 
-    num_chunks = 2  # Adjust the number of chunks as needed
-    fileset_chunks = split_fileset(fileset, num_chunks)
+    fileset_chunks = split_fileset(fileset, args.num_chunks)
+    if args.sample:
+        fileset_chunks = [fileset_chunks[0]]
+    logging.info(fileset_chunks)
 
     for i, chunk in enumerate(fileset_chunks):
         dataset_runnable, dataset_updated = preprocess(
@@ -273,10 +317,16 @@ def main():
         (out,) = dask.compute(to_compute, scheduler='threads')
 
         outputFile = f"BDTSkimmerOutput_{args.timestamp}_chunk{i}.coffea"
+        if args.sample:
+            outputFile = f"sample_BDTSkimmerOutput_{args.timestamp}_chunk{i}.coffea"
+        if not os.path.exists(outputDir):
+            os.makedirs(outputDir)
         save(out, os.path.join(outputDir, outputFile))
-        print(f"Output file is stored in {os.path.join(outputDir, outputFile)}")
+        logging.info(f"Output file is stored in {os.path.join(outputDir, outputFile)}")
+
 
 if __name__ == '__main__':
     from multiprocessing import freeze_support
     freeze_support()
     main()
+
