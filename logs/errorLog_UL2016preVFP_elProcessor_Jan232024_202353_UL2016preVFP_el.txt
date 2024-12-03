@@ -1,6 +1,0 @@
-Error message: module 'coffea.processor' has no attribute 'Runner'
-Stack trace:
-Traceback (most recent call last):
-  File "/home/mukund/Projects/updatedCoffea/Coffea_Analysis/Scripts/executer.py", line 53, in executeAndLog
-    iterative_run = processor.Runner(
-AttributeError: module 'coffea.processor' has no attribute 'Runner'

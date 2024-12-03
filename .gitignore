@@ -28,3 +28,10 @@ src/Scripts/DataMC/trial.ipynb
 *.npy
 *.log
 *.coffea
+*.env
+*.png
+*.parquet
+src/Scripts/NN/last_trained_epoch_info_3classes.json
+src/Scripts/NN/last_trained_epoch_info.json
+src/Scripts/NN/output_data_3classes_0.json
+src/Scripts/NN/outputs/Nov29/output_data_3classes.json
