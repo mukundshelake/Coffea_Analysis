@@ -50,13 +50,14 @@ python -c "from messege_bot import send_message; send_message('Workflow started 
 workflow_start_time=$(date +%s)
 
 # Run the classifier script
-run_script "extractor.py" "-e UL2016preVFP -c ttbar_SemiLeptonic -t $timestamp -n 8"
+run_script "BDT_binary.py" "-t $timestamp"
 
-# Uncomment and run additional scripts as needed
-run_script "preprocesser.py" "-t $timestamp"
-run_script "BDT.py" "-t $timestamp"
-run_script "plotter.py" "-t $timestamp"
-run_script "visualizeInputs.py" "-t $timestamp"
+
+# run_script "extractor.py" "-e UL2016preVFP -c ttbar_SemiLeptonic -t $timestamp -n 8"
+# run_script "preprocesser.py" "-t $timestamp"
+# run_script "BDT.py" "-t $timestamp"
+# run_script "plotter.py" "-t $timestamp"
+# run_script "visualizeInputs.py" "-t $timestamp"
 
 # Record the end time of the workflow
 workflow_end_time=$(date +%s)
