@@ -4,7 +4,7 @@ import numpy as np
 import awkward as ak
 import hist.dask as hda
 from coffea import processor
-from coffea.nanoevents import NanoEventsFactory,  BaseSchema
+from coffea.nanoevents import NanoEventsFactory,  BaseSchema, NanoAODSchema
 from coffea.dataset_tools import apply_to_fileset, max_chunks, preprocess
 import matplotlib.pyplot as plt
 import json, argparse
@@ -19,18 +19,18 @@ class MyProcessor(processor.ProcessorABC):
         dataset = events.metadata['dataset']
         tops = ak.zip(
             {
-                "pt" : events.GenPart_pt[:, 2],
-                "eta": events.GenPart_eta[:, 2],
-                "mass": events.GenPart_mass[:, 2],
-                "phi" : events.GenPart_phi[:, 2]
+                "pt" : events.GenPart.pt[:, 2],
+                "eta": events.GenPart.eta[:, 2],
+                "mass": events.GenPart.mass[:, 2],
+                "phi" : events.GenPart.phi[:, 2]
             }
         )
         antitops = ak.zip(
             {
-                "pt" : events.GenPart_pt[:, 3],
-                "eta": events.GenPart_eta[:, 3],
-                "mass": events.GenPart_mass[:, 3],
-                "phi" : events.GenPart_phi[:, 3]
+                "pt" : events.GenPart.pt[:, 3],
+                "eta": events.GenPart.eta[:, 3],
+                "mass": events.GenPart.mass[:, 3],
+                "phi" : events.GenPart.phi[:, 3]
             }
         )
         
@@ -45,8 +45,8 @@ class MyProcessor(processor.ProcessorABC):
         tbarphi = antitops["phi"]
         ytbar = abs(tbareta - 0.50*np.tanh(tbareta)*np.square(tbarmass/tbarpt))
 
-        p1_id = events.GenPart_pdgId[:, 0]
-        p2_id = events.GenPart_pdgId[:, 1]
+        p1_id = events.GenPart.pdgId[:, 0]
+        p2_id = events.GenPart.pdgId[:, 1]
 
         p1ID = ak.where(p1_id == 21, 0, p1_id)
         p2ID = ak.where(p2_id == 21, 0, p2_id)
@@ -213,7 +213,7 @@ def main():
     to_compute = apply_to_fileset(
         MyProcessor(),
         max_chunks(dataset_runnable, 300),
-        schemaclass= BaseSchema,
+        schemaclass= NanoAODSchema,
     )
 
     (out,) = dask.compute(to_compute, scheduler='threads')

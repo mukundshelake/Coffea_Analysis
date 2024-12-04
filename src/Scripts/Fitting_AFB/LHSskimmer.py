@@ -4,11 +4,11 @@ import numpy as np
 import awkward as ak
 import hist.dask as hda
 from coffea import processor
-from coffea.nanoevents import NanoEventsFactory,  BaseSchema
+from coffea.nanoevents import NanoEventsFactory,  BaseSchema, NanoAODSchema
 from coffea.dataset_tools import apply_to_fileset, max_chunks, preprocess
 import json, argparse
 from coffea.util import save
-
+from coffea.analysis_tools import PackedSelection, Weights
 
 class MyProcessor(processor.ProcessorABC):
     def __init__(self):
@@ -16,25 +16,67 @@ class MyProcessor(processor.ProcessorABC):
 
     def process(self, events):
         dataset = events.metadata['dataset']
+        print(dataset)
+
+        parts = dataset.split('_', 1)
+
+        # Extract the era and channel
+        era = parts[0]
+        channel = parts[1]
+
+        selection = PackedSelection()
+        # weight = Weights.weight()
+
+        maps = {
+            'btagThreshold': {
+                'UL2016preVFP': 0.2598,
+                'UL2016postVFP': 0.2489,
+                'UL2017': 0.3040,
+                'UL2018': 0.2783,
+            }
+        }
+
+        selection.add_multiple(
+            {
+                "atleastOneLep": ak.num(events.Muon) > 0,
+                "atleastThreeJ": ak.num(events.Jet) > 2,
+                "goodLeps" : ak.sum((events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.1) & (events.Muon.tightId), axis=1) >= 1,
+                "goodJets" : ak.sum((events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.5), axis = 1) >= 3,
+                "BTag"  : ak.sum((events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.5) & (events.Jet.btagDeepFlavB > maps['btagThreshold'][era]), axis = 1) >= 3
+            }
+        )
+        if 'UL2016' in dataset:
+            selection.add("HLT", events.HLT.IsoTkMu24 | events.HLT.IsoMu24)
+        elif 'UL2017' in dataset:
+            selection.add("HLT", events.HLT.IsoMu27)
+        else:
+            selection.add("HLT", events.HLT.IsoMu24)
+        # mask = selection.all("atleastOneLep", "atleastThreeJ")
+        cutflow = selection.cutflow("atleastOneLep", "atleastThreeJ", "goodLeps", "goodJets", "BTag", "HLT")       
+        results = cutflow.result()
+
+        finalMask = results[-1][-1]
+
+        nSelected = np.sum(finalMask.compute())
         tops = ak.zip(
             {
-                "pt" : events.GenPart_pt[:, 2],
-                "eta": events.GenPart_eta[:, 2],
-                "mass": events.GenPart_mass[:, 2],
-                "phi" : events.GenPart_phi[:, 2]
+                "pt" : events[finalMask].GenPart.pt[:, 2],
+                "eta": events[finalMask].GenPart.eta[:, 2],
+                "mass": events[finalMask].GenPart.mass[:, 2],
+                "phi" : events[finalMask].GenPart.phi[:, 2]
             }
         )
         antitops = ak.zip(
             {
-                "pt" : events.GenPart_pt[:, 3],
-                "eta": events.GenPart_eta[:, 3],
-                "mass": events.GenPart_mass[:, 3],
-                "phi" : events.GenPart_phi[:, 3]
+                "pt" : events[finalMask].GenPart.pt[:, 3],
+                "eta": events[finalMask].GenPart.eta[:, 3],
+                "mass": events[finalMask].GenPart.mass[:, 3],
+                "phi" : events[finalMask].GenPart.phi[:, 3]
             }
         )
         
-        p1_id = events.GenPart_pdgId[:, 0]
-        p2_id = events.GenPart_pdgId[:, 1]
+        p1_id = events[finalMask].GenPart.pdgId[:, 0]
+        p2_id = events[finalMask].GenPart.pdgId[:, 1]
 
         p1ID = ak.where(p1_id == 21, 0, p1_id)
         p2ID = ak.where(p2_id == 21, 0, p2_id)
@@ -97,7 +139,7 @@ class MyProcessor(processor.ProcessorABC):
         yt2D = (
             hda.Hist.new
             .Reg(4, -1.0, 1.0, label = "$c*$", name = "c")
-            .Reg(18, 300, 1200, label = "$m_tt$", name = "m_tt")
+            .Reg(24, 300, 1500, label = "$m_tt$", name = "m_tt")
             # .Reg(4, 0, 1.00, label = "$beta_ttz$", name = "beta_ttz")
             .Reg(4, 0, 2.4, label="$y_t$", name = "y_t")
             .Reg(4, 0, 2.4, label="$y_tbar$", name = "y_tbar")
@@ -230,7 +272,7 @@ def main():
     to_compute = apply_to_fileset(
         MyProcessor(),
         max_chunks(dataset_runnable, 300),
-        schemaclass= BaseSchema,
+        schemaclass= NanoAODSchema,
     )
 
     (out,) = dask.compute(to_compute, scheduler='threads')

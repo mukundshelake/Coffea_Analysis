@@ -53,19 +53,21 @@ class MyProcessor(processor.ProcessorABC):
             {
                 "atleastOneLep": ak.num(events.Muon) > 0,
                 "atleastThreeJ": ak.num(events.Jet) > 2,
-                "goodLeps" : ak.sum((events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.1) & (events.Muon.tightId), axis=1) >= 1,
-                "goodJets" : ak.sum((events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.5), axis = 1) >= 3,
-                "BTag"  : ak.sum((events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.5) & (events.Jet.btagDeepFlavB > maps['btagThreshold'][era]), axis = 1) >= 3
+                "goodLeps" : ak.sum((events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.4) & (events.Muon.tightId), axis=1) >= 1,
+                "goodJets" : ak.sum((events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.4), axis = 1) >= 3,
+                "BTag"  : ak.sum((events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.4) & (events.Jet.btagDeepFlavB > maps['btagThreshold'][era]), axis = 1) >= 2
             }
         )
         if 'UL2016' in dataset:
             selection.add("HLT", events.HLT.IsoTkMu24 | events.HLT.IsoMu24)
+        elif 'UL2017' in dataset:
+            selection.add("HLT", events.HLT.IsoMu27)
         else:
             selection.add("HLT", events.HLT.IsoMu24)
         # mask = selection.all("atleastOneLep", "atleastThreeJ")
         cutflow = selection.cutflow("atleastOneLep", "atleastThreeJ", "goodLeps", "goodJets", "BTag", "HLT")
 
-        honecut, hcutflow, labels = cutflow.yieldhist()
+        # honecut, hcutflow, labels = cutflow.yieldhist()
 
         results = cutflow.result()
 
@@ -73,20 +75,72 @@ class MyProcessor(processor.ProcessorABC):
 
         nSelected = np.sum(finalMask.compute())
 
+        # muon_hist = (
+        #     hda.Hist.new
+        #     .Reg(20, 0, 600.0, label="$Muon_pt$", name="muonPt")
+        #     .Reg(24, -2.4, 2.4, label="$Muon_eta$", name="muonEta")
+        #     .Double()
+        # )
+
+        # leading_muon_hist = (
+        #     hda.Hist.new
+        #     .Reg(20, 0, 600.0, label="$leadingMuon_pt$", name="leadingmuonPt")
+        #     .Reg(24, -2.4, 2.4, label="$leadingMuon_eta$", name="leadingmuonEta")
+        #     .Double()
+        # )
+
+        # jet_hist = (
+        #     hda.Hist.new
+        #     .Reg(20, 0, 1000.0, label="$jet_pt$", name="jetPt")
+        #     .Reg(24, -2.4, 2.4, label="$jet_eta$", name="jetEta")
+        #     .Double()
+        # )
+        if nSelected == 0:
+            print(f"No events selected for {dataset}")
+
+
         if nSelected == 0:
             return {
                 dataset: {
                     "entries": ak.num(events, axis=0),
-                    "honecut" : honecut,
-                    "hcutflow": hcutflow,
-                    "label": labels,
                     "nSelected": nSelected,
                     "nWeighted": 0,
                     # "weightStats": weights.weightStatistics
                 }
             }
+        # muons = events.Muon[(events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.4) & (events.Muon.tightId)][finalMask]
+        # spt_flat = ak.flatten(muons.pt)
+        # seta_flat = ak.flatten(muons.eta)
+        # leading_muon = muons[ak.argmax(muons.pt, axis=1, keepdims=True)]
+        # leading_muon_pt = ak.flatten(leading_muon.pt)
+        # leading_muon_eta = ak.flatten(leading_muon.eta)
+        
+
+        # sjets = events.Jet[(events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.4) & (events.Jet.btagDeepFlavB > maps['btagThreshold'][era])][finalMask]
+        # leadingJet = sjets[ak.argmax(sjets.pt, axis=1, keepdims=True)]
+        # leadingJet_pt = ak.flatten(leadingJet.pt)
+        # leadingJet_eta = ak.flatten(leadingJet.eta)
+
+
+        # met_hist = (
+        #     hda.Hist.new
+        #     .Reg(20, 0, 500.0, label="$MET_pt$", name="metPt")
+        #     .Reg(24, -3.2, 3.2, label="$MET_phi$", name="metPhi")
+        #     .Double()
+        # )
+
+        # met_pt = events.MET.pt[finalMask]
+        # met_phi = events.MET.phi[finalMask]
+
+        # met_hist.fill(
+        #     metPt=met_pt,
+        #     metPhi=met_phi
+        # )
+
+
 
         weights = Weights(nSelected, storeIndividual=True)
+        
 
         if isData:
             weights.add("L1preFireWt", weight=events[finalMask].L1PreFiringWeight.Nom.compute(), weightUp = events[finalMask].L1PreFiringWeight.Up.compute(), weightDown = events[finalMask].L1PreFiringWeight.Dn.compute())
@@ -96,8 +150,12 @@ class MyProcessor(processor.ProcessorABC):
 
             if hasattr(events, "LHEWeight"):
                 weights.add("LHEWeightSign", weight = events[finalMask].LHEWeight.originalXWGTUP.compute()/abs(events[finalMask].LHEWeight.originalXWGTUP.compute()))
-            spt = events.Muon[(events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.1) & (events.Muon.tightId)].pt[finalMask]
-            seta = events.Muon[(events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.1) & (events.Muon.tightId)].eta[finalMask]
+            spt = events.Muon[(events.Muon.pt >= 35.0)  & (abs(events.Muon.eta) <= 2.4) & (events.Muon.tightId)].pt[finalMask]
+            seta = events.Muon[(events.Muon.pt >= 35.0) & (abs(events.Muon.eta) <= 2.4) & (events.Muon.tightId)].eta[finalMask]
+
+            # leadingMuon_pt = ak.max(spt, axis=1)
+            # leadingMuon_eta = ak.max(seta, axis=1)
+
 
             IDFile = f"/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/SFs/{era}_mu_ID.json"
             IDeval = correctionlib.CorrectionSet.from_file(IDFile)
@@ -111,24 +169,28 @@ class MyProcessor(processor.ProcessorABC):
 
             weights.add("ID",weight=IDweight.compute(),weightUp=IDweightUp.compute(),weightDown = IDweightDown.compute())
 
-            try:
-                HLTFile = f"/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/SFs/{era}_mu_HLT.json"
-                HLTeval = correctionlib.CorrectionSet.from_file(HLTFile)
-                if era == "UL2016preVFP" or era == "UL2016postVFP":
-                    sfString = "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
-                elif era == "UL2017":
-                    sfString = "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight"
-                else:
-                    sfString = "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"
-                HLTSF = HLTeval[sfString].evaluate(abs(seta), spt, 'nominal')
-                HLTweight = ak.prod(HLTSF, axis=1)
-                weights.add("HLT",weight=HLTweight.compute())
-            except Exception as e:
-                print(f"HLT SF not found for {era}_{channel}; skipping")
-                print(e)
+            # try:
+            #     HLTFile = f"/nfs/home/mukund/Projects/updatedCoffea/Coffea_Analysis/src/SFs/{era}_mu_HLT.json"
+            #     HLTeval = correctionlib.CorrectionSet.from_file(HLTFile)
+            #     if era == "UL2016preVFP" or era == "UL2016postVFP":
+            #         sfString = "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+            #     elif era == "UL2017":
+            #         sfString = "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight"
+            #     else:
+            #         sfString = "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+            #     HLTSF = HLTeval[sfString].evaluate(abs(seta), spt, 'nominal')
+            #     HLTweight = ak.prod(HLTSF, axis=1)
+            #     weights.add("HLT",weight=HLTweight.compute())
+            # except Exception as e:
+            #     print(f"HLT SF not found for {era}_{channel}; skipping")
+            #     print(e)
 
-            bjets = events.Jet[(events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.5) & (events.Jet.btagDeepFlavB > maps['btagThreshold'][era])][finalMask]
-            nonbjets = events.Jet[(events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.5) & (events.Jet.btagDeepFlavB <= maps['btagThreshold'][era])][finalMask]
+            bjets = events.Jet[(events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.4) & (events.Jet.btagDeepFlavB > maps['btagThreshold'][era])][finalMask]
+            nonbjets = events.Jet[(events.Jet.pt >= 30.0) & (abs(events.Jet.eta) < 2.4) & (events.Jet.btagDeepFlavB <= maps['btagThreshold'][era])][finalMask]
+
+
+            leadingJet_pt = ak.max(bjets.pt, axis=1)
+            leadingJet_eta = ak.max(bjets.eta, axis=1)
 
             bjets_BC = bjets[(bjets.hadronFlavour == 4) | (bjets.hadronFlavour == 5)]
             bjets_L = bjets[(bjets.hadronFlavour == 0)]
@@ -184,41 +246,58 @@ class MyProcessor(processor.ProcessorABC):
 
             btag_SF = ak.prod(Sel_btag_jets_SFBC, axis=1)*ak.prod(Sel_btag_jets_SFL, axis=1)*ak.prod(Rej_btag_B, axis=1)*ak.prod(Rej_btag_C, axis=1)*ak.prod(Rej_btag_L, axis=1)
 
-            # Sel_btag_jets_SFBC_up = btagging_evaluator['deepJet_mujets'].evaluate('up', 'M', bjets_BC_fl, abs(bjets_BC_eta), bjets_BC_pt)
-            # Sel_btag_jets_SFL_up = btagging_evaluator['deepJet_incl'].evaluate('up', 'M', bjets_L_fl, abs(bjets_L_eta), bjets_L_pt)
-            # Rej_btag_jets_SFB_up = btagging_evaluator['deepJet_mujets'].evaluate('up', 'M', nonbjets_B_fl, abs(nonbjets_B_eta), nonbjets_B_pt) 
-            # Rej_btag_B_up = (1 - Rej_btag_jets_SFB_up*btag_effi_B)/(1 - btag_effi_B)
-            # Rej_btag_jets_SFC_up = btagging_evaluator['deepJet_mujets'].evaluate('up', 'M', nonbjets_C_fl, abs(nonbjets_C_eta), nonbjets_C_pt) 
-            # Rej_btag_C_up = (1 - Rej_btag_jets_SFC_up*btag_effi_C)/(1 - btag_effi_C)
-            # Rej_btag_jets_SFL_up = btagging_evaluator['deepJet_incl'].evaluate('up', 'M', nonbjets_L_fl, abs(nonbjets_L_eta), nonbjets_L_pt) 
-            # Rej_btag_L_up = (1 - Rej_btag_jets_SFL_up*btag_effi_L)/(1 - btag_effi_L)
+            Sel_btag_jets_SFBC_up = btagging_evaluator['deepJet_mujets'].evaluate('up', 'M', bjets_BC_fl, abs(bjets_BC_eta), bjets_BC_pt)
+            Sel_btag_jets_SFL_up = btagging_evaluator['deepJet_incl'].evaluate('up', 'M', bjets_L_fl, abs(bjets_L_eta), bjets_L_pt)
+            Rej_btag_jets_SFB_up = btagging_evaluator['deepJet_mujets'].evaluate('up', 'M', nonbjets_B_fl, abs(nonbjets_B_eta), nonbjets_B_pt) 
+            Rej_btag_B_up = (1 - Rej_btag_jets_SFB_up*btag_effi_B)/(1 - btag_effi_B)
+            Rej_btag_jets_SFC_up = btagging_evaluator['deepJet_mujets'].evaluate('up', 'M', nonbjets_C_fl, abs(nonbjets_C_eta), nonbjets_C_pt) 
+            Rej_btag_C_up = (1 - Rej_btag_jets_SFC_up*btag_effi_C)/(1 - btag_effi_C)
+            Rej_btag_jets_SFL_up = btagging_evaluator['deepJet_incl'].evaluate('up', 'M', nonbjets_L_fl, abs(nonbjets_L_eta), nonbjets_L_pt) 
+            Rej_btag_L_up = (1 - Rej_btag_jets_SFL_up*btag_effi_L)/(1 - btag_effi_L)
 
-            # btag_SF_up = ak.prod(Sel_btag_jets_SFBC_up, axis=1)*ak.prod(Sel_btag_jets_SFL_up, axis=1)*ak.prod(Rej_btag_B_up, axis=1)*ak.prod(Rej_btag_C_up, axis=1)*ak.prod(Rej_btag_L_up, axis=1)
+            btag_SF_up = ak.prod(Sel_btag_jets_SFBC_up, axis=1)*ak.prod(Sel_btag_jets_SFL_up, axis=1)*ak.prod(Rej_btag_B_up, axis=1)*ak.prod(Rej_btag_C_up, axis=1)*ak.prod(Rej_btag_L_up, axis=1)
 
-            # Sel_btag_jets_SFBC_down = btagging_evaluator['deepJet_mujets'].evaluate('down', 'M', bjets_BC_fl, abs(bjets_BC_eta), bjets_BC_pt)
-            # Sel_btag_jets_SFL_down = btagging_evaluator['deepJet_incl'].evaluate('down', 'M', bjets_L_fl, abs(bjets_L_eta), bjets_L_pt)
-            # Rej_btag_jets_SFB_down = btagging_evaluator['deepJet_mujets'].evaluate('down', 'M', nonbjets_B_fl, abs(nonbjets_B_eta), nonbjets_B_pt) 
-            # Rej_btag_B_down = (1 - Rej_btag_jets_SFB_down*btag_effi_B)/(1 - btag_effi_B)
-            # Rej_btag_jets_SFC_down = btagging_evaluator['deepJet_mujets'].evaluate('down', 'M', nonbjets_C_fl, abs(nonbjets_C_eta), nonbjets_C_pt) 
-            # Rej_btag_C_down = (1 - Rej_btag_jets_SFC_down*btag_effi_C)/(1 - btag_effi_C)
-            # Rej_btag_jets_SFL_down = btagging_evaluator['deepJet_incl'].evaluate('down', 'M', nonbjets_L_fl, abs(nonbjets_L_eta), nonbjets_L_pt) 
-            # Rej_btag_L_down = (1 - Rej_btag_jets_SFL_down*btag_effi_L)/(1 - btag_effi_L)
+            Sel_btag_jets_SFBC_down = btagging_evaluator['deepJet_mujets'].evaluate('down', 'M', bjets_BC_fl, abs(bjets_BC_eta), bjets_BC_pt)
+            Sel_btag_jets_SFL_down = btagging_evaluator['deepJet_incl'].evaluate('down', 'M', bjets_L_fl, abs(bjets_L_eta), bjets_L_pt)
+            Rej_btag_jets_SFB_down = btagging_evaluator['deepJet_mujets'].evaluate('down', 'M', nonbjets_B_fl, abs(nonbjets_B_eta), nonbjets_B_pt) 
+            Rej_btag_B_down = (1 - Rej_btag_jets_SFB_down*btag_effi_B)/(1 - btag_effi_B)
+            Rej_btag_jets_SFC_down = btagging_evaluator['deepJet_mujets'].evaluate('down', 'M', nonbjets_C_fl, abs(nonbjets_C_eta), nonbjets_C_pt) 
+            Rej_btag_C_down = (1 - Rej_btag_jets_SFC_down*btag_effi_C)/(1 - btag_effi_C)
+            Rej_btag_jets_SFL_down = btagging_evaluator['deepJet_incl'].evaluate('down', 'M', nonbjets_L_fl, abs(nonbjets_L_eta), nonbjets_L_pt) 
+            Rej_btag_L_down = (1 - Rej_btag_jets_SFL_down*btag_effi_L)/(1 - btag_effi_L)
 
-            # btag_SF_down = ak.prod(Sel_btag_jets_SFBC_down, axis=1)*ak.prod(Sel_btag_jets_SFL_down, axis=1)*ak.prod(Rej_btag_B_down, axis=1)*ak.prod(Rej_btag_C_down, axis=1)*ak.prod(Rej_btag_L_down, axis=1)
+            btag_SF_down = ak.prod(Sel_btag_jets_SFBC_down, axis=1)*ak.prod(Sel_btag_jets_SFL_down, axis=1)*ak.prod(Rej_btag_B_down, axis=1)*ak.prod(Rej_btag_C_down, axis=1)*ak.prod(Rej_btag_L_down, axis=1)
 
-            # weights.add("btag", weight=btag_SF, weightUp = btag_SF_up, weightDown = btag_SF_down)
+            weights.add("btag", weight=btag_SF, weightUp = btag_SF_up, weightDown = btag_SF_down)
 
             weights.add("btag", weight=btag_SF)
+
+
+        # muon_hist.fill(
+        #     muonPt = spt_flat,
+        #     muonEta = seta_flat
+        # )
+
+        # leading_muon_hist.fill(
+        #     leadingmuonPt = leading_muon_pt,
+        #     leadingmuonEta = leading_muon_eta
+        # )
+
+        # jet_hist.fill(
+        #     jetPt = leadingJet_pt,
+        #     jetEta = leadingJet_eta
+        # )
 
 
         return {
             dataset: {
                 "entries": ak.num(events, axis=0),
-                "honecut" : honecut,
-                "hcutflow": hcutflow,
-                "label": labels,
                 "nSelected": nSelected,
-                "nWeighted": np.sum(weights.weight()),
+                "nWeighted": weights.weight().sum()
+                # "muonHist": muon_hist,
+                # "leadingMuonHist": leading_muon_hist,
+                # "jetHist": jet_hist,
+                # "metHist": met_hist
                 # "weightStats": weights.weightStatistics
             }
         }
