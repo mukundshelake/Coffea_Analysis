@@ -1,8 +1,0 @@
----------------Script Timeline -------------------------
-2024-07-20 04:36:12 - Script started
-2024-07-20 04:36:12 - Adding and committing scripts to git
-Error: Last command failed with status 128
-2024-07-20 04:36:12 - Files added and committed to Git
-2024-07-20 04:36:12 - Fetching the current git hash
-2024-07-20 04:36:12 - Current Git commit hash: 8dccfdd2afe09b12bd3417927451381c44ce106d
-2024-07-20 04:36:12 - python skimmer.py  -o output_20240720_043612.coffea

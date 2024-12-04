@@ -34,3 +34,4 @@ src/Scripts/.env
 *.gz
 *.pkl
 *.json
+*.env
