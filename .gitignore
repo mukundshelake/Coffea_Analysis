@@ -2,14 +2,12 @@ my_project_env/
 *.root
 *.ipynb
 Scripts/my_env/
-Scripts/SFs
 Logs/
 coffeaOutputs/
 Scripts/logger.txt
 my_env
 *.pyc
 Scripts/lib/secrets.py
-SFs/
 src/Scripts/plots/
 src/Scripts/outputs/
 src/Scripts/reports/*.aux
@@ -29,3 +27,9 @@ src/Scripts/DataMC/trial.ipynb
 *.png
 *.csv
 *.coffea
+*.json
+src/Scripts/BDT/outputs/
+src/Scripts/.env
+*.parquet
+*.coffea
+*.gz
