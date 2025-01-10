@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 import shap
 
 era = 'UL2016preVFP'
-parser = argparse.ArgumentParser(description="Train BDT models on parquet files.")
+parser = argparse.ArgumentParser(description="Train PNN models on parquet files.")
 parser.add_argument(
     '-t', '--timestamp',
     type=str,
