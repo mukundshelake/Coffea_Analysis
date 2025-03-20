@@ -12,32 +12,43 @@ parser = argparse.ArgumentParser(description="Update the datasets")
 
 # Add arguments to the parser
 parser.add_argument('-s', '--sample', action='store_true', help="update only the sample datasets")
+parser.add_argument('--skimmed', action='store_true', help="update the skimmed datasets")
+
 # Parse the arguments
 args = parser.parse_args()
 
 eras = ["UL2016preVFP", "UL2016postVFP", "UL2017", "UL2018"]
 
 # Choose flag to update
-## For sample from each dataset:'sample', Only TTbar MC files: "TTbar"; any other falg == Entire dataset
+## For sample from each dataset:'sample', Only TTbar MC files: "TTbar"; any other flag == Entire dataset
 
-flag = 'full'
+flag = 'all'
 
 if args.sample:
-    print(f"Updating the sample datasets for eras {eras}.")
+    if args.skimmed:
+        print(f"Updating the sample skimmed datasets for eras {eras}.")
+    else:
+        print(f"Updating the sample unskimmed datasets for eras {eras}.")
     flag = 'sample'
 else:
-    print(f"Updating the full Run2 datasets for eras {eras}.")
+    if args.skimmed:
+        print(f"Updating all skimmed datasets for eras {eras}.")
+    else:
+        print(f"Updating all unskimmed datasets for eras {eras}.")
 
-#### If you want to update specific eras
-# eras = ["UL2016preVFP"]
+# Determine the input file prefix based on whether skimmed datasets are to be updated
+file_prefix = "skimmed_filePaths_" if args.skimmed else "filePaths_"
+
+# Determine the output file prefix based on whether skimmed datasets are to be updated
+output_prefix = "skimmed_" if args.skimmed else ""
 
 inoutFolder = "Datasets"
 
-
 for era in eras:
     print(f"Updating the filepaths for the {era}")
-    pathFile = f"filePaths_{era}.json"
-    with open(os.path.join(inoutFolder,pathFile), 'r') as json_file:
+    pathFile = f"{file_prefix}{era}.json"
+    print(pathFile)
+    with open(os.path.join(inoutFolder, pathFile), 'r') as json_file:
         DatasetPaths = json.load(json_file) 
     DataFiles = {}
     for DataMC in DatasetPaths:
@@ -45,22 +56,8 @@ for era in eras:
         for process in DatasetPaths[DataMC]:
             print(process)
             DataFiles[DataMC][process] = getFiles(DatasetPaths[DataMC][process], flag)  
-    json_file_path = f"dataFiles_{era}.json"
-    if flag=='sample':
-        json_file_path = f'sampleFiles_{era}.json'
-    with open(os.path.join(inoutFolder,json_file_path), 'w') as json_file:
-        json.dump(DataFiles, json_file, indent=4) 
-
-
-# for era in DatasetPaths:
-#     DataFiles[era] = {}
-#     for DataMC in DatasetPaths[era]:
-#         DataFiles[era][DataMC] = {}
-#         for process in DatasetPaths[era][DataMC]:
-#             # print(process)
-#             DataFiles[era][DataMC][process] = getFiles(DatasetPaths[era][DataMC][process])
-
-# json_file_path = f"dataFiles_{era}.json"
-
-# with open(json_file_path, 'w') as json_file:
-#     json.dump(DataFiles[era], json_file, indent=4) 
+    json_file_path = f"{output_prefix}dataFiles_{era}.json"
+    if flag == 'sample':
+        json_file_path = f"{output_prefix}sampleFiles_{era}.json"
+    with open(os.path.join(inoutFolder, json_file_path), 'w') as json_file:
+        json.dump(DataFiles, json_file, indent=4)
