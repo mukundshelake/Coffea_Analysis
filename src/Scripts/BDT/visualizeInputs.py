@@ -159,13 +159,14 @@ def main():
         plt.clf()
 
     if 'pT_sum' in df.columns:
-        plt.hist(df[df['y'] == 2]['pT_sum'], bins=20, color='blue', label='qg', density=True, histtype='step')
-        plt.hist(df[df['y'] == 1]['pT_sum'], bins=20, color = 'black', label='gg', density=True, histtype='step')
-        plt.hist(df[df['y'] == 0]['pT_sum'], bins=20, color = 'red', label='qq', density=True, histtype='step')
+        plt.hist(df[df['y'] == 2]['pT_sum'], bins=60, color='blue', label='qg', density=True, histtype='step')
+        plt.hist(df[df['y'] == 1]['pT_sum'], bins=60, color = 'black', label='gg', density=True, histtype='step')
+        plt.hist(df[df['y'] == 0]['pT_sum'], bins=60, color = 'red', label='qq', density=True, histtype='step')
         plt.xlabel('pT_sum')
         plt.ylabel('Events Density')
         plt.legend()
         plt.show()
+        plt.xlim(0, 750)
         # save the figure
         plt.savefig(f"{outputDir}/pT_sum.png")
         logging.info(f"Plot saved to {outputDir}/pT_sum.png")

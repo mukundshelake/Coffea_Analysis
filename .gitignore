@@ -24,6 +24,7 @@ src/Datasets/dataFiles*
 src/Scripts/lib/credentials.yaml
 src/Scripts/DataMC/trial.ipynb
 *.npy
+*.npz
 *.png
 *.csv
 *.coffea
@@ -35,3 +36,4 @@ src/Scripts/.env
 *.pkl
 *.json
 *.env
+*.h5
