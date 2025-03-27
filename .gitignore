@@ -39,3 +39,4 @@ src/Scripts/NN/outputs/Nov29/output_data_3classes.json
 *.csv
 *.h5
 *.pkl
+src/Scripts/Misc/goldenJson/lumi*
