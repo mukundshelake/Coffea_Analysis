@@ -100,7 +100,7 @@ def main():
     print(f"Sample mode: {args.sample}")
     print(f"Output file: {args.output}")
 
-    outputDir = "../outputs"
+    outputDir = "outputs"
     datasetFlag = 'data'
 
     if args.sample:
@@ -108,7 +108,7 @@ def main():
 
     fileset = {}
     for era in args.eras:
-        with open(f'../../Datasets/{datasetFlag}Files_{era}.json', 'r') as json_file:
+        with open(f'../../Datasets/selected_{datasetFlag}Files_{era}.json', 'r') as json_file:
             dicti = json.load(json_file)
             for pr in dicti['Data_el']:
                 datasetName = f'{era}_{pr}'

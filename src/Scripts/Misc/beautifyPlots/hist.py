@@ -6,12 +6,6 @@ hist_tt_prompt = ROOT.TH1F("tt_prompt", "t#bar{t} prompt #mu", 50, 0, 400)
 hist_tt_tau = ROOT.TH1F("tt_tau", "t#bar{t} #tau #rightarrow #mu", 50, 0, 400)
 hist_other_top = ROOT.TH1F("other_top", "Other Top", 50, 0, 400)
 
-# Fill histograms with random data
-for _ in range(1000):
-    hist_data.Fill(ROOT.gRandom.Gaus(200, 50))
-    hist_tt_prompt.Fill(ROOT.gRandom.Gaus(150, 40))
-    hist_tt_tau.Fill(ROOT.gRandom.Gaus(100, 30))
-    hist_other_top.Fill(ROOT.gRandom.Gaus(50, 20))
 
 # Style histograms
 hist_data.SetMarkerStyle(20)
