@@ -5,7 +5,7 @@ import argparse
 import os
 from tqdm import tqdm
 
-def get_puid_counts(file_path, tree_name="Events"):
+def get_puid_counts(file_path: str, era: str, tree_name: str = "Events") -> tuple[int, int, int, int]:
     """
     Counts jets based on puId from a single ROOT file, after applying event selection.
     Event selection: Sum$(Jet_pt > 25 && abs(Jet_eta) < 2.4) > 3
@@ -13,11 +13,38 @@ def get_puid_counts(file_path, tree_name="Events"):
     Args:
         file_path (str): Path to the ROOT file.
         tree_name (str): Name of the TTree containing events.
+        era (str): The era (UL2016preVFP, UL2016postVFP, UL2017, UL2018)
 
     Returns:
         tuple: (nTight, nMedium, nLoose, nTotal) counts for jets in selected events.
                Returns (0, 0, 0, 0) if the file/tree cannot be opened or required branches are missing.
     """
+    maps = {
+        'T': {
+            'UL2016preVFP': 7,
+            'UL2016postVFP': 7,
+            'UL2017': 7,
+            'UL2018': 7,
+        },
+        'L': {
+            'UL2016preVFP': 1,
+            'UL2016postVFP': 1,
+            'UL2017': 4,
+            'UL2018': 4,
+        },
+        'M': {
+            'UL2016preVFP': 3,
+            'UL2016postVFP': 3,
+            'UL2017': 6,
+            'UL2018': 6,
+        },
+        'F': {
+            'UL2016preVFP': 0,
+            'UL2016postVFP': 0,
+            'UL2017': 0,
+            'UL2018': 0,
+        }
+    }
     try:
         with uproot.open(f"{file_path}:{tree_name}") as tree:
             # Check for required branches
@@ -55,9 +82,9 @@ def get_puid_counts(file_path, tree_name="Events"):
                  return 0, 0, 0, 0
 
             # Define masks for specific puId values for the selected jets
-            is_tight = (flat_puid == 7)
-            is_medium = (flat_puid == 3)
-            is_loose = (flat_puid == 1)
+            is_tight = (flat_puid == maps['T'][era])
+            is_medium = (flat_puid == maps['M'][era])
+            is_loose = (flat_puid == maps['L'][era])
 
             # Count jets inclusively for each category within selected events
             n_tight = ak.sum(is_tight)
@@ -74,7 +101,16 @@ def get_puid_counts(file_path, tree_name="Events"):
         print(f"Error processing file {file_path}: {e}")
         return 0, 0, 0, 0
 
-def main(input_json_path, output_json_path, data_key="MC_mu"):
+def main(input_json_path: str, output_json_path: str, era: str, data_key: str = "MC_mu") -> None:
+    """
+    Main function to process datasets and generate efficiency JSON.
+
+    Args:
+        input_json_path (str): Path to the input JSON file containing dataset paths.
+        output_json_path (str): Path to save the output JSON file.
+        era (str): The era (UL2016preVFP, UL2016postVFP, UL2017, UL2018)
+        data_key (str): The top-level key in the input JSON to process (default: "MC_mu").
+    """
     """
     Main function to process datasets and generate efficiency JSON.
 
@@ -113,7 +149,7 @@ def main(input_json_path, output_json_path, data_key="MC_mu"):
             # Assuming the JSON provides the tree name as value, but we use default "Events"
             # tree_name = files_dict[file_path] # Use if tree name varies
             tree_name = "Events" # Hardcoding for now based on example
-            n_tight, n_medium, n_loose, n_total = get_puid_counts(file_path, tree_name)
+            n_tight, n_medium, n_loose, n_total = get_puid_counts(file_path, era, tree_name)
             total_tight += n_tight
             total_medium += n_medium
             total_loose += n_loose
@@ -145,11 +181,14 @@ def main(input_json_path, output_json_path, data_key="MC_mu"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Calculate Jet puId efficiencies from ROOT files listed in a JSON.")
-    parser.add_argument("input_json", help="Path to the input JSON file containing dataset file paths.")
-    parser.add_argument("output_json", help="Path to the output JSON file to save results.")
-    parser.add_argument("--data_key", default="MC_mu", help="The top-level key in the input JSON to process (default: MC_mu).")
-    # parser.add_argument("--era", required=True, help="Specify the era (e.g., UL2016preVFP, UL2016postVFP) - used for output filename logic if needed.") # Example if era needed for output path
+    parser.add_argument("--era", required=True,
+                       choices=['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018'],
+                       help="Specify the era (UL2016preVFP, UL2016postVFP, UL2017, UL2018)")
 
     args = parser.parse_args()
-
-    main(args.input_json, args.output_json, args.data_key)
+    input_json = os.path.expanduser(
+        f"~/Projects/updatedCoffea/Coffea_Analysis/src/Datasets/skimmed_dataFiles_{args.era}.json"
+    )
+    output_json = f"{args.era}_Jet_puId_effi.json"
+    
+    main(input_json, output_json, args.era, "MC_mu")

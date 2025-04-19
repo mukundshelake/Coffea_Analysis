@@ -1,0 +1,523 @@
+#!/usr/bin/env python3
+"""
+Script to plot histograms from Coffea analysis output.
+Converts Jupyter notebook functionality to a standalone script with:
+- Command line arguments
+- Logging
+- Error handling
+- Configurable parameters
+
+Dependencies:
+- coffea: pip install coffea
+- hist: pip install hist
+- root: Install ROOT with PyROOT support (https://root.cern/install/)
+"""
+
+import argparse
+import logging
+import os
+import sys
+import json
+
+# Try to import required packages with error handling
+try:
+    from coffea.util import load
+    import hist
+    import ROOT
+    from ROOT import TH1F
+except ImportError as e:
+    print(f"Error: Missing required dependency - {str(e)}")
+    print("Please install the required packages:")
+    print("  pip install coffea hist")
+    print("And install ROOT with PyROOT support from https://root.cern/install/")
+    sys.exit(1)
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# --- Variable Configuration ---
+# Maps internal variable names to plotting labels
+VARIABLE_CONFIG = {
+    "muon_pt": {"label": "Muon p_{T} (GeV)", "rebin": (0j, 250j)},
+    "muon_eta": {"label": "Muon #eta", "rebin": None}, # Add more variables as needed
+    "muon_phi": {"label": "Muon #phi", "rebin": None},
+    "jet_pt": {"label": "Jet p_{T} (GeV)", "rebin": None},
+    # Add other variables here...
+}
+# ---
+
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='Plot histograms from Coffea analysis',
+                                   formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('input_file', help='Path to input Coffea file (e.g. outputs/output_April14.coffea)')
+    parser.add_argument('--output-dir', default='plots', help='Output directory for plots')
+    parser.add_argument('--luminosity', type=float, default=19520, 
+                       help='Integrated luminosity in fb^-1')
+    parser.add_argument('--variable', default='muon_pt',
+                       choices=VARIABLE_CONFIG.keys(),
+                       help='Variable to plot (must exist in histograms and VARIABLE_CONFIG)')
+    parser.add_argument('--log-level', default='INFO',
+                       choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                       help='Logging level')
+    parser.add_argument('--sample-info', default='sample_info.json',
+                       help='Path to JSON file with cross sections and generated events')
+    return parser.parse_args()
+
+def load_sample_info(json_path):
+    """Load cross sections and generated events from JSON file."""
+    try:
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+        required_keys = ['cross_sections', 'generated_events', 'category_map']
+        if not all(key in data for key in required_keys):
+            missing_keys = [key for key in required_keys if key not in data]
+            raise ValueError(f"JSON file must contain {', '.join(required_keys)} keys. Missing: {', '.join(missing_keys)}")
+        logger.info(f"Loaded sample info from: {json_path}")
+        return data
+    except FileNotFoundError:
+        logger.error(f"Sample info file not found: {json_path}")
+        raise
+    except json.JSONDecodeError:
+        logger.error(f"Error decoding JSON from file: {json_path}")
+        raise
+    except ValueError as e:
+        logger.error(f"Invalid JSON format in {json_path}: {e}")
+        raise
+
+def process_histograms(out_merged, variable, luminosity, sample_info):
+    """Process and scale histograms using info from JSON and apply rebinning."""
+    category_map = sample_info['category_map']
+    merged_histos = {}
+    xsecs = sample_info['cross_sections']
+    Ngenerated_events = sample_info['generated_events']
+    var_config = VARIABLE_CONFIG.get(variable)
+    if not var_config:
+        # This case should ideally be caught by argparse choices, but check anyway
+        logger.error(f"Variable '{variable}' not found in VARIABLE_CONFIG.")
+        raise ValueError(f"Configuration for variable '{variable}' not found.")
+
+    rebin_arg = var_config.get("rebin") # Could be slice or int
+
+    for category, dataset_list in category_map.items():
+        merged = None
+        for dataset in dataset_list:
+            if dataset not in out_merged:
+                logger.warning(f"Missing dataset: {dataset} in input file. Skipping.")
+                continue
+
+            try:
+                # Check if histogram exists for the variable
+                if variable not in out_merged[dataset][dataset]['histos']:
+                    logger.warning(f"Histogram for variable '{variable}' not found in dataset {dataset}. Skipping.")
+                    continue
+                h = out_merged[dataset][dataset]['histos'][variable]
+
+                # --- Scaling ---
+                if "Run" not in dataset:  # Skip data scaling
+                    if dataset not in xsecs or dataset not in Ngenerated_events:
+                        logger.warning(f"Missing sample info for {dataset} in JSON file. Skipping scaling.")
+                    else:
+                        # Ensure Ngenerated_events is not zero
+                        n_gen = Ngenerated_events[dataset]
+                        if n_gen <= 0:
+                             logger.warning(f"Ngenerated_events is zero or negative for {dataset}. Skipping scaling.")
+                        else:
+                            scale = (xsecs[dataset] * luminosity) / n_gen
+                            logger.debug(f"Scaling {dataset} by {scale} (xsec={xsecs[dataset]}, lumi={luminosity}, Ngen={n_gen})")
+                            h *= scale
+                # --- End Scaling ---
+
+                # Accumulate histograms
+                merged = h if merged is None else merged + h
+
+            except KeyError as e:
+                logger.error(f"KeyError accessing data for {dataset} (variable: {variable}): {str(e)}. Check input file structure.")
+                continue # Skip this dataset if structure is unexpected
+            except Exception as e:
+                 logger.error(f"Unexpected error processing dataset {dataset} for variable {variable}: {e}")
+                 continue
+
+        # --- Rebinning ---
+        if merged is not None:
+            if rebin_arg is not None:
+                try:
+                    logger.info(f"Applying rebinning '{rebin_arg}' for {variable} in category {category}")
+                    # Handle different types of rebinning arguments
+                    if isinstance(rebin_arg, slice):
+                        merged = merged[rebin_arg]
+                    elif isinstance(rebin_arg, int):
+                        merged = merged.rebin(rebin_arg)
+                    elif isinstance(rebin_arg, tuple) and len(rebin_arg) > 1 and all(isinstance(x, (int, float, complex)) for x in rebin_arg):
+                         # Assuming tuple means hist slice syntax like (start, stop, step)
+                         merged = merged[rebin_arg[0]:rebin_arg[1]:rebin_arg[2] if len(rebin_arg)>2 else 1j]
+                    else:
+                        logger.warning(f"Unsupported rebinning argument type '{type(rebin_arg)}' for variable '{variable}'. Skipping rebinning.")
+
+                except Exception as e:
+                    logger.error(f"Failed to rebin histogram for {category} with argument '{rebin_arg}': {e}")
+                    # Keep the original 'merged' if rebin fails
+            merged_histos[category] = merged
+        # --- End Rebinning ---
+    
+    return merged_histos
+
+def create_root_histograms(merged_histos, variable):
+    """Create ROOT histograms from coffea histograms with proper bin errors."""
+    import numpy as np
+    root_histos = {}
+    # Use variable name from config if available, otherwise use the key
+    var_label = VARIABLE_CONFIG.get(variable, {}).get("label", variable)
+
+    for category, histo in merged_histos.items():
+        # Basic check if it looks like a coffea/hist histogram
+        if not hasattr(histo, 'axes') or not histo.axes or not hasattr(histo, 'values'):
+             logger.warning(f"Skipping category '{category}' for variable '{variable}': object doesn't look like a valid histogram.")
+             continue
+
+        try:
+            # Assuming 1D histogram for now
+            if len(histo.axes) != 1:
+                logger.warning(f"Skipping non-1D histogram for category '{category}', variable '{variable}'.")
+                continue
+            axis = histo.axes[0]
+            size = axis.size
+            # Use edges array directly for ROOT TH1F definition
+            edges = np.array(axis.edges, dtype=float)
+
+            # Create ROOT histogram with variable binning if necessary
+            root_hist = TH1F(
+                f"{category}_{variable}", # Unique name per variable/category
+                f"{category};{var_label};Events", # More precise Y-axis label
+                size, edges # Pass the bin edges array
+            )
+        except Exception as e:
+            logger.error(f"Error creating ROOT histogram structure for {category} ({variable}): {e}")
+            continue
+
+        # Fill the ROOT histogram with content and errors
+        try:
+            values = histo.values()
+            if values is None:
+                logger.error(f"Values are None for {category} ({variable}). Skipping fill.")
+                continue
+            # variances = histo.variances() if hasattr(histo, 'variances') else values
+            # if variances is None:
+            #     logger.warning(f"Variances not found for {category} ({variable}). Using values for errors.")
+            # if len(values) != size:
+            #      logger.error(f"Mismatch between axis size ({size}) and values length ({len(values)}) for {category}, {variable}. Skipping fill.")
+            #      continue
+            # if len(variances) != size:
+            #      logger.warning(f"Mismatch between axis size ({size}) and variances length ({len(variances)}) for {category}, {variable}. Using sqrt(content) for errors.")
+            #      variances = values # Fallback
+
+            for i in range(size):
+                bin_content = values[i]
+                variance = values[i]
+
+                # ROOT bin index starts from 1
+                root_bin = i + 1
+
+                # Set bin content and error
+                bin_error = np.sqrt(variance) if variance >= 0 else 0.0
+
+                root_hist.SetBinContent(root_bin, bin_content)
+                root_hist.SetBinError(root_bin, bin_error)
+
+            root_histos[category] = root_hist # Add successfully created hist
+
+        except Exception as e:
+            logger.error(f"Error filling ROOT histogram for {category} ({variable}): {e}")
+            # Don't add the histogram if filling failed
+    
+    return root_histos
+
+def save_plots(root_histos, variable, output_dir, luminosity_pb):
+    """Save plots to output directory with proper styling and ratio plot."""
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        logger.info(f"Created output directory: {output_dir}")
+
+    # Use label from config, default to variable name
+    var_label = VARIABLE_CONFIG.get(variable, {}).get("label", variable)
+    luminosity_fb = luminosity_pb / 1000.0 # Convert pb^-1 to fb^-1 for display
+
+    # Define category order for stacking
+    # Make this configurable later if needed
+    stack_order = [
+        "ttbarSemiLeptonic", "ttbarFullyLeptonic", "Diboson", "SingleTop", 
+        "WJets", "DrellYan", "QCD"
+    ]
+    plot_categories = ["Data"] + stack_order
+
+    # Check if all required histograms exist in the input dict
+    available_categories = set(root_histos.keys())
+    required_for_plot = set(plot_categories)
+    missing_histos = list(required_for_plot - available_categories)
+
+    if missing_histos:
+        logger.error(f"Cannot create plot for '{variable}'. Missing histograms for categories: {', '.join(missing_histos)}")
+        return # Stop if essential histograms are missing
+
+    # Filter out categories from stack_order that are not available, though we checked above
+    stack_order_available = [cat for cat in stack_order if cat in available_categories]
+    if not stack_order_available:
+         logger.error(f"No background histograms available to stack for variable '{variable}'.")
+         return
+
+    try:
+        # --- Get Histograms ---
+        hist_data = root_histos["Data"]
+        background_histos = {cat: root_histos[cat] for cat in stack_order_available}
+
+        # --- Styling ---
+        hist_data.SetMarkerStyle(20)
+        hist_data.SetMarkerSize(1.0) # Slightly larger markers
+        hist_data.SetLineColor(ROOT.kBlack)
+        hist_data.SetLineWidth(2)
+
+        # Define colors (consider moving to config later)
+        colors = {
+            "ttbarSemiLeptonic": 432,  
+            "ttbarFullyLeptonic": 616, 
+            "DrellYan": 416,       
+            "WJets": 600,          
+            "Diboson": 632,         
+            "SingleTop": 800,        
+            "QCD": 920               
+        }
+        for cat in stack_order_available:
+            hist = background_histos[cat]
+            hist.SetFillColor(colors.get(cat, ROOT.kWhite)) # Use defined color or white
+            hist.SetLineColor(ROOT.kBlack)
+            hist.SetLineWidth(1)
+
+        # Disable statistics box for all involved histograms
+        for hist in [hist_data] + list(background_histos.values()):
+             if hasattr(hist, 'SetStats'):
+                hist.SetStats(False)
+        # --- End Styling ---
+
+
+        # --- Create Stack ---
+        # Use var_label in the title string
+        stack = ROOT.THStack(f"stack_{variable}", f";{var_label};Events per bin")
+        for cat in stack_order_available:
+             stack.Add(background_histos[cat])
+
+        # Get total MC histogram for ratio and uncertainty band
+        if not stack.GetHists():
+             logger.error(f"Stack for variable '{variable}' is empty. Cannot proceed.")
+             return
+        stack_total = stack.GetStack().Last().Clone(f"total_mc_{variable}")
+        if not stack_total or stack_total.Integral() <= 0:
+             logger.error(f"Total MC histogram for '{variable}' is empty or invalid. Cannot create ratio plot.")
+             return
+        # --- End Create Stack ---
+
+
+        # --- Create Canvas and Pads ---
+        canvas = ROOT.TCanvas(f"canvas_{variable}", f"{var_label} Plot", 800, 800)
+        canvas.SetRightMargin(0.04) # Adjust margins
+        canvas.SetLeftMargin(0.15)
+        canvas.SetTopMargin(0.08)
+
+        # Upper pad for main plot
+        pad1 = ROOT.TPad(f"pad1_{variable}", "pad1", 0, 0.3, 1, 1)
+        pad1.SetBottomMargin(0.02) # Make pads closer
+        pad1.SetLeftMargin(0.15)
+        pad1.SetRightMargin(0.04)
+        pad1.SetTopMargin(0.08)
+        pad1.Draw()
+        pad1.cd()
+        pad1.SetLogy()
+        # --- End Create Canvas and Pads ---
+
+
+        # --- Draw Main Plot ---
+        # Determine plot range dynamically
+        data_max = hist_data.GetMaximum()
+        mc_max = stack_total.GetMaximum()
+        max_val = max(data_max, mc_max) * 10 # More headroom for log scale
+        min_val = 0.01 # Sensible minimum for log scale
+
+        stack.SetMaximum(max_val)
+        stack.SetMinimum(min_val)
+        # Set maximum for data hist as well for consistency if needed, though stack usually dominates
+        hist_data.SetMaximum(max_val)
+        hist_data.SetMinimum(min_val)
+
+        stack.Draw("HIST") # Draw filled background stack
+        hist_data.Draw("E1 SAME") # Draw data with error bars ('E1' style)
+
+        # Set axis titles on the stack (since it's drawn first)
+        stack.GetYaxis().SetTitle("Events per bin")
+        stack.GetYaxis().SetTitleOffset(1.2)
+        stack.GetYaxis().SetTitleSize(0.05)
+        stack.GetYaxis().SetLabelSize(0.04)
+        stack.GetXaxis().SetLabelSize(0) # Hide X labels on top pad
+        stack.GetXaxis().SetTitleSize(0) # Hide X title on top pad
+
+
+        # Redraw axes to be on top
+        pad1.RedrawAxis()
+        # --- End Draw Main Plot ---
+
+
+        # --- Add Legend ---
+        legend = ROOT.TLegend(0.65, 0.60, 0.95, 0.90) # Adjusted position/size
+        legend.SetBorderSize(0)
+        legend.SetFillStyle(0) # Transparent background
+        legend.SetTextSize(0.035) # Adjust text size
+        legend.AddEntry(hist_data, "Data", "lep")
+        # Add background entries in specified stack order for legend clarity
+        for cat in reversed(stack_order_available):
+            # Use category name directly as label
+            legend.AddEntry(background_histos[cat], cat, "f")
+        legend.Draw()
+        # --- End Add Legend ---
+
+
+        # --- Add Text (CMS, Lumi) ---
+        cms_text_bold = ROOT.TLatex()
+        cms_text_bold.SetNDC()
+        cms_text_bold.SetTextFont(61) # Bold
+        cms_text_bold.SetTextSize(0.05)
+        cms_text_bold.DrawLatex(0.18, 0.85, "CMS") # Position adjusted
+
+        cms_text_prelim = ROOT.TLatex()
+        cms_text_prelim.SetNDC()
+        cms_text_prelim.SetTextFont(52) # Italic
+        cms_text_prelim.SetTextSize(0.04)
+        cms_text_prelim.DrawLatex(0.18 + cms_text_bold.GetXsize()*0.9, 0.85, "Preliminary") # Position adjusted
+
+        lumi_text = ROOT.TLatex()
+        lumi_text.SetNDC()
+        lumi_text.SetTextFont(42) # Regular
+        lumi_text.SetTextSize(0.04)
+        # Display lumi in fb^-1
+        lumi_text.DrawLatex(0.60, 0.93, f"{luminosity_fb:.1f} fb^{{-1}} (13 TeV)") # Position adjusted
+        # --- End Add Text ---
+
+
+        # --- Create Ratio Plot ---
+        canvas.cd() # Go back to canvas before creating second pad
+        pad2 = ROOT.TPad(f"pad2_{variable}", "pad2", 0, 0.05, 1, 0.3)
+        pad2.SetTopMargin(0.02) # Make pads closer
+        pad2.SetBottomMargin(0.35)
+        pad2.SetLeftMargin(0.15)
+        pad2.SetRightMargin(0.04)
+        pad2.SetGridy()
+        pad2.Draw()
+        pad2.cd()
+
+        ratio = hist_data.Clone(f"ratio_{variable}")
+        ratio.Divide(stack_total)
+        ratio.SetTitle("") # Remove title from ratio plot itself
+        ratio.SetMarkerStyle(20)
+        ratio.SetMarkerSize(1.0)
+        ratio.SetLineWidth(2)
+        ratio.SetStats(False)
+
+        # Adjust ratio plot axes
+        ratio.GetYaxis().SetTitle("Data / MC")
+        ratio.GetYaxis().SetRangeUser(0.5, 1.5)
+        ratio.GetYaxis().SetNdivisions(505)
+        ratio.GetYaxis().CenterTitle()
+        ratio.GetYaxis().SetTitleSize(0.12)
+        ratio.GetYaxis().SetTitleOffset(0.5) # Adjusted offset
+        ratio.GetYaxis().SetLabelSize(0.1)
+
+        ratio.GetXaxis().SetTitle(var_label) # Set X title only on bottom plot
+        ratio.GetXaxis().SetTitleSize(0.14)
+        ratio.GetXaxis().SetTitleOffset(1.1) # Adjusted offset
+        ratio.GetXaxis().SetLabelSize(0.12)
+
+        ratio.Draw("E1") # Draw ratio with error bars
+
+        # Add MC uncertainty band
+        uncertainty_band = ROOT.TGraphAsymmErrors(stack_total)
+        for i in range(1, stack_total.GetNbinsX() + 1):
+            x = stack_total.GetBinCenter(i)
+            y = 1.0 # Ratio is 1
+            mc_val = stack_total.GetBinContent(i)
+            mc_err = stack_total.GetBinError(i)
+            rel_err = mc_err / mc_val if mc_val > 0 else 0.0
+            uncertainty_band.SetPoint(i - 1, x, y)
+            # X errors are half bin width, Y errors are relative stat error
+            uncertainty_band.SetPointError(i - 1, stack_total.GetBinWidth(i)/2., stack_total.GetBinWidth(i)/2., rel_err, rel_err)
+
+        uncertainty_band.SetFillColorAlpha(ROOT.kGray + 1, 0.4) # Lighter grey, more transparent
+        uncertainty_band.SetFillStyle(1001) # Solid fill
+        uncertainty_band.SetMarkerSize(0)
+        uncertainty_band.Draw("E2 SAME") # Draw band behind points
+
+        # Redraw ratio points on top
+        ratio.Draw("E1 SAME")
+
+        # Add reference line at 1.0
+        line = ROOT.TLine(ratio.GetXaxis().GetXmin(), 1.0, ratio.GetXaxis().GetXmax(), 1.0)
+        line.SetLineColor(2) # Red
+        line.SetLineStyle(2) # Dashed
+        line.SetLineWidth(1)
+        line.Draw("SAME")
+        # --- End Create Ratio Plot ---
+
+
+        # --- Save Plot ---
+        # Use variable name in the output filename
+        output_filename = f"{variable}_DataMC.png" # More descriptive name
+        output_path = os.path.join(output_dir, output_filename)
+        canvas.SaveAs(output_path)
+        logger.info(f"Saved plot to: {output_path}")
+        # --- End Save Plot ---
+
+    except Exception as e:
+        logger.error(f"Error creating plots for variable '{variable}': {str(e)}")
+        import traceback
+        traceback.print_exc() # Print full traceback for debugging
+
+def main():
+    args = parse_arguments()
+    logging.getLogger().setLevel(args.log_level)
+    
+    logger.info(f"Starting histogram processing for variable: {args.variable}")
+    logger.info(f"Input file: {args.input_file}")
+    logger.info(f"Luminosity: {args.luminosity} fb^-1")
+    
+    try:
+        # Load input file
+        out_merged = load(args.input_file)
+        logger.info("Successfully loaded input file")
+        
+        # Load sample info from JSON
+        sample_info = load_sample_info(args.sample_info)
+
+        # Process histograms
+        merged_histos = process_histograms(
+            out_merged, args.variable, args.luminosity, sample_info
+        )
+        
+        # Create ROOT histograms
+        root_histos = create_root_histograms(merged_histos, args.variable)
+
+        # Check if any ROOT histograms were actually created
+        if not root_histos:
+             logger.error("No ROOT histograms were created. Cannot generate plots.")
+             sys.exit(1)
+
+        # Save plots
+        save_plots(root_histos, args.variable, args.output_dir, args.luminosity)
+        
+        logger.info("Processing completed successfully")
+        
+    except Exception as e:
+        logger.error(f"Error in processing: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    main()
