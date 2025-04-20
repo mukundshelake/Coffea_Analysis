@@ -42,10 +42,12 @@ logger = logging.getLogger(__name__)
 # --- Variable Configuration ---
 # Maps internal variable names to plotting labels
 VARIABLE_CONFIG = {
-    "muon_pt": {"label": "Muon p_{T} (GeV)", "rebin": (0j, 250j)},
-    "muon_eta": {"label": "Muon #eta", "rebin": None}, # Add more variables as needed
-    "muon_phi": {"label": "Muon #phi", "rebin": None},
-    "jet_pt": {"label": "Jet p_{T} (GeV)", "rebin": None},
+    "muon_pt": {"label": "Muon p_{T} (GeV)", "rebin": (0j, 400j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
+    "muon_eta": {"label": "Muon #eta", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"}, # Add more variables as needed
+    "muon_phi": {"label": "Muon #phi", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
+    "jet_pt": {"label": "Leading Jet p_{T} (GeV)", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
+    "jet_eta": {"label": "Leading Jet #eta", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
+    "jet_phi": {"label": "Leading Jet #phi", "rebin": (-3.0j, 3.0j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
     # Add other variables here...
 }
 # ---
@@ -56,11 +58,6 @@ def parse_arguments():
                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('input_file', help='Path to input Coffea file (e.g. outputs/output_April14.coffea)')
     parser.add_argument('--output-dir', default='plots', help='Output directory for plots')
-    parser.add_argument('--luminosity', type=float, default=19520, 
-                       help='Integrated luminosity in fb^-1')
-    parser.add_argument('--variable', default='muon_pt',
-                       choices=VARIABLE_CONFIG.keys(),
-                       help='Variable to plot (must exist in histograms and VARIABLE_CONFIG)')
     parser.add_argument('--log-level', default='INFO',
                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                        help='Logging level')
@@ -73,7 +70,7 @@ def load_sample_info(json_path):
     try:
         with open(json_path, 'r') as f:
             data = json.load(f)
-        required_keys = ['cross_sections', 'generated_events', 'category_map']
+        required_keys = ['cross_sections', 'generated_events', 'category_map', 'Luminosity']
         if not all(key in data for key in required_keys):
             missing_keys = [key for key in required_keys if key not in data]
             raise ValueError(f"JSON file must contain {', '.join(required_keys)} keys. Missing: {', '.join(missing_keys)}")
@@ -112,10 +109,10 @@ def process_histograms(out_merged, variable, luminosity, sample_info):
 
             try:
                 # Check if histogram exists for the variable
-                if variable not in out_merged[dataset][dataset]['histos']:
+                if variable not in out_merged[dataset]['histos']:
                     logger.warning(f"Histogram for variable '{variable}' not found in dataset {dataset}. Skipping.")
                     continue
-                h = out_merged[dataset][dataset]['histos'][variable]
+                h = out_merged[dataset]['histos'][variable]
 
                 # --- Scaling ---
                 if "Run" not in dataset:  # Skip data scaling
@@ -236,7 +233,7 @@ def create_root_histograms(merged_histos, variable):
     
     return root_histos
 
-def save_plots(root_histos, variable, output_dir, luminosity_pb):
+def save_plots(root_histos, variable, output_dir, luminosity_pb, args):
     """Save plots to output directory with proper styling and ratio plot."""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -305,7 +302,7 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb):
 
         # --- Create Stack ---
         # Use var_label in the title string
-        stack = ROOT.THStack(f"stack_{variable}", f";{var_label};Events per bin")
+        stack = ROOT.THStack(f"stack_{variable}", f";{var_label};Events")
         for cat in stack_order_available:
              stack.Add(background_histos[cat])
 
@@ -335,15 +332,15 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb):
         pad1.Draw()
         pad1.cd()
         pad1.SetLogy()
+        
         # --- End Create Canvas and Pads ---
 
 
         # --- Draw Main Plot ---
-        # Determine plot range dynamically
-        data_max = hist_data.GetMaximum()
-        mc_max = stack_total.GetMaximum()
-        max_val = max(data_max, mc_max) * 10 # More headroom for log scale
-        min_val = 0.01 # Sensible minimum for log scale
+        # Get min/max values from config (now required)
+        var_config = VARIABLE_CONFIG[variable]
+        max_val = var_config["max_val"]
+        min_val = var_config["min_val"]
 
         stack.SetMaximum(max_val)
         stack.SetMinimum(min_val)
@@ -353,6 +350,10 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb):
 
         stack.Draw("HIST") # Draw filled background stack
         hist_data.Draw("E1 SAME") # Draw data with error bars ('E1' style)
+
+        # Explicitly set y-axis range for pad1
+        stack.GetYaxis().SetRangeUser(min_val, max_val)
+        hist_data.GetYaxis().SetRangeUser(min_val, max_val)
 
         # Set axis titles on the stack (since it's drawn first)
         stack.GetYaxis().SetTitle("Events per bin")
@@ -369,10 +370,33 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb):
 
 
         # --- Add Legend ---
-        legend = ROOT.TLegend(0.65, 0.60, 0.95, 0.90) # Adjusted position/size
-        legend.SetBorderSize(0)
-        legend.SetFillStyle(0) # Transparent background
-        legend.SetTextSize(0.035) # Adjust text size
+        # Get legend style from config (default to 'compact' if not specified)
+        legend_style = VARIABLE_CONFIG[variable].get("legendStyle", "compact")
+        
+
+        
+        # Apply style-specific settings
+        if legend_style == "vertical":
+            legend = ROOT.TLegend(0.68, 0.60, 0.95, 0.90) # Adjusted position/size
+            legend.SetBorderSize(0)
+            legend.SetFillStyle(0) # Transparent background
+            legend.SetTextSize(0.04)
+        elif legend_style == "wide":
+            legend = ROOT.TLegend(0.55, 0.70, 0.95, 0.90) # Adjusted position/size
+            legend.SetBorderSize(0)
+            legend.SetFillStyle(0) # Transparent background
+            legend.SetTextSize(0.03)
+            legend.SetNColumns(2)
+            legend.SetColumnSeparation(0.02)
+            legend.SetEntrySeparation(0.005)
+        else: # compact (default)
+            legend = ROOT.TLegend(0.65, 0.60, 0.95, 0.90) # Adjusted position/size
+            legend.SetBorderSize(0)
+            legend.SetFillStyle(0) # Transparent background
+            legend.SetTextSize(0.035)
+            legend.SetNColumns(2)
+            legend.SetColumnSeparation(0.05)
+            legend.SetEntrySeparation(0.01)
         legend.AddEntry(hist_data, "Data", "lep")
         # Add background entries in specified stack order for legend clarity
         for cat in reversed(stack_order_available):
@@ -393,14 +417,24 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb):
         cms_text_prelim.SetNDC()
         cms_text_prelim.SetTextFont(52) # Italic
         cms_text_prelim.SetTextSize(0.04)
-        cms_text_prelim.DrawLatex(0.18 + cms_text_bold.GetXsize()*0.9, 0.85, "Preliminary") # Position adjusted
+        # cms_text_prelim.DrawLatex(0.18 + cms_text_bold.GetXsize()*3.1, 0.85, "Preliminary") # Position adjusted
+        cms_text_prelim.DrawLatex(0.26, 0.85, "Preliminary") 
+        # Add channel label (μ + jets)
+        channel_text = ROOT.TLatex()
+        channel_text.SetNDC()
+        channel_text.SetTextFont(52) # Italic
+        channel_text.SetTextSize(0.04)
+        channel_text.DrawLatex(0.20, 0.80, "#mu + jets") # Positioned below CMS Preliminary
+
+
 
         lumi_text = ROOT.TLatex()
         lumi_text.SetNDC()
         lumi_text.SetTextFont(42) # Regular
         lumi_text.SetTextSize(0.04)
         # Display lumi in fb^-1
-        lumi_text.DrawLatex(0.60, 0.93, f"{luminosity_fb:.1f} fb^{{-1}} (13 TeV)") # Position adjusted
+        lumi_text.DrawLatex(0.60, 0.93, f"{luminosity_fb:.1f} fb^{{-1}} (13 TeV, 2016preVFP)") # Position adjusted
+
         # --- End Add Text ---
 
 
@@ -469,8 +503,9 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb):
 
 
         # --- Save Plot ---
-        # Use variable name in the output filename
-        output_filename = f"{variable}_DataMC.png" # More descriptive name
+        # Use input file basename + variable name for output filename
+        input_basename = os.path.splitext(os.path.basename(args.input_file))[0]
+        output_filename = f"{input_basename}_{variable}.png"
         output_path = os.path.join(output_dir, output_filename)
         canvas.SaveAs(output_path)
         logger.info(f"Saved plot to: {output_path}")
@@ -485,9 +520,7 @@ def main():
     args = parse_arguments()
     logging.getLogger().setLevel(args.log_level)
     
-    logger.info(f"Starting histogram processing for variable: {args.variable}")
     logger.info(f"Input file: {args.input_file}")
-    logger.info(f"Luminosity: {args.luminosity} fb^-1")
     
     try:
         # Load input file
@@ -496,24 +529,46 @@ def main():
         
         # Load sample info from JSON
         sample_info = load_sample_info(args.sample_info)
+        logger.info(f"Luminosity: {sample_info['Luminosity']} fb^-1")
 
-        # Process histograms
-        merged_histos = process_histograms(
-            out_merged, args.variable, args.luminosity, sample_info
-        )
+        # Get available variables from first dataset's histograms
+        first_dataset = next(iter(out_merged.values()))
+        if isinstance(first_dataset, dict):
+            available_vars = set(first_dataset.get('histos', {}).keys())
+        else:
+            # Handle case where dataset is accessed differently
+            available_vars = set()
+            for dataset in out_merged.values():
+                if hasattr(dataset, 'histos'):
+                    available_vars.update(dataset.histos.keys())
+                elif isinstance(dataset, dict) and 'histos' in dataset:
+                    available_vars.update(dataset['histos'].keys())
+        config_vars = set(VARIABLE_CONFIG.keys())
         
-        # Create ROOT histograms
-        root_histos = create_root_histograms(merged_histos, args.variable)
+        # Find intersection of available and configured variables
+        vars_to_process = available_vars & config_vars
+        logger.info(f"Found {len(vars_to_process)} variables to process: {', '.join(vars_to_process)}")
 
-        # Check if any ROOT histograms were actually created
-        if not root_histos:
-             logger.error("No ROOT histograms were created. Cannot generate plots.")
-             sys.exit(1)
+        for variable in vars_to_process:
+            logger.info(f"Processing variable: {variable}")
+            
+            # Process histograms
+            merged_histos = process_histograms(
+                out_merged, variable, sample_info['Luminosity'], sample_info
+            )
+            
+            # Create ROOT histograms
+            root_histos = create_root_histograms(merged_histos, variable)
 
-        # Save plots
-        save_plots(root_histos, args.variable, args.output_dir, args.luminosity)
+            # Check if any ROOT histograms were actually created
+            if not root_histos:
+                logger.error(f"No ROOT histograms were created for {variable}. Skipping.")
+                continue
+
+            # Save plots
+            save_plots(root_histos, variable, args.output_dir, sample_info['Luminosity'], args)
         
-        logger.info("Processing completed successfully")
+        logger.info(f"Processing completed for {len(vars_to_process)} variables")
         
     except Exception as e:
         logger.error(f"Error in processing: {str(e)}")

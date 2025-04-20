@@ -110,10 +110,8 @@ class MyProcessor(processor.ProcessorABC):
         histograms["jet_mass"].fill(mass=leading_jet_mass.compute(), weight=total_weight.compute())
 
         return {
-            dataset: {
-                "entries": ak.num(events, axis=0),
-                "histos": histograms
-            }
+            "entries": ak.num(events, axis=0),
+            "histos": histograms
         }
 
 
@@ -124,28 +122,28 @@ class MyProcessor(processor.ProcessorABC):
 def main():
     parser = argparse.ArgumentParser(description="Process some eras.")
     allowed_eras = ['UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']
-    parser.add_argument('-e', '--eras', choices=allowed_eras, nargs='*', default=allowed_eras)
+    parser.add_argument('-e', '--era', choices=allowed_eras, required=True, help='Era to process')
     parser.add_argument('-s', '--sample', action='store_true')
-    parser.add_argument('-o', '--output', type=str, default='output.coffea')
+    parser.add_argument('-t', '--tag', type=str, required=True, help='Tag to include in output file name')
     args = parser.parse_args()
 
-    logger.info(f"Selected eras: {args.eras}")
+    logger.info(f"Selected era: {args.era}")
     logger.info(f"Sample mode: {args.sample}")
-    logger.info(f"Output file: {args.output}")
+    logger.info(f"Output tag: {args.tag}")
 
     outputDir = "outputs"
     datasetFlag = 'sample' if args.sample else 'data'
 
     fileset = {}
-    for era in args.eras:
-        with open(f'../../Datasets/selected_{datasetFlag}Files_{era}.json', 'r') as json_file:
-            dicti = json.load(json_file)
-            for pr in dicti['Data_mu']:
-                datasetName = f'{era}_{pr}'
-                fileset[datasetName] = {"files": dicti['Data_mu'][pr]}
-            for pr in dicti['MC_mu']:
-                datasetName = f'{era}_{pr}'
-                fileset[datasetName] = {"files": dicti['MC_mu'][pr]}
+    era = args.era
+    with open(f'../../Datasets/selected_{datasetFlag}Files_{era}.json', 'r') as json_file:
+        dicti = json.load(json_file)
+        for pr in dicti['Data_mu']:
+            datasetName = f'{era}_{pr}'
+            fileset[datasetName] = {"files": dicti['Data_mu'][pr]}
+        for pr in dicti['MC_mu']:
+            datasetName = f'{era}_{pr}'
+            fileset[datasetName] = {"files": dicti['MC_mu'][pr]}
     # print(f"Fileset: {fileset}")
     fileset = remove_empty_files(fileset)
     # print(f"Cleaned fileset: {fileset}")
@@ -167,7 +165,7 @@ def main():
     (out,) = dask.compute(to_compute, scheduler='threads')
 
     # --- Save output .coffea file ---
-    outputFile = args.output
+    outputFile = f"{args.era}_{datasetFlag}_{args.tag}.coffea"
     save(out, os.path.join(outputDir, outputFile))
     logger.info(f"Saving output to {os.path.join(outputDir, outputFile)}")
 
