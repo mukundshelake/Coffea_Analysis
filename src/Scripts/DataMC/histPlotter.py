@@ -42,15 +42,39 @@ logger = logging.getLogger(__name__)
 # --- Variable Configuration ---
 # Maps internal variable names to plotting labels
 VARIABLE_CONFIG = {
-    "muon_pt": {"label": "Muon p_{T} (GeV)", "rebin": (0j, 400j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
+    "muon_pt": {"label": "Muon p_{T} (GeV)", "rebin": (0j, 260j, 2j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
     "muon_eta": {"label": "Muon #eta", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"}, # Add more variables as needed
     "muon_phi": {"label": "Muon #phi", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
     "jet_pt": {"label": "Leading Jet p_{T} (GeV)", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
     "jet_eta": {"label": "Leading Jet #eta", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
     "jet_phi": {"label": "Leading Jet #phi", "rebin": (-3.0j, 3.0j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
+    "n_jets": {"label": "Number of Jets", "rebin": [0, 1, 2, 3, 4, 5, 6, 7], "renameBins" : ['0', '1', '2', '3', '4', '5', '6', '>6'], "rebinType": "addOverflow", "max_val": 1000000000.0, "min_val": 1.0, "legendStyle": "wide"},
+    "n_bjets": {"label": "Number of b-jets", "rebin": [0, 1, 2, 3, 4, 5], "renameBins" : ['0', '1', '2', '3', '4','>4'], "rebinType": "addOverflow", "max_val": 1000000000.0, "min_val": 1.0, "legendStyle": "wide"}
     # Add other variables here...
 }
 # ---
+
+def rebin_with_custom_edges(histogram, new_edges, rebin_type=None):
+    old_axis = histogram.axes[0]
+    if rebin_type == "addOverflow":
+        # Add overflow bin
+        new_edges = new_edges + [new_edges[-1] + (new_edges[-1] - new_edges[-2])]
+        newHist = hist.Hist.new.Variable(new_edges, name=old_axis.name, label=old_axis.label).Double()
+        for i in range(len(new_edges) - 1):
+            low = new_edges[i]*1j
+            high = new_edges[i+1]*1j
+            content = histogram[low:high].sum()
+            if i == len(new_edges) - 2:  # Last bin (overflow)
+                content += histogram[high:].sum()
+            newHist[i] = content
+    else:
+        newHist = hist.Hist.new.Variable(new_edges, name=old_axis.name, label=old_axis.label).Double()
+        for i in range(len(new_edges) - 1):
+            low = new_edges[i]*1j
+            high = new_edges[i+1]*1j
+            content = histogram[low:high].sum()
+            newHist[i] = content
+    return newHist
 
 def parse_arguments():
     """Parse command line arguments."""
@@ -99,6 +123,7 @@ def process_histograms(out_merged, variable, luminosity, sample_info):
         raise ValueError(f"Configuration for variable '{variable}' not found.")
 
     rebin_arg = var_config.get("rebin") # Could be slice or int
+    rebin_type = var_config.get("rebinType", None)
 
     for category, dataset_list in category_map.items():
         merged = None
@@ -144,20 +169,26 @@ def process_histograms(out_merged, variable, luminosity, sample_info):
             if rebin_arg is not None:
                 try:
                     logger.info(f"Applying rebinning '{rebin_arg}' for {variable} in category {category}")
-                    # Handle different types of rebinning arguments
+
                     if isinstance(rebin_arg, slice):
                         merged = merged[rebin_arg]
+
                     elif isinstance(rebin_arg, int):
                         merged = merged.rebin(rebin_arg)
+
+                    elif isinstance(rebin_arg, (list, tuple)) and all(isinstance(x, (int, float)) for x in rebin_arg):
+                        merged = rebin_with_custom_edges(merged, rebin_arg, rebin_type)
+
                     elif isinstance(rebin_arg, tuple) and len(rebin_arg) > 1 and all(isinstance(x, (int, float, complex)) for x in rebin_arg):
-                         # Assuming tuple means hist slice syntax like (start, stop, step)
-                         merged = merged[rebin_arg[0]:rebin_arg[1]:rebin_arg[2] if len(rebin_arg)>2 else 1j]
+                        step = rebin_arg[2] if len(rebin_arg) > 2 else 1j
+                        merged = merged[rebin_arg[0]:rebin_arg[1]:step]
+
                     else:
                         logger.warning(f"Unsupported rebinning argument type '{type(rebin_arg)}' for variable '{variable}'. Skipping rebinning.")
 
                 except Exception as e:
                     logger.error(f"Failed to rebin histogram for {category} with argument '{rebin_arg}': {e}")
-                    # Keep the original 'merged' if rebin fails
+
             merged_histos[category] = merged
         # --- End Rebinning ---
     
@@ -224,6 +255,9 @@ def create_root_histograms(merged_histos, variable):
 
                 root_hist.SetBinContent(root_bin, bin_content)
                 root_hist.SetBinError(root_bin, bin_error)
+                if "renameBins" in VARIABLE_CONFIG[variable]:
+                    # Use renamed bins if provided
+                    root_hist.GetXaxis().SetBinLabel(root_bin, VARIABLE_CONFIG[variable]["renameBins"][i])
 
             root_histos[category] = root_hist # Add successfully created hist
 
@@ -233,7 +267,7 @@ def create_root_histograms(merged_histos, variable):
     
     return root_histos
 
-def save_plots(root_histos, variable, output_dir, luminosity_pb, args):
+def save_plots(root_histos, variable, output_dir, luminosity_pb, args, era):
     """Save plots to output directory with proper styling and ratio plot."""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -311,6 +345,12 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb, args):
              logger.error(f"Stack for variable '{variable}' is empty. Cannot proceed.")
              return
         stack_total = stack.GetStack().Last().Clone(f"total_mc_{variable}")
+        if variable == "n_jets":
+            logger.info(f"\nDebug: n_jets bin contents")
+            logger.info(f"{'Bin':<5} {'Content':<10} {'Error':<10}")
+            for i in range(1, stack_total.GetNbinsX()+1):
+                logger.info(f"{i:<5} {stack_total.GetBinContent(i):<10.2f} {stack_total.GetBinError(i):<10.2f}")
+            logger.info(f"Overflow: {stack_total.GetBinContent(stack_total.GetNbinsX()+1):.2f}")
         if not stack_total or stack_total.Integral() <= 0:
              logger.error(f"Total MC histogram for '{variable}' is empty or invalid. Cannot create ratio plot.")
              return
@@ -349,6 +389,7 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb, args):
         hist_data.SetMinimum(min_val)
 
         stack.Draw("HIST") # Draw filled background stack
+
         hist_data.Draw("E1 SAME") # Draw data with error bars ('E1' style)
 
         # Explicitly set y-axis range for pad1
@@ -433,7 +474,7 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb, args):
         lumi_text.SetTextFont(42) # Regular
         lumi_text.SetTextSize(0.04)
         # Display lumi in fb^-1
-        lumi_text.DrawLatex(0.60, 0.93, f"{luminosity_fb:.1f} fb^{{-1}} (13 TeV, 2016preVFP)") # Position adjusted
+        lumi_text.DrawLatex(0.60, 0.93, f"{luminosity_fb:.1f} fb^{{-1}} (13 TeV, {era})") # Position adjusted
 
         # --- End Add Text ---
 
@@ -566,7 +607,7 @@ def main():
                 continue
 
             # Save plots
-            save_plots(root_histos, variable, args.output_dir, sample_info['Luminosity'], args)
+            save_plots(root_histos, variable, args.output_dir, sample_info['Luminosity'], args, sample_info['era'])
         
         logger.info(f"Processing completed for {len(vars_to_process)} variables")
         

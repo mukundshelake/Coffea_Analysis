@@ -1,0 +1,170 @@
+{
+    "DYJetsToLL": {
+        "nTight": 259675.0,
+        "nMedium": 335421.0,
+        "nLoose": 437417.0,
+        "nTotal": 456980.0
+    },
+    "QCD_Pt-15To20_MuEnriched": {
+        "nTight": 0.0,
+        "nMedium": 0.0,
+        "nLoose": 0.0,
+        "nTotal": 0.0
+    },
+    "QCD_Pt-20To30_MuEnriched": {
+        "nTight": 0.0,
+        "nMedium": 0.0,
+        "nLoose": 0.0,
+        "nTotal": 0.0
+    },
+    "QCD_Pt-30To50_MuEnriched": {
+        "nTight": 619.0,
+        "nMedium": 778.0,
+        "nLoose": 897.0,
+        "nTotal": 967.0
+    },
+    "QCD_Pt-50To80_MuEnriched": {
+        "nTight": 4815.0,
+        "nMedium": 5728.0,
+        "nLoose": 6477.0,
+        "nTotal": 6786.0
+    },
+    "QCD_Pt-80To120_MuEnriched": {
+        "nTight": 19845.0,
+        "nMedium": 22745.0,
+        "nLoose": 25054.0,
+        "nTotal": 25864.0
+    },
+    "QCD_Pt-120To170_MuEnriched": {
+        "nTight": 32405.0,
+        "nMedium": 36122.0,
+        "nLoose": 39260.0,
+        "nTotal": 40184.0
+    },
+    "QCD_Pt-170To300_MuEnriched": {
+        "nTight": 103279.0,
+        "nMedium": 112470.0,
+        "nLoose": 120741.0,
+        "nTotal": 123174.0
+    },
+    "QCD_Pt-300To470_MuEnriched": {
+        "nTight": 136389.0,
+        "nMedium": 145653.0,
+        "nLoose": 154538.0,
+        "nTotal": 157081.0
+    },
+    "QCD_Pt-470To600_MuEnriched": {
+        "nTight": 123792.0,
+        "nMedium": 131058.0,
+        "nLoose": 137880.0,
+        "nTotal": 139778.0
+    },
+    "QCD_Pt-600To800_MuEnriched": {
+        "nTight": 131696.0,
+        "nMedium": 138705.0,
+        "nLoose": 145454.0,
+        "nTotal": 147419.0
+    },
+    "QCD_Pt-800To1000_MuEnriched": {
+        "nTight": 296396.0,
+        "nMedium": 311963.0,
+        "nLoose": 327087.0,
+        "nTotal": 331251.0
+    },
+    "QCD_Pt-1000_MuEnriched": {
+        "nTight": 103697.0,
+        "nMedium": 109046.0,
+        "nLoose": 114040.0,
+        "nTotal": 115417.0
+    },
+    "Schannel": {
+        "nTight": 1589732.0,
+        "nMedium": 1852196.0,
+        "nLoose": 2194633.0,
+        "nTotal": 2240038.0
+    },
+    "Tchannel": {
+        "nTight": 4392761.0,
+        "nMedium": 5123402.0,
+        "nLoose": 6073743.0,
+        "nTotal": 6183249.0
+    },
+    "Tbarchannel": {
+        "nTight": 2492648.0,
+        "nMedium": 2911292.0,
+        "nLoose": 3458981.0,
+        "nTotal": 3520625.0
+    },
+    "tw_top": {
+        "nTight": 1895246.0,
+        "nMedium": 2204253.0,
+        "nLoose": 2618820.0,
+        "nTotal": 2653632.0
+    },
+    "tw_antitop": {
+        "nTight": 1616541.0,
+        "nMedium": 1878769.0,
+        "nLoose": 2231670.0,
+        "nTotal": 2261163.0
+    },
+    "ttbar_SemiLeptonic": {
+        "nTight": 196832676.0,
+        "nMedium": 224659922.0,
+        "nLoose": 259794793.0,
+        "nTotal": 262198839.0
+    },
+    "ttbar_FullyLeptonic": {
+        "nTight": 69067790.0,
+        "nMedium": 83695372.0,
+        "nLoose": 103577043.0,
+        "nTotal": 104865992.0
+    },
+    "WJetsToLNu_0J": {
+        "nTight": 1373.0,
+        "nMedium": 1788.0,
+        "nLoose": 2402.0,
+        "nTotal": 3445.0
+    },
+    "WJetsToLNu_1J": {
+        "nTight": 11705.0,
+        "nMedium": 15214.0,
+        "nLoose": 20636.0,
+        "nTotal": 27277.0
+    },
+    "WJetsToLNu_2J": {
+        "nTight": 142004.0,
+        "nMedium": 168737.0,
+        "nLoose": 203509.0,
+        "nTotal": 213972.0
+    },
+    "ZZTo2Q2L": {
+        "nTight": 919222.0,
+        "nMedium": 1150541.0,
+        "nLoose": 1467334.0,
+        "nTotal": 1489899.0
+    },
+    "ZZTo2L2Nu": {
+        "nTight": 48557.0,
+        "nMedium": 61891.0,
+        "nLoose": 80505.0,
+        "nTotal": 84960.0
+    },
+    "WWTo2L2Nu": {
+        "nTight": 11765.0,
+        "nMedium": 14643.0,
+        "nLoose": 18680.0,
+        "nTotal": 20039.0
+    },
+    "WWTolnulnu": {
+        "nTight": 0.0,
+        "nMedium": 0.0,
+        "nLoose": 0.0,
+        "nTotal": 0.0
+    },
+    "WZTo2Q2L": {
+        "nTight": 131371.0,
+        "nMedium": 160653.0,
+        "nLoose": 197426.0,
+        "nTotal": 203359.0
+    }
+}

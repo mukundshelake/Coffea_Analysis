@@ -71,6 +71,8 @@ class MyProcessor(processor.ProcessorABC):
             "jet_eta": hist.Hist.new.Reg(50, -2.5, 2.5, name="eta", label="Leading Jet $\eta$").Double(),
             "jet_phi": hist.Hist.new.Reg(64, -3.2, 3.2, name="phi", label="Leading Jet $\phi$").Double(),
             "jet_mass": hist.Hist.new.Reg(50, 0.0, 100.0, name="mass", label="Leading Jet Mass [GeV]").Double(),
+            "n_jets": hist.Hist.new.Reg(20, 0, 20, name="count", label="Number of jets (pt>25, |eta|<2.4)").Double(),
+            "n_bjets": hist.Hist.new.Reg(20, 0, 20, name="count", label="Number of b-tagged jets (pt>25, |eta|<2.4)").Double(),
         }
 
         leading_muon_pt = events.Muon.pt[:, 0]
@@ -108,6 +110,23 @@ class MyProcessor(processor.ProcessorABC):
         histograms["jet_eta"].fill(eta=leading_jet_eta.compute(), weight=total_weight.compute())
         histograms["jet_phi"].fill(phi=leading_jet_phi.compute(), weight=total_weight.compute())
         histograms["jet_mass"].fill(mass=leading_jet_mass.compute(), weight=total_weight.compute())
+        
+        # Count jets passing selection
+        selected_jets = events.Jet[(events.Jet.pt > 25) & (abs(events.Jet.eta) < 2.4)]
+        n_jets = ak.num(selected_jets, axis=1)
+        histograms["n_jets"].fill(count=n_jets.compute(), weight=total_weight.compute())
+        
+        # Count b-tagged jets passing selection
+        btag_thresholds = {
+            'UL2016preVFP': 0.2598,
+            'UL2016postVFP': 0.2489,
+            'UL2017': 0.2589,
+            'UL2018': 0.2432
+        }
+        threshold = btag_thresholds[events.metadata['dataset'].split('_')[0]]
+        btagged_jets = selected_jets[selected_jets.btagDeepFlavB > threshold]
+        n_bjets = ak.num(btagged_jets, axis=1)
+        histograms["n_bjets"].fill(count=n_bjets.compute(), weight=total_weight.compute())
 
         return {
             "entries": ak.num(events, axis=0),

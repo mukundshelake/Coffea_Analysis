@@ -1,5 +1,6 @@
 {
   "Luminosity": 16812.1,
+  "era" : "UL2016postVFP",
   "cross_sections": {
     "UL2016postVFP_ttbar_SemiLeptonic": 364.31,
     "UL2016postVFP_ttbar_FullyLeptonic": 87.33,
@@ -61,8 +62,8 @@
     "UL2016postVFP_QCD_Pt-800To1000_MuEnriched": 3.89E+07
   },
   "category_map": {
-    "Data": ["Run2016F_mu", "Run2016G_mu",
-            "Run2016H_mu"],
+    "Data": ["UL2016postVFP_Run2016F_mu", "UL2016postVFP_Run2016G_mu",
+            "UL2016postVFP_Run2016H_mu"],
     "DrellYan": ["UL2016postVFP_DYJetsToLL"],
     "QCD": ["UL2016postVFP_QCD_Pt-1000_MuEnriched", "UL2016postVFP_QCD_Pt-120To170_MuEnriched",
            "UL2016postVFP_QCD_Pt-15To20_MuEnriched", "UL2016postVFP_QCD_Pt-170To300_MuEnriched",
