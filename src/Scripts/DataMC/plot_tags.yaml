@@ -1,0 +1,8 @@
+# Track which tag version is current for each era
+# Format: era: tag
+
+# Example:
+UL2016preVFP: nJet_corr
+UL2016postVFP: nJet_corr
+UL2017: nJet_corr
+UL2018: nJet_corr
