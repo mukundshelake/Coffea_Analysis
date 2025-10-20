@@ -74,7 +74,7 @@ def main():
     logging.info(f"Number of events in training data for class 1: {len(df_train[df_train['y_binary'] == 1])}")
 
     # features = ['ttbarpz', 'ttbar_mass', 'Jet_HT', 'nJet', 'pT_sum', 'FW1', 'Sxx', 'Syy', 'Szz', 'Sxy', 'Sxz', 'Syz', 'S', 'P', 'A', 'p2in', 'p2out']
-    features = ['ttbarpz', 'FW1', 'nJet', 'pT_sum', 'P', 'A', 'p2in', 'Syy', 'Sxy']
+    features = ['FW1', 'nJet', 'pT_sum', 'P', 'A', 'p2in', 'Syy', 'Sxy']
     logging.info(f"Features used for training: {features}")
 
     # Select features and target variable for training
