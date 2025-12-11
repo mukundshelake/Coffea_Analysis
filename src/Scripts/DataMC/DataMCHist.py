@@ -155,7 +155,7 @@ def main():
 
     fileset = {}
     era = args.era
-    with open(f'../../Datasets/selected_{datasetFlag}Files_{era}.json', 'r') as json_file:
+    with open(f'/home/mukund/Projects/PhysicsTools/NanoAODTools/Datasets/{args.tag}_selection_{era}_dataFiles.json', 'r') as json_file:
         dicti = json.load(json_file)
         for pr in dicti['Data_mu']:
             datasetName = f'{era}_{pr}'
