@@ -1,5 +1,6 @@
 {
   "Luminosity": 16812.1,
+  "luminosity_uncertainty": 0.012,
   "era": "UL2016postVFP",
   "cross_sections": {
     "UL2016postVFP_ttbar_SemiLeptonic": 366.3,

@@ -63,56 +63,62 @@ class MyProcessor(processor.ProcessorABC):
         # Initialize histograms (fresh per dataset)
         logger.debug("Initializing histograms...")
         histograms = {
-            # "muon_pt": hist.Hist.new.Reg(40, 0.0, 400.0, name="pt", label="Leading Muon $p_T$ [GeV]").Double(),
-            # "muon_eta": hist.Hist.new.Reg(50, -2.5, 2.5, name="eta", label="Leading Muon $\eta$").Double(),
-            # "muon_phi": hist.Hist.new.Reg(64, -3.2, 3.2, name="phi", label="Leading Muon $\phi$").Double(),
-            # "muon_mass": hist.Hist.new.Reg(40, 0.0, 0.24, name="mass", label="Leading Muon Mass [GeV]").Double(),
+            "muon_pt": hist.Hist.new.Reg(40, 0.0, 400.0, name="pt", label="Leading Muon $p_T$ [GeV]").Double(),
+            "muon_eta": hist.Hist.new.Reg(50, -2.5, 2.5, name="eta", label="Leading Muon $\eta$").Double(),
+            "muon_phi": hist.Hist.new.Reg(64, -3.2, 3.2, name="phi", label="Leading Muon $\phi$").Double(),
+            "muon_mass": hist.Hist.new.Reg(40, 0.0, 0.24, name="mass", label="Leading Muon Mass [GeV]").Double(),
             "muon_iso": hist.Hist.new.Reg(500, 0.0, 10.0, name="iso", label="Leading Muon Relative Isolation").Double(),
-            # "jet_pt": hist.Hist.new.Reg(50, 0.0, 500.0, name="pt", label="Leading Jet $p_T$ [GeV]").Double(),
-            # "jet_eta": hist.Hist.new.Reg(50, -2.5, 2.5, name="eta", label="Leading Jet $\eta$").Double(),
-            # "jet_phi": hist.Hist.new.Reg(64, -3.2, 3.2, name="phi", label="Leading Jet $\phi$").Double(),
-            # "jet_mass": hist.Hist.new.Reg(50, 0.0, 100.0, name="mass", label="Leading Jet Mass [GeV]").Double(),
-            # "n_jets": hist.Hist.new.Reg(20, 0, 20, name="count", label="Number of jets (pt>25, |eta|<2.4)").Double(),
-            # "n_bjets": hist.Hist.new.Reg(20, 0, 20, name="count", label="Number of b-tagged jets (pt>25, |eta|<2.4)").Double(),
-            # "met_pt": hist.Hist.new.Reg(50, 0.0, 500.0, name="pt", label="MET $p_T$ [GeV]").Double(),
+            "jet_pt": hist.Hist.new.Reg(50, 0.0, 500.0, name="pt", label="Leading Jet $p_T$ [GeV]").Double(),
+            "jet_eta": hist.Hist.new.Reg(50, -2.5, 2.5, name="eta", label="Leading Jet $\eta$").Double(),
+            "jet_phi": hist.Hist.new.Reg(64, -3.2, 3.2, name="phi", label="Leading Jet $\phi$").Double(),
+            "jet_mass": hist.Hist.new.Reg(50, 0.0, 100.0, name="mass", label="Leading Jet Mass [GeV]").Double(),
+            "n_jets": hist.Hist.new.Reg(20, 0, 20, name="count", label="Number of jets (pt>25, |eta|<2.4)").Double(),
+            "n_bjets": hist.Hist.new.Reg(20, 0, 20, name="count", label="Number of b-tagged jets (pt>25, |eta|<2.4)").Double(),
+            "met_pt": hist.Hist.new.Reg(50, 0.0, 500.0, name="pt", label="MET $p_T$ [GeV]").Double(),
             "tW_mass": hist.Hist.new.Reg(50, 0.0, 500.0, name="mT", label="Transverse W Mass [GeV]").Double(),
         }
 
         # --- Object Selections ---
-        # Find leading muon that satisfies pt > 26.00, abs(eta) < 2.4, and tightId == 1; each event already has atleast one such muon
-        muon_mask = (events.Muon.pt > 26.0) & (abs(events.Muon.eta) < 2.4) & (events.Muon.tightId == 1)
+        # Find leading muon that satisfies pt > 26.00, abs(eta) < 2.4, and tightId == 1 and pfRelIso04_all <= 0.06; each event already has atleast one such muon
+        muon_mask = (events.Muon.pt > 26.0) & (abs(events.Muon.eta) < 2.4) & (events.Muon.tightId == 1) & (events.Muon.pfRelIso04_all <= 0.06)  
         events.Muon = events.Muon[muon_mask]
         events.Muon = events.Muon[ak.argsort(events.Muon.pt, axis=1, ascending=False)]
-
-
-        # # Get MET pt and phi
-        # met_pt = events.MET.pt
-        # met_phi = events.MET.phi
-
-
         
-
-
-
-
-        # leading_muon_pt = events.Muon.pt[:, 0]
-        # # leading_muon_eta = events.Muon.eta[:, 0]
-        # leading_muon_phi = events.Muon.phi[:, 0]
-        # # leading_muon_mass = events.Muon.mass[:, 0]
-        leading_muon_iso = events.Muon.pfRelIso04_all[:, 0]
-
-
-        # Build transverse W mass from leading muon and MET
+        # Get all the required stuff for leading muon and MET
         leading_muon_pt = events.Muon.pt[:, 0]
+        leading_muon_eta = events.Muon.eta[:, 0]
         leading_muon_phi = events.Muon.phi[:, 0]
+        leading_muon_mass = events.Muon.mass[:, 0]
+        leading_muon_iso = events.Muon.pfRelIso04_all[:, 0]
         met_pt = events.MET.pt
         met_phi = events.MET.phi
         transverse_w_mass = np.sqrt(2 * leading_muon_pt * met_pt * (1 - np.cos(leading_muon_phi - met_phi)))
 
-        # leading_jet_pt = events.Jet.pt[:,0]
-        # leading_jet_eta = events.Jet.eta[:,0]
-        # leading_jet_phi = events.Jet.phi[:,0]
-        # leading_jet_mass = events.Jet.mass[:,0]
+
+        # Create JET mask for jets with pt > 25, abs(eta) < 2.4, jetId == 6, and (pt > 50.0 or Jet.puId > 0)
+
+        jet_mask = (events.Jet.pt > 25) & (abs(events.Jet.eta) < 2.4) & (events.Jet.jetId == 6) & ((events.Jet.pt > 50.0) | (events.Jet.puId >= 2))
+        events.Jet = events.Jet[jet_mask]
+        events.Jet = events.Jet[ak.argsort(events.Jet.pt, axis=1, ascending=False)]
+
+        # Count number of jets passing selection
+        n_jets = ak.num(events.Jet, axis=1)
+
+        # Count number of b-tagged jets passing selection
+        btag_thresholds = {
+            'UL2016preVFP': 0.2598,
+            'UL2016postVFP': 0.2489,
+            'UL2017': 0.2589,
+            'UL2018': 0.2432    
+        }
+        threshold = btag_thresholds[events.metadata['dataset'].split('_')[0]]
+        btagged_jets = events.Jet[events.Jet.btagDeepFlavB > threshold]
+        n_bjets = ak.num(btagged_jets, axis=1)
+
+        leading_jet_pt = events.Jet.pt[:,0]
+        leading_jet_eta = events.Jet.eta[:,0]
+        leading_jet_phi = events.Jet.phi[:,0]
+        leading_jet_mass = events.Jet.mass[:,0]
 
         # --- Total Weights ---
         total_weight = ak.ones_like(leading_muon_iso)
@@ -131,34 +137,19 @@ class MyProcessor(processor.ProcessorABC):
 
 
         # Fill histograms
-        # histograms["muon_pt"].fill(pt=leading_muon_pt.compute(), weight=total_weight.compute())
-        # histograms["muon_eta"].fill(eta=leading_muon_eta.compute(), weight=total_weight.compute())
-        # histograms["muon_phi"].fill(phi=leading_muon_phi.compute(), weight=total_weight.compute())
-        # histograms["muon_mass"].fill(mass=leading_muon_mass.compute(), weight=total_weight.compute())
+        histograms["muon_pt"].fill(pt=leading_muon_pt.compute(), weight=total_weight.compute())
+        histograms["muon_eta"].fill(eta=leading_muon_eta.compute(), weight=total_weight.compute())
+        histograms["muon_phi"].fill(phi=leading_muon_phi.compute(), weight=total_weight.compute())
+        histograms["muon_mass"].fill(mass=leading_muon_mass.compute(), weight=total_weight.compute())
         histograms["muon_iso"].fill(iso=leading_muon_iso.compute(), weight=total_weight.compute())
-        # histograms["jet_pt"].fill(pt=leading_jet_pt.compute(), weight=total_weight.compute())
-        # histograms["jet_eta"].fill(eta=leading_jet_eta.compute(), weight=total_weight.compute())
-        # histograms["jet_phi"].fill(phi=leading_jet_phi.compute(), weight=total_weight.compute())
-        # histograms["jet_mass"].fill(mass=leading_jet_mass.compute(), weight=total_weight.compute())
-        # histograms["met_pt"].fill(pt=events.MET.pt.compute(), weight=total_weight.compute())
+        histograms["n_jets"].fill(count=n_jets.compute(), weight=total_weight.compute())
+        histograms["n_bjets"].fill(count=n_bjets.compute(), weight=total_weight.compute())
+        histograms["jet_pt"].fill(pt=leading_jet_pt.compute(), weight=total_weight.compute())
+        histograms["jet_eta"].fill(eta=leading_jet_eta.compute(), weight=total_weight.compute())
+        histograms["jet_phi"].fill(phi=leading_jet_phi.compute(), weight=total_weight.compute())
+        histograms["jet_mass"].fill(mass=leading_jet_mass.compute(), weight=total_weight.compute())
+        histograms["met_pt"].fill(pt=met_pt.compute(), weight=total_weight.compute())
         histograms["tW_mass"].fill(mT=transverse_w_mass.compute(), weight=total_weight.compute())
-        
-        # Count jets passing selection
-        # selected_jets = events.Jet[(events.Jet.pt > 25) & (abs(events.Jet.eta) < 2.4) & (events.Jet.jetId == 6) & ((events.Jet.pt > 50.0) | (events.Jet.puId >=2))]
-        # n_jets = ak.num(selected_jets, axis=1)
-        # histograms["n_jets"].fill(count=n_jets.compute(), weight=total_weight.compute())
-        
-        # # Count b-tagged jets passing selection
-        # btag_thresholds = {
-        #     'UL2016preVFP': 0.2598,
-        #     'UL2016postVFP': 0.2489,
-        #     'UL2017': 0.2589,
-        #     'UL2018': 0.2432
-        # }
-        # threshold = btag_thresholds[events.metadata['dataset'].split('_')[0]]
-        # btagged_jets = selected_jets[selected_jets.btagDeepFlavB > threshold]
-        # n_bjets = ak.num(btagged_jets, axis=1)
-        # histograms["n_bjets"].fill(count=n_bjets.compute(), weight=total_weight.compute())
 
         return {
             "entries": ak.num(events, axis=0),

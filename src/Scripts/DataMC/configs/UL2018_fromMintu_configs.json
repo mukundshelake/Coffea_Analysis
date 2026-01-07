@@ -1,5 +1,6 @@
 {
   "Luminosity": 59222.7416,
+  "luminosity_uncertainty": 0.0084,
   "era": "UL2018",
   "cross_sections": {
     "UL2018_ttbar_SemiLeptonic": 366.3,

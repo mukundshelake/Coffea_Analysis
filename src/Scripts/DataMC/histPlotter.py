@@ -18,6 +18,7 @@ import logging
 import os
 import sys
 import json
+import math
 
 # Try to import required packages with error handling
 try:
@@ -94,11 +95,12 @@ def load_sample_info(json_path):
     try:
         with open(json_path, 'r') as f:
             data = json.load(f)
-        required_keys = ['cross_sections', 'generated_events', 'category_map', 'Luminosity']
+        required_keys = ['cross_sections', 'generated_events', 'category_map', 'Luminosity', 'luminosity_uncertainty']
         if not all(key in data for key in required_keys):
             missing_keys = [key for key in required_keys if key not in data]
             raise ValueError(f"JSON file must contain {', '.join(required_keys)} keys. Missing: {', '.join(missing_keys)}")
         logger.info(f"Loaded sample info from: {json_path}")
+        logger.info(f"Luminosity uncertainty: {data['luminosity_uncertainty']*100:.1f}%")
         return data
     except FileNotFoundError:
         logger.error(f"Sample info file not found: {json_path}")
@@ -267,7 +269,7 @@ def create_root_histograms(merged_histos, variable):
     
     return root_histos
 
-def save_plots(root_histos, variable, output_dir, luminosity_pb, args, era):
+def save_plots(root_histos, variable, output_dir, luminosity_pb, args, era, lumi_uncertainty):
     """Save plots to output directory with proper styling and ratio plot."""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -521,9 +523,11 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb, args, era):
             y = 1.0 # Ratio is 1
             mc_val = stack_total.GetBinContent(i)
             mc_err = stack_total.GetBinError(i)
-            rel_err = mc_err / mc_val if mc_val > 0 else 0.0
+            # Combine statistical and luminosity uncertainties in quadrature
+            stat_rel_err = mc_err / mc_val if mc_val > 0 else 0.0
+            rel_err = math.sqrt(stat_rel_err**2 + lumi_uncertainty**2) if mc_val > 0 else 0.0
             uncertainty_band.SetPoint(i - 1, x, y)
-            # X errors are half bin width, Y errors are relative stat error
+            # X errors are half bin width, Y errors are relative combined error
             uncertainty_band.SetPointError(i - 1, stack_total.GetBinWidth(i)/2., stack_total.GetBinWidth(i)/2., rel_err, rel_err)
 
         uncertainty_band.SetFillColorAlpha(ROOT.kGray + 1, 0.4) # Lighter grey, more transparent
@@ -607,7 +611,7 @@ def main():
                 continue
 
             # Save plots
-            save_plots(root_histos, variable, args.output_dir, sample_info['Luminosity'], args, sample_info['era'])
+            save_plots(root_histos, variable, args.output_dir, sample_info['Luminosity'], args, sample_info['era'], sample_info['luminosity_uncertainty'])
         
         logger.info(f"Processing completed for {len(vars_to_process)} variables")
         
