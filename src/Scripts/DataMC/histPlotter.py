@@ -45,12 +45,12 @@ logger = logging.getLogger(__name__)
 VARIABLE_CONFIG = {
     "muon_pt": {"label": "Muon p_{T} (GeV)", "rebin": (0j, 260j, 2j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
     "muon_eta": {"label": "Muon #eta", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"}, # Add more variables as needed
-    "muon_phi": {"label": "Muon #phi", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
+    "muon_phi": {"label": "Muon #phi", "rebin": (-3.20j, 3.20j, 2j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
     "jet_pt": {"label": "Leading Jet p_{T} (GeV)", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "vertical"},
     "jet_eta": {"label": "Leading Jet #eta", "rebin": None, "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
     "jet_phi": {"label": "Leading Jet #phi", "rebin": (-3.0j, 3.0j), "max_val": 10000000.0, "min_val": 1.0, "legendStyle": "wide"},
-    "n_jets": {"label": "Number of Jets", "rebin": [0, 1, 2, 3, 4, 5, 6, 7], "renameBins" : ['0', '1', '2', '3', '4', '5', '6', '>6'], "rebinType": "addOverflow", "max_val": 1000000000.0, "min_val": 1.0, "legendStyle": "wide"},
-    "n_bjets": {"label": "Number of b-jets", "rebin": [0, 1, 2, 3, 4, 5], "renameBins" : ['0', '1', '2', '3', '4','>4'], "rebinType": "addOverflow", "max_val": 1000000000.0, "min_val": 1.0, "legendStyle": "wide"}
+    "n_jets": {"label": "Number of Jets", "rebin": [0, 1, 2, 3, 4, 5, 6, 7], "renameBins" : ['0', '1', '2', '3', '4', '5', '6', '>6'], "rebinType": "addOverflow", "max_val": 1000000000.0, "min_val": 1.0, "legendStyle": "wide", "zero_bins_below": 4},
+    "n_bjets": {"label": "Number of b-jets", "rebin": [0, 1, 2, 3, 4, 5], "renameBins" : ['0', '1', '2', '3', '4','>4'], "rebinType": "addOverflow", "max_val": 1000000000.0, "min_val": 1.0, "legendStyle": "wide", "zero_bins_below": 2}
     # Add other variables here...
 }
 # ---
@@ -190,6 +190,19 @@ def process_histograms(out_merged, variable, luminosity, sample_info):
 
                 except Exception as e:
                     logger.error(f"Failed to rebin histogram for {category} with argument '{rebin_arg}': {e}")
+
+            # --- Zero out bins below threshold ---
+            zero_below = var_config.get("zero_bins_below")
+            if zero_below is not None:
+                try:
+                    axis = merged.axes[0]
+                    for i, edge in enumerate(axis.edges[:-1]):
+                        if edge < zero_below:
+                            merged.view()[i] = 0.0
+                    logger.info(f"Zeroed bins below {zero_below} for {variable} in category {category}")
+                except Exception as e:
+                    logger.error(f"Failed to zero bins below {zero_below} for {category}: {e}")
+            # --- End Zero out bins ---
 
             merged_histos[category] = merged
         # --- End Rebinning ---
@@ -518,6 +531,11 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb, args, era, lumi
 
         # Add MC uncertainty band
         uncertainty_band = ROOT.TGraphAsymmErrors(stack_total)
+        logger.info(f"\n{'='*80}")
+        logger.info(f"Uncertainty band ranges for {variable}:")
+        logger.info(f"{'Bin':<5} {'Bin Center':<12} {'MC Events':<12} {'Stat Unc %':<12} {'Lumi Unc %':<12} {'Total Unc %':<12} {'Band Range':<20}")
+        logger.info(f"{'-'*80}")
+        
         for i in range(1, stack_total.GetNbinsX() + 1):
             x = stack_total.GetBinCenter(i)
             y = 1.0 # Ratio is 1
@@ -526,9 +544,19 @@ def save_plots(root_histos, variable, output_dir, luminosity_pb, args, era, lumi
             # Combine statistical and luminosity uncertainties in quadrature
             stat_rel_err = mc_err / mc_val if mc_val > 0 else 0.0
             rel_err = math.sqrt(stat_rel_err**2 + lumi_uncertainty**2) if mc_val > 0 else 0.0
+            
+            # Calculate band range
+            lower_edge = 1.0 - rel_err
+            upper_edge = 1.0 + rel_err
+            
+            # Log the uncertainty information
+            logger.info(f"{i:<5} {x:<12.2f} {mc_val:<12.1f} {stat_rel_err*100:<12.2f} {lumi_uncertainty*100:<12.2f} {rel_err*100:<12.2f} [{lower_edge:.4f}, {upper_edge:.4f}]")
+            
             uncertainty_band.SetPoint(i - 1, x, y)
             # X errors are half bin width, Y errors are relative combined error
             uncertainty_band.SetPointError(i - 1, stack_total.GetBinWidth(i)/2., stack_total.GetBinWidth(i)/2., rel_err, rel_err)
+        
+        logger.info(f"{'='*80}\n")
 
         uncertainty_band.SetFillColorAlpha(ROOT.kGray + 1, 0.4) # Lighter grey, more transparent
         uncertainty_band.SetFillStyle(1001) # Solid fill
